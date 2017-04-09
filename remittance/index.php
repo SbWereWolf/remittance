@@ -8,7 +8,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-define('APPLICATION_ROOT', realpath(__DIR__));
+define('APPLICATION_ROOT', realpath(__DIR__) . DIRECTORY_SEPARATOR . '..');
 define('CONFIGURATION_ROOT', APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'configuration');
 define('DB_READ_CONFIGURATION', CONFIGURATION_ROOT . DIRECTORY_SEPARATOR . 'db_read.php');
 define('DB_WRITE_CONFIGURATION', CONFIGURATION_ROOT . DIRECTORY_SEPARATOR . 'db_write.php');

@@ -58,7 +58,7 @@
 
         $.ajax({
             type: 'POST',
-            url: '/remittance/order/add',
+            url: '/order/add',
             data: {
                 deal_income: deal_income,
                 deal_outcome: deal_outcome,
