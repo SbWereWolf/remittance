@@ -3,3 +3,4 @@ vendor/*
 configuration/*
 composer.lock
 remittance/operator/.htaccess
+remittance/manager/.htaccess
