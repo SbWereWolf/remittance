@@ -9,13 +9,12 @@
 namespace Remittance\Web;
 
 
-use Remittance\Core\Common;
 use Remittance\DataAccess\Entity\TransferRecord;
 use Remittance\DataAccess\Search\TransferSearch;
-use Slim\Container;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Router;
+use Slim\Views\PhpRenderer;
 
 
 class OperatorPage
@@ -25,13 +24,13 @@ class OperatorPage
     const ACTION_ANNUL = 'annul';
     const ID = 'id';
 
-    private $container;
     private $router;
+    private $viewer;
 
-    public function __construct(Container $container, Router $router)
+    public function __construct(Router $router, PhpRenderer $viewer)
     {
-        $this->container = $container;
         $this->router = $router;
+        $this->viewer = $viewer;
     }
 
     /**
@@ -78,35 +77,12 @@ class OperatorPage
 
         $offset = 0;
         $limit = 0;
-        $response = $this->container->view->render($response, "operator/operator.php", [
+        $response = $this->viewer->render($response, "operator/operator.php", [
             'transfers' => $transfers,
             'offset' => $offset,
             'limit' => $limit,
             'actionLinks' => $actionLinks,
         ]);
-
-        return $response;
-
-    }
-
-    public function accomplish(Request $request, Response $response, array $arguments)
-    {
-
-        $id = Common::setIfExists(self::ID, $arguments, Common::EMPTY_VALUE);
-        $response = $response->withJson(
-            array('message' => "success accomplish $id")
-        );
-
-        return $response;
-    }
-
-    public function annul(Request $request, Response $response, array $arguments)
-    {
-
-        $id = Common::setIfExists(self::ID, $arguments, Common::EMPTY_VALUE);
-        $response = $response->withJson(
-            array('message' => "success annul $id")
-        );
 
         return $response;
 

@@ -20,14 +20,18 @@ $configuration['displayErrorDetails'] = true;
 $configuration['addContentLengthHeader'] = false;
 
 $container = new \Slim\Container(['settings' => $configuration]);
-$container['view'] = new \Slim\Views\PhpRenderer(APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'view');
+
+const ROUTER_COMPONENT = 'router';
+const VIEWER_COMPONENT = 'view';
+$container[VIEWER_COMPONENT] = new \Slim\Views\PhpRenderer(APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'view');
 
 $app = new \Slim\App($container);
 
 $app->get('/', function (Request $request, Response $response, array $arguments) {
 
-    $router = $this->get('router');
-    $page = new \Remittance\Web\OperatorPage($this, $router);
+    $router = $this->get(ROUTER_COMPONENT);
+    $viewer = $this->get(VIEWER_COMPONENT);
+    $page = new \Remittance\Web\OperatorPage($router, $viewer);
     $response = $page->root($request, $response, $arguments);
 
     return $response;
@@ -35,9 +39,8 @@ $app->get('/', function (Request $request, Response $response, array $arguments)
 
 $app->post('/transfer/accomplish/{id}', function (Request $request, Response $response, array $arguments) {
 
-    $router = $this->get('router');
-    $page = new \Remittance\Web\OperatorPage($this, $router);
-    $response = $page->accomplish($request, $response, $arguments);
+    $api = new \Remittance\Web\OperatorApi();
+    $response = $api->accomplish($request, $response, $arguments);
 
     return $response;
 
@@ -45,9 +48,8 @@ $app->post('/transfer/accomplish/{id}', function (Request $request, Response $re
 
 $app->post('/transfer/annul/{id}', function (Request $request, Response $response, array $arguments) {
 
-    $router = $this->get('router');
-    $page = new \Remittance\Web\OperatorPage($this, $router);
-    $response = $page->annul($request, $response, $arguments);
+    $api = new \Remittance\Web\OperatorApi();
+    $response = $api->annul($request, $response, $arguments);
 
     return $response;
 

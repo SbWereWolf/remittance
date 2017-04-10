@@ -2,3 +2,4 @@
 vendor/*
 configuration/*
 composer.lock
+remittance/operator/.htaccess

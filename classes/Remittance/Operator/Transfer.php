@@ -45,6 +45,9 @@ class Transfer
 
             $record->documentNumber = $record->id;
             $record->documentDate = date('Ymd');
+            $record->status = $this->status;
+            $record->statusComment = 'принята заявка с сайта';
+            $record->statusTime = date('Ymd h:i:s');
             $record->reportEmail = $orderDetail->dealEmail;
 
             $record->incomeAccount = $orderDetail->dealSource;
@@ -53,33 +56,29 @@ class Transfer
             $record->outcomeAmount = $orderDetail->dealOutcome;
 
             $record->transferAccount = $orderDetail->accountTransfer;
+            $record->transferName = $orderDetail->fioTransfer;
             $record->receiveName = $orderDetail->fioReceive;
             $record->receiveAccount = $orderDetail->accountReceive;
-            $record->transferName = $orderDetail->fioTransfer;
-
-            $record->status = $this->status;
-            $record->statusComment = 'принята заявка с сайта';
-            $record->statusTime = date('Ymd h:i:s');
 
             $isSuccess = $record->mutateEntity();
         }
 
         if ($isSuccess) {
 
-            $this->fioTransfer = $record->transferName;
-            $this->accountTransfer = $record->transferAccount;
-            $this->accountReceive = $record->receiveAccount;
-            $this->dealEmail = $record->reportEmail;
-            $this->dealIncome = $record->incomeAmount;
-            $this->dealOutcome = $record->outcomeAmount;
-            $this->documentDate = $record->documentDate;
-            $this->fioReceive = $record->receiveName;
-            $this->incomeAccount = $record->incomeAccount;
-            $this->outcomeAccount = $record->outcomeAccount;
             $this->documentNumber = $record->documentNumber;
+            $this->documentDate = $record->documentDate;
             $this->status = $record->status;
             $this->statusComment = $record->statusComment;
             $this->statusTime = $record->statusTime;
+            $this->dealEmail = $record->reportEmail;
+            $this->fioTransfer = $record->transferName;
+            $this->accountTransfer = $record->transferAccount;
+            $this->fioReceive = $record->receiveName;
+            $this->accountReceive = $record->receiveAccount;
+            $this->incomeAccount = $record->incomeAccount;
+            $this->dealIncome = $record->incomeAmount;
+            $this->outcomeAccount = $record->outcomeAccount;
+            $this->dealOutcome = $record->outcomeAmount;
 
         }
 
