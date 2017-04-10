@@ -2,3 +2,9 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]
+
+AuthUserFile /var/www/application/remittance/operator/.htpasswd
+AuthGroupFile /var/www/application/remittance/operator/.htgroup
+AuthName "error"
+AuthType Basic
+require group remittance-operator
