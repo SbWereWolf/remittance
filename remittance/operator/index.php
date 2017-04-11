@@ -31,7 +31,7 @@ $app->get('/', function (Request $request, Response $response, array $arguments)
 
     $router = $this->get(ROUTER_COMPONENT);
     $viewer = $this->get(VIEWER_COMPONENT);
-    $page = new \Remittance\Web\OperatorPage($router, $viewer);
+    $page = new \Remittance\Web\OperatorPage($viewer, $router);
     $response = $page->root($request, $response, $arguments);
 
     return $response;

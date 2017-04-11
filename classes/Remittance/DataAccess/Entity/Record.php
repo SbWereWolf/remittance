@@ -9,15 +9,15 @@
 namespace Remittance\DataAccess\Entity;
 
 
-class Record
-{
-    /** @var string колонка для идентификатора */
-    const ID = 'id';
+use Remittance\Core\ICommon;
 
+class Record implements IRecord
+{
     /** @var string имя таблицы БД для хранения записи */
     const TABLE_NAME = 'record_table';
+
     /** @var string идентификатор записи */
-    public $id = 0;
+    public $id = ICommon::EMPTY_VALUE;
     /** @var string имя таблицы БД для хранения записи */
     protected $tablename = self::TABLE_NAME;
 }

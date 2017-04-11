@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ktokt
- * Date: 05.04.2017
- * Time: 2:05
- */
 
 namespace Remittance\Customer;
 

@@ -314,7 +314,7 @@ class SqlHandler implements ISqlHandler
         if ($isNull) {
             $value = ISqlHandler::EMPTY_VALUE;
         }
-        $isEmpty = $value == ISqlHandler::EMPTY_VALUE;
+        $isEmpty = $value === ISqlHandler::EMPTY_VALUE;
         if (!$isEmpty) {
             $some = $value;
         }

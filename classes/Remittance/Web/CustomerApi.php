@@ -3,83 +3,51 @@
 namespace Remittance\Web;
 
 
-use Remittance\Customer\Order;use Slim\Http\Request;
+use Remittance\Customer\Order;
+use Remittance\UserInput\InputArray;
+use Slim\Http\Request;
 use Slim\Http\Response;
 
 class CustomerApi
 {
 
+    const DEAL_EMAIL = 'deal_email';
+    const FIO_RECEIVE = 'fio_receive';
+    const ACCOUNT_RECEIVE = 'account_receive';
+    const FIO_TRANSFER = 'fio_transfer';
+    const ACCOUNT_TRANSFER = 'account_transfer';
+    const DEAL_SOURCE = 'deal_source';
+    const DEAL_INCOME = 'deal_income';
+    const DEAL_TARGET = 'deal_target';
+    const DEAL_OUTCOME = 'deal_outcome';
+
     public function add(Request $request, Response $response, array $arguments)
     {
 
         $parsedBody = $request->getParsedBody();
+        $inputArray = new InputArray($parsedBody);
 
-        $isExistsIncome = array_key_exists('deal_income', $parsedBody);
-        $dealIncome = '';
-        if ($isExistsIncome) {
-            $dealIncome = $parsedBody['deal_income'];
-            $dealIncome = filter_var ( $dealIncome , FILTER_VALIDATE_FLOAT);
-        }
-        $isExistsOutcome = array_key_exists('deal_outcome', $parsedBody);
-        $dealOutcome = '';
-        if ($isExistsOutcome) {
-            $dealOutcome = $parsedBody['deal_outcome'];
-            $dealOutcome = filter_var ( $dealOutcome , FILTER_VALIDATE_FLOAT);
-        }
-        $isExistsEmail = array_key_exists('deal_email', $parsedBody);
-        $dealEmail = '';
-        if ($isExistsEmail) {
-            $dealEmail = $parsedBody['deal_email'];
-            $dealEmail = filter_var ( $dealEmail , FILTER_VALIDATE_EMAIL);
-        }
-        $isExistsSource = array_key_exists('deal_source', $parsedBody);
-        $dealSource = '';
-        if ($isExistsSource) {
-            $dealSource = $parsedBody['deal_source'];
-            $dealSource = filter_var ( $dealSource , FILTER_SANITIZE_SPECIAL_CHARS);
-        }
-        $isExistsTarget = array_key_exists('deal_target', $parsedBody);
-        $dealTarget = '';
-        if ($isExistsTarget) {
-            $dealTarget = $parsedBody['deal_target'];
-            $dealTarget = filter_var ( $dealTarget , FILTER_SANITIZE_SPECIAL_CHARS);
-        }
-        $isExistsFioTransfer = array_key_exists('fio_transfer', $parsedBody);
-        $fioTransfer = '';
-        if ($isExistsFioTransfer) {
-            $fioTransfer = $parsedBody['fio_transfer'];
-            $fioTransfer = filter_var ( $fioTransfer , FILTER_SANITIZE_SPECIAL_CHARS);
-        }
-        $isExistsAccountTransfer = array_key_exists('account_transfer', $parsedBody);
-        $accountTransfer = '';
-        if ($isExistsAccountTransfer) {
-            $accountTransfer = $parsedBody['account_transfer'];
-            $accountTransfer = filter_var ( $accountTransfer , FILTER_SANITIZE_SPECIAL_CHARS);
-        }
-        $isExistsFioReceive = array_key_exists('fio_receive', $parsedBody);
-        $fioReceive = '';
-        if ($isExistsFioReceive) {
-            $fioReceive = $parsedBody['fio_receive'];
-            $fioReceive = filter_var ( $fioReceive , FILTER_SANITIZE_SPECIAL_CHARS);
-        }
-        $isExistsAccountReceive = array_key_exists('account_receive', $parsedBody);
-        $accountReceive = '';
-        if ($isExistsAccountReceive) {
-            $accountReceive = $parsedBody['account_receive'];
-            $accountReceive = filter_var ( $accountReceive , FILTER_SANITIZE_SPECIAL_CHARS);
-        }
+        $dealEmail = $inputArray->getSpecialCharsValue(self::DEAL_EMAIL);
+        $fioReceive = $inputArray->getSpecialCharsValue(self::FIO_RECEIVE);
+        $accountReceive = $inputArray->getSpecialCharsValue(self::ACCOUNT_RECEIVE);
+        $fioTransfer = $inputArray->getSpecialCharsValue(self::FIO_TRANSFER);
+        $accountTransfer = $inputArray->getSpecialCharsValue(self::ACCOUNT_TRANSFER);
+        $dealSource = $inputArray->getSpecialCharsValue(self::DEAL_SOURCE);
+        $dealIncome = $inputArray->getFloatValue(self::DEAL_INCOME);
+        $dealTarget = $inputArray->getSpecialCharsValue(self::DEAL_TARGET);
+        $dealOutcome = $inputArray->getFloatValue(self::DEAL_OUTCOME);
 
         $order = new Order();
 
         $order->dealEmail = $dealEmail;
         $order->fioReceive = $fioReceive;
         $order->accountReceive = $accountReceive;
-        $order->accountTransfer = $accountTransfer;
-        $order->dealIncome = $dealIncome;
-        $order->dealOutcome = $dealOutcome;
-        $order->dealSource = $dealSource;
-        $order->dealTarget = $dealTarget;
         $order->fioTransfer = $fioTransfer;
+        $order->accountTransfer = $accountTransfer;
+        $order->dealSource = $dealSource;
+        $order->dealIncome = $dealIncome;
+        $order->dealTarget = $dealTarget;
+        $order->dealOutcome = $dealOutcome;
 
         $placementMessage = $order->place();
 

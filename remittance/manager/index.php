@@ -1,9 +1,6 @@
 <?php
-/*
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
-*/
 
+use Remittance\Web\ManagerPage;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -13,8 +10,8 @@ define('CONFIGURATION_ROOT', APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'configura
 define('DB_READ_CONFIGURATION', CONFIGURATION_ROOT . DIRECTORY_SEPARATOR . 'db_read.php');
 define('DB_WRITE_CONFIGURATION', CONFIGURATION_ROOT . DIRECTORY_SEPARATOR . 'db_write.php');
 
-require APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 require APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'autoload_classes.php';
+require APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 
 $configuration['displayErrorDetails'] = true;
 $configuration['addContentLengthHeader'] = false;
@@ -31,28 +28,38 @@ $app->get('/', function (Request $request, Response $response, array $arguments)
 
     $router = $this->get(ROUTER_COMPONENT);
     $viewer = $this->get(VIEWER_COMPONENT);
-    $page = new \Remittance\Web\OperatorPage($router, $viewer);
+    $page = new ManagerPage($viewer, $router);
+
     $response = $page->root($request, $response, $arguments);
 
     return $response;
 });
 
-$app->post('/transfer/accomplish/{id}', function (Request $request, Response $response, array $arguments) {
+$app->post('/currency/add', function (Request $request, Response $response, array $arguments) {
 
-    $api = new \Remittance\Web\OperatorApi();
-    $response = $api->accomplish($request, $response, $arguments);
-
-    return $response;
-
-})->setName(\Remittance\Web\OperatorPage::ACTION_ACCOMPLISH);
-
-$app->post('/transfer/annul/{id}', function (Request $request, Response $response, array $arguments) {
-
-    $api = new \Remittance\Web\OperatorApi();
-    $response = $api->annul($request, $response, $arguments);
+    $api = new \Remittance\Web\ManagerApi();
+    $response = $api->add($request, $response, $arguments);
 
     return $response;
 
-})->setName(\Remittance\Web\OperatorPage::ACTION_ANNUL);
+});
+
+$app->post('/currency/' . ManagerPage::ACTION_DISABLE . '/{id}', function (Request $request, Response $response, array $arguments) {
+
+    $api = new \Remittance\Web\ManagerApi();
+    $response = $api->disable($request, $response, $arguments);
+
+    return $response;
+
+})->setName(ManagerPage::ACTION_DISABLE);
+
+$app->post('/currency/' . ManagerPage::ACTION_ENABLE . '/{id}', function (Request $request, Response $response, array $arguments) {
+
+    $api = new \Remittance\Web\ManagerApi();
+    $response = $api->enable($request, $response, $arguments);
+
+    return $response;
+
+})->setName(ManagerPage::ACTION_ENABLE);
 
 $app->run();

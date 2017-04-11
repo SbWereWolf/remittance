@@ -11,20 +11,6 @@ namespace Remittance\DataAccess\Entity;
 
 interface IPrimitiveData
 {
-    /** @var string колонка признака "является скрытым" */
-    const IS_HIDDEN = 'is_hidden';
-
-    /** @var string значение для поднятого флага "является скрытым" */
-    const DEFINE_AS_HIDDEN = true;
-    /** @var string значение для поднятого флага "является скрытым" */
-    const DEFINE_AS_NOT_HIDDEN = false;
-    /** @var string значение по умолчанию для признака "является скрытым" */
-    const DEFAULT_IS_HIDDEN = self::DEFINE_AS_NOT_HIDDEN;
-
-    /** Скрыть сущность
-     * @return bool успех выполнения
-     */
-    public function hideEntity():bool;
 
     /** Обновляет (изменяет) запись в БД
      * @return bool успешность изменения

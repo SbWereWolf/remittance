@@ -113,7 +113,7 @@ class PredefinedEntity extends PrimitiveData implements IPredefinedEntity
     /** Формирует массив из свойств экземпляра
      * @return array массив свойств экземпляра
      */
-    protected function toEntity():array
+    public function toEntity():array
     {
         $result = parent::toEntity();
         $result[self::CHILD] = $this->linkToParent;

@@ -1,13 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Sancho
- * Date: 10.01.2017
- * Time: 18:03
- */
+
 namespace Remittance\DataAccess\Entity {
 
-    use Remittance\Core\Common;
     use Remittance\Core\ICommon;
     use Remittance\DataAccess\Logic\ISqlHandler;
     use Remittance\DataAccess\Logic\SqlHandler;
@@ -29,70 +23,28 @@ namespace Remittance\DataAccess\Entity {
         /** @var string код */
         public $code = self::EMPTY_VALUE;
         /** @var string имя */
-        public $name = self::EMPTY_VALUE;
+        public $title = self::EMPTY_VALUE;
         /** @var string описание */
         public $description = self::EMPTY_VALUE;
         /** @var string имя таблицы БД для хранения сущности */
         protected $tablename = self::TABLE_NAME;
-
-        /** Загрузить по коду записи
-         * @param string $code код записи
-         * @return bool успех выполнения
-         */
-        public function loadByCode(string $code):bool
-        {
-
-            $codeParameter = SqlHandler::setBindParameter(':CODE', $code, \PDO::PARAM_STR);
-            $isHiddenParameter = SqlHandler::setBindParameter(':IS_HIDDEN', self::DEFINE_AS_NOT_HIDDEN, \PDO::PARAM_INT);
-
-            $arguments[ISqlHandler::QUERY_TEXT] =
-                'SELECT '
-                . self::ID
-                . ' , ' . self::CODE
-                . ' , ' . self::NAME
-                . ' , ' . self::DESCRIPTION
-                . ' , ' . self::IS_HIDDEN
-                . ' FROM '
-                . $this->tablename
-                . ' WHERE '
-                . self::CODE . ' = ' . $codeParameter[ISqlHandler::PLACEHOLDER]
-                . ' AND ' . self::IS_HIDDEN . ' = ' . $isHiddenParameter[ISqlHandler::PLACEHOLDER]
-                . '
-;
-';
-            $arguments[ISqlHandler::QUERY_PARAMETER][] = $codeParameter;
-            $arguments[ISqlHandler::QUERY_PARAMETER][] = $isHiddenParameter;
-
-            $record = SqlHandler::readOneRecord($arguments);
-
-            $result = false;
-            if ($record != ISqlHandler::EMPTY_ARRAY) {
-                $result = $this->setByNamedValue($record);
-            }
-
-            return $result;
-        }
+        protected $classname = self::class;
 
         public function setByNamedValue(array $namedValue):bool
         {
 
-            $emptyValue = self::EMPTY_VALUE;
             $result = parent::setByNamedValue($namedValue);
 
-            $code = trim(Common::setIfExists(self::CODE, $namedValue, $emptyValue));
-            if ($code != $emptyValue) {
+            $code = SqlHandler::setIfExists(self::CODE, $namedValue);
+            if ($code !== ISqlHandler::EMPTY_VALUE) {
                 $this->code = $code;
             }
-            $isNull = is_null($code);
-            if ($isNull) {
-                $this->code = $emptyValue;
+            $title = SqlHandler::setIfExists(self::TITLE, $namedValue);
+            if ($title !== ISqlHandler::EMPTY_VALUE) {
+                $this->title = $title;
             }
-            $name = Common::setIfExists(self::NAME, $namedValue, $emptyValue);
-            if ($name != $emptyValue) {
-                $this->name = $name;
-            }
-            $description = Common::setIfExists(self::DESCRIPTION, $namedValue, $emptyValue);
-            if ($description != $emptyValue) {
+            $description = SqlHandler::setIfExists(self::DESCRIPTION, $namedValue);
+            if ($description !== ISqlHandler::EMPTY_VALUE) {
                 $this->description = $description;
             }
 
@@ -101,43 +53,17 @@ namespace Remittance\DataAccess\Entity {
 
         /** Получить имя и описание записи
          * @param string $code значение ключа для свойства код
-         * @param string $name значение ключа для свойства имя
+         * @param string $title значение ключа для свойства имя
          * @param string $description значение ключа для свойства описание
          * @return array массив с именем и описанием
          */
-        public function getElementDescription(string $code = INamedEntity::CODE,
-                                              string $name = INamedEntity::NAME,
-                                              string $description = INamedEntity::DESCRIPTION):array
+        public function getElementDescription(string $code = self::CODE,
+                                              string $title = self::TITLE,
+                                              string $description = self::DESCRIPTION):array
         {
             $result[$code] = $this->code;
-            $result[$name] = $this->name;
+            $result[$title] = $this->title;
             $result[$description] = $this->description;
-            return $result;
-        }
-
-        /** Обновляет (изменяет) запись в БД
-         * @return bool успех выполнения
-         */
-        public function mutateEntity():bool
-        {
-            $result = false;
-
-            $stored = new NamedEntity();
-            $wasReadStored = $stored->loadById($this->id);
-
-            $storedEntity = array();
-            $entity = array();
-            if ($wasReadStored) {
-                $storedEntity = $stored->toEntity();
-                $entity = $this->toEntity();
-            }
-
-            $isContain = Common::isOneArrayContainOther($entity, $storedEntity);
-
-            if (!$isContain) {
-                $result = $this->updateEntity();
-            }
-
             return $result;
         }
 
@@ -154,7 +80,7 @@ namespace Remittance\DataAccess\Entity {
                 'SELECT '
                 . self::ID
                 . ' , ' . self::CODE
-                . ' , ' . self::NAME
+                . ' , ' . self::TITLE
                 . ' , ' . self::DESCRIPTION
                 . ' , ' . self::IS_HIDDEN
                 . ' FROM '
@@ -177,12 +103,12 @@ namespace Remittance\DataAccess\Entity {
         /** Формирует массив из свойств экземпляра
          * @return array массив свойств экземпляра
          */
-        protected function toEntity():array
+        public function toEntity():array
         {
             $result = parent::toEntity();
 
             $result [self::CODE] = $this->code;
-            $result [self::NAME] = $this->name;
+            $result [self::TITLE] = $this->title;
             $result [self::DESCRIPTION] = $this->description;
 
             return $result;
@@ -198,7 +124,7 @@ namespace Remittance\DataAccess\Entity {
             $descriptionParameter = SqlHandler::setBindParameter(':DESCRIPTION', $this->description, \PDO::PARAM_STR);
             $idParameter = SqlHandler::setBindParameter(':ID', $this->id, \PDO::PARAM_INT);
             $isHiddenParameter = SqlHandler::setBindParameter(':IS_HIDDEN', $this->isHidden, \PDO::PARAM_INT);
-            $nameParameter = SqlHandler::setBindParameter(':NAME', $this->name, \PDO::PARAM_STR);
+            $nameParameter = SqlHandler::setBindParameter(':NAME', $this->title, \PDO::PARAM_STR);
 
             $arguments[ISqlHandler::QUERY_TEXT] =
                 'UPDATE '
@@ -206,7 +132,7 @@ namespace Remittance\DataAccess\Entity {
                 . ' SET '
                 . self::CODE . ' = ' . $codeParameter[ISqlHandler::PLACEHOLDER]
                 . ' , ' . self::IS_HIDDEN . ' = ' . $isHiddenParameter[ISqlHandler::PLACEHOLDER]
-                . ' , ' . self::NAME . ' = ' . $nameParameter[ISqlHandler::PLACEHOLDER]
+                . ' , ' . self::TITLE . ' = ' . $nameParameter[ISqlHandler::PLACEHOLDER]
                 . ' , ' . self::DESCRIPTION . ' = ' . $descriptionParameter[ISqlHandler::PLACEHOLDER]
                 . ' WHERE '
                 . self::ID . ' = ' . $idParameter[ISqlHandler::PLACEHOLDER]
@@ -214,7 +140,7 @@ namespace Remittance\DataAccess\Entity {
                 . self::ID
                 . ' , ' . self::IS_HIDDEN
                 . ' , btrim(' . self::CODE . ') AS "' . self::CODE . '"'
-                . ' , ' . self::NAME
+                . ' , ' . self::TITLE
                 . ' , ' . self::DESCRIPTION
                 . ';';
             $arguments[ISqlHandler::QUERY_PARAMETER][] = $codeParameter;

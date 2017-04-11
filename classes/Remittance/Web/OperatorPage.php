@@ -27,7 +27,7 @@ class OperatorPage
     private $router;
     private $viewer;
 
-    public function __construct(Router $router, PhpRenderer $viewer)
+    public function __construct(PhpRenderer $viewer, Router $router)
     {
         $this->router = $router;
         $this->viewer = $viewer;

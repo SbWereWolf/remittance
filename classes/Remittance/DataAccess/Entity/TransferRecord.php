@@ -53,33 +53,7 @@ class TransferRecord extends Entity
     public $statusTime = '';
     /** @var string имя таблицы для хранения сущности */
     protected $tablename = self::TABLE_NAME;
-
-    /** Обновляет (изменяет) запись в БД
-     * @return bool успех выполнения
-     */
-    public function mutateEntity():bool
-    {
-
-        $stored = new TransferRecord();
-        $wasReadStored = $stored->loadById($this->id);
-
-        $storedEntity = ISqlHandler::EMPTY_ARRAY;
-        $entity = ISqlHandler::EMPTY_ARRAY;
-        if ($wasReadStored) {
-            $storedEntity = $stored->toEntity();
-            $entity = $this->toEntity();
-        }
-
-
-        $isContain = Common::isOneArrayContainOther($entity, $storedEntity);
-
-        $result = false;
-        if (!$isContain) {
-            $result = $this->updateEntity();
-        }
-
-        return $result;
-    }
+    protected $classname = self::class;
 
     /** Прочитать запись из БД
      * @param string $id идентификатор записи
@@ -154,7 +128,7 @@ class TransferRecord extends Entity
     /** Формирует массив из свойств экземпляра
      * @return array массив свойств экземпляра
      */
-    protected function toEntity():array
+    public function toEntity():array
     {
         parent::toEntity();
 
@@ -259,7 +233,7 @@ class TransferRecord extends Entity
         $record = SqlHandler::writeOneRecord($arguments);
 
         $result = false;
-        if ($record != ISqlHandler::EMPTY_ARRAY) {
+        if ($record !== ISqlHandler::EMPTY_ARRAY) {
             $result = $this->setByNamedValue($record);
         }
 
