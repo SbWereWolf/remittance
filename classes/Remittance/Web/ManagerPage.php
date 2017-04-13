@@ -20,7 +20,7 @@ class ManagerPage
     private $viewer;
     private $router;
 
-    public function __construct(PhpRenderer $viewer,Router $router)
+    public function __construct(PhpRenderer $viewer, Router $router)
     {
         $this->viewer = $viewer;
         $this->router = $router;
@@ -42,13 +42,13 @@ class ManagerPage
         $isValid = $isArray && $isContain;
         $actionLinks = array();
         $currencies = array();
-        if($isValid){
+        if ($isValid) {
 
-            foreach ($records as $record){
+            foreach ($records as $record) {
                 $asArray = $record->toEntity();
                 $currency = new CurrencyRecord();
                 $currency->setByNamedValue($asArray);
-                $currencies[]=$currency;
+                $currencies[] = $currency;
 
                 $id = $currency->id;
 
@@ -63,8 +63,6 @@ class ManagerPage
                 $actionLinks[$id][self::ACTION_ENABLE] = $enableLink;
             }
         }
-
-
 
         $offset = 0;
         $limit = 0;

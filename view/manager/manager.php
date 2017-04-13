@@ -5,6 +5,7 @@
 /* @var $actionLinks array */
 
 use Remittance\Web\ManagerPage;
+
 ?>
 <html>
 <head>
@@ -66,7 +67,7 @@ use Remittance\Web\ManagerPage;
             </thead>
             <tfoot>
             <tr>
-                <td ><a id="previous-page" href="#" onclick="movePrevious();">PREVIOUS</a></td>
+                <td><a id="previous-page" href="#" onclick="movePrevious();">PREVIOUS</a></td>
                 <td id="currencies-pages" colspan="4">&nbsp;&nbsp;</td>
                 <td><a id="next-page" href="#" onclick="moveNext();">NEXT</a></td>
             </tr>
@@ -79,10 +80,16 @@ use Remittance\Web\ManagerPage;
                     <tr>
                         <td cell><?= $currency->code ?></td>
                         <td cell><?= $currency->title ?></td>
-                        <td cell><?= $currency->isHidden ?></td>
+                        <td cell><input id="disable-<?= $currency->code ?>"
+                                        type="checkbox" <?= $currency->isHidden ? 'checked' : '' ?>
+                                        disabled>
+                        </td>
                         <td cell><?= $currency->description ?></td>
-                        <td cell><a class="action" href="javascript:return false;" data-action="<?= $actionLinks[$id][ManagerPage::ACTION_ENABLE] ?>">Включить</a></td>
-                        <td cell><a class="action" href="javascript:return false;" data-action="<?= $actionLinks[$id][ManagerPage::ACTION_DISABLE] ?>">Отключить</a></td>
+                        <td cell><a class="action" href="javascript:return false;"
+                                    data-action="<?= $actionLinks[$id][ManagerPage::ACTION_ENABLE] ?>">Включить</a></td>
+                        <td cell><a class="action" href="javascript:return false;"
+                                    data-action="<?= $actionLinks[$id][ManagerPage::ACTION_DISABLE] ?>">Отключить</a>
+                        </td>
                     </tr>
                 <?php endif ?>
             <?php endforeach; ?>
@@ -97,9 +104,10 @@ use Remittance\Web\ManagerPage;
     function doAddCurrency() {
 
         const code = $("input[id='code']").val();
-        const title = $("output[id='title']").val();
+        const title = $("input[id='title']").val();
         const description = $("input[id='description']").val();
-        const disable = $("input[id='disable']").val();
+        const checkbox_disable = $("input[id='disable']:checked");
+        const disable = (typeof(checkbox_disable) === 'undefined');
 
         $.ajax({
             type: 'POST',
@@ -119,15 +127,14 @@ use Remittance\Web\ManagerPage;
         });
     }
 
-    $('.action').click(function() {
+    $('.action').click(function () {
 
         const link = $(this).data('action');
 
         $.ajax({
             type: 'POST',
             url: link,
-            data: {
-            },
+            data: {},
             dataType: 'json',
             success: function (result) {
 

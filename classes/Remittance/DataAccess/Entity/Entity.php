@@ -5,6 +5,7 @@
  * Date: 10.01.2017
  * Time: 18:00
  */
+
 namespace Remittance\DataAccess\Entity {
 
     use Remittance\Core\ICommon;
@@ -32,7 +33,7 @@ namespace Remittance\DataAccess\Entity {
         /** Скрыть сущность
          * @return bool успех выполнения
          */
-        public function hideEntity():bool
+        public function hideEntity(): bool
         {
             $this->isHidden = self::DEFINE_AS_HIDDEN;
             $result = $this->mutateEntity();
@@ -44,13 +45,13 @@ namespace Remittance\DataAccess\Entity {
          * @param array $namedValue массив значений
          * @return bool успех выполнения
          */
-        public function setByNamedValue(array $namedValue):bool
+        public function setByNamedValue(array $namedValue): bool
         {
             $result = parent::setByNamedValue($namedValue);
 
             $isHidden = SqlHandler::setIfExists(self::IS_HIDDEN, $namedValue);
             if ($isHidden !== SqlHandler::EMPTY_VALUE) {
-                $this->isHidden = $isHidden;
+                $this->isHidden = boolval($isHidden);
             }
 
             return $result;
@@ -59,16 +60,16 @@ namespace Remittance\DataAccess\Entity {
         /** Формирует массив из свойств экземпляра
          * @return array массив свойств экземпляра
          */
-        public function toEntity():array
+        public function toEntity(): array
         {
             $result = parent::toEntity();
 
-            $result [self::IS_HIDDEN] = $this->isHidden;
+            $result [self::IS_HIDDEN] = intval($this->isHidden);
 
             return $result;
         }
 
-        public function addEntity():bool
+        public function addEntity(): bool
         {
             $arguments[ISqlHandler::QUERY_TEXT] =
                 ' INSERT INTO ' . $this->tablename
@@ -92,7 +93,7 @@ namespace Remittance\DataAccess\Entity {
         /** Обновить данные в БД
          * @return bool успех выполнения
          */
-        protected function updateEntity():bool
+        protected function updateEntity(): bool
         {
 
             $idParameter = SqlHandler::setBindParameter(':ID', $this->id, \PDO::PARAM_INT);

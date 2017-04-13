@@ -12,7 +12,7 @@ class Currency
     public $description;
     public $disable;
 
-    public function add():string
+    public function add(): string
     {
 
         $record = new CurrencyRecord();

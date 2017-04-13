@@ -4,7 +4,8 @@
 /* @var $limit int */
 /* @var $actionLinks array */
 
-use \Remittance\Web\OperatorPage as OperatorPage;
+use Remittance\Web\OperatorPage as OperatorPage;
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -15,11 +16,12 @@ use \Remittance\Web\OperatorPage as OperatorPage;
     <style>
         table.transfers-list {
             border: 1px solid black;
-            border-collapse: collapse ;
+            border-collapse: collapse;
         }
-        [cell]{
+
+        [cell] {
             border: 1px solid black;
-            border-collapse: collapse ;
+            border-collapse: collapse;
         }
 
     </style>
@@ -62,7 +64,7 @@ use \Remittance\Web\OperatorPage as OperatorPage;
             </thead>
             <tfoot>
             <tr>
-                <td ><a id="previous-page" href="#" onclick="movePrevious();">PREVIOUS</a></td>
+                <td><a id="previous-page" href="#" onclick="movePrevious();">PREVIOUS</a></td>
                 <td id="transfers-pages" colspan="14">&nbsp;&nbsp;</td>
                 <td><a id="next-page" href="#" onclick="moveNext();">NEXT</a></td>
             </tr>
@@ -87,30 +89,29 @@ use \Remittance\Web\OperatorPage as OperatorPage;
                         <td cell><?= $transfer->outcomeAmount ?></td>
                         <td cell><?= $transfer->statusComment ?></td>
                         <td cell><?= $transfer->statusTime ?></td>
-                        <td cell><a class="action" href="javascript:return false;" data-action="<?= $actionLinks[$id][OperatorPage::ACTION_ACCOMPLISH] ?>">Выполнить</a></td>
-                        <td cell><a class="action" href="javascript:return false;" data-action="<?= $actionLinks[$id][OperatorPage::ACTION_ANNUL] ?>">Отменить</a></td>
+                        <td cell><a class="action" href="javascript:return false;"
+                                    data-action="<?= $actionLinks[$id][OperatorPage::ACTION_ACCOMPLISH] ?>">Выполнить</a>
+                        </td>
+                        <td cell><a class="action" href="javascript:return false;"
+                                    data-action="<?= $actionLinks[$id][OperatorPage::ACTION_ANNUL] ?>">Отменить</a></td>
                     </tr>
                 <?php endif ?>
             <?php endforeach; ?>
         </table>
     <?php endif ?>
 </div>
-
-<table><thead><tr><th>1</th></tr></thead><tfoot><tr><td>2</td></tr></tfoot><tbody><tr><td>3</td></tr></tbody></table>
-
 </body>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
 <script type="text/javascript">
-    $('.action').click(function() {
+    $('.action').click(function () {
 
         const link = $(this).data('action');
 
         $.ajax({
             type: 'POST',
             url: link,
-            data: {
-            },
+            data: {},
             dataType: 'json',
             success: function (result) {
 
