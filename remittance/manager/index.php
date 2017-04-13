@@ -24,7 +24,7 @@ $container[VIEWER_COMPONENT] = new \Slim\Views\PhpRenderer(APPLICATION_ROOT . DI
 
 $app = new \Slim\App($container);
 
-$app->get('/', function (Request $request, Response $response, array $arguments) {
+$app->get(ManagerPage::ROOT, function (Request $request, Response $response, array $arguments) {
 
     $router = $this->get(ROUTER_COMPONENT);
     $viewer = $this->get(VIEWER_COMPONENT);
@@ -33,33 +33,92 @@ $app->get('/', function (Request $request, Response $response, array $arguments)
     $response = $page->root($request, $response, $arguments);
 
     return $response;
-});
+})->setName(ManagerPage::ROOT);
 
-$app->post('/currency/add', function (Request $request, Response $response, array $arguments) {
+$pathForCurrencyModule = ManagerPage::ROOT . ManagerPage::MODULE_CURRENCY;
+$app->get($pathForCurrencyModule, function (Request $request, Response $response, array $arguments) {
+
+    $router = $this->get(ROUTER_COMPONENT);
+    $viewer = $this->get(VIEWER_COMPONENT);
+    $page = new ManagerPage($viewer, $router);
+
+    $response = $page->currency($request, $response, $arguments);
+
+    return $response;
+})->setName(ManagerPage::MODULE_CURRENCY);
+
+$pathForCurrencyAdd = ManagerPage::ROOT . implode(ManagerPage::PATH_SYMBOL,
+        array(ManagerPage::MODULE_CURRENCY,
+            ManagerPage::ACTION_CURRENCY_ADD));
+$app->post($pathForCurrencyAdd, function (Request $request, Response $response, array $arguments) {
 
     $api = new \Remittance\Web\ManagerApi();
-    $response = $api->add($request, $response, $arguments);
+    $response = $api->currencyAdd($request, $response, $arguments);
 
     return $response;
 
 });
 
-$app->post('/currency/' . ManagerPage::ACTION_DISABLE . '/{id}', function (Request $request, Response $response, array $arguments) {
+$pathForCurrencyDisable = ManagerPage::ROOT . implode(ManagerPage::PATH_SYMBOL,
+        array(ManagerPage::MODULE_CURRENCY,
+            ManagerPage::ACTION_CURRENCY_DISABLE,
+            '{' . ManagerPage::ID . '}'));
+$app->post($pathForCurrencyDisable, function (Request $request, Response $response, array $arguments) {
 
     $api = new \Remittance\Web\ManagerApi();
-    $response = $api->disable($request, $response, $arguments);
+    $response = $api->currencyDisable($request, $response, $arguments);
 
     return $response;
 
-})->setName(ManagerPage::ACTION_DISABLE);
+})->setName(ManagerPage::ACTION_CURRENCY_DISABLE);
 
-$app->post('/currency/' . ManagerPage::ACTION_ENABLE . '/{id}', function (Request $request, Response $response, array $arguments) {
+$pathForCurrencyEnable = ManagerPage::ROOT . implode(ManagerPage::PATH_SYMBOL,
+        array(ManagerPage::MODULE_CURRENCY,
+            ManagerPage::ACTION_CURRENCY_ENABLE,
+            '{' . ManagerPage::ID . '}'));
+$app->post($pathForCurrencyEnable, function (Request $request, Response $response, array $arguments) {
 
     $api = new \Remittance\Web\ManagerApi();
-    $response = $api->enable($request, $response, $arguments);
+    $response = $api->currencyEnable($request, $response, $arguments);
 
     return $response;
 
-})->setName(ManagerPage::ACTION_ENABLE);
+})->setName(ManagerPage::ACTION_CURRENCY_ENABLE);
+
+$pathForRateModule = ManagerPage::ROOT . ManagerPage::MODULE_RATE;
+$app->get($pathForRateModule, function (Request $request, Response $response, array $arguments) {
+
+    $router = $this->get(ROUTER_COMPONENT);
+    $viewer = $this->get(VIEWER_COMPONENT);
+    $page = new ManagerPage($viewer, $router);
+
+    $response = $page->root($request, $response, $arguments);
+
+    return $response;
+})->setName(ManagerPage::MODULE_RATE);
+
+$pathForRateModule = ManagerPage::ROOT . ManagerPage::MODULE_ACCOUNT;
+$app->get($pathForRateModule, function (Request $request, Response $response, array $arguments) {
+
+    $router = $this->get(ROUTER_COMPONENT);
+    $viewer = $this->get(VIEWER_COMPONENT);
+    $page = new ManagerPage($viewer, $router);
+
+    $response = $page->root($request, $response, $arguments);
+
+    return $response;
+})->setName(ManagerPage::MODULE_ACCOUNT);
+
+$pathForRateModule = ManagerPage::ROOT . ManagerPage::MODULE_SETTING;
+$app->get($pathForRateModule, function (Request $request, Response $response, array $arguments) {
+
+    $router = $this->get(ROUTER_COMPONENT);
+    $viewer = $this->get(VIEWER_COMPONENT);
+    $page = new ManagerPage($viewer, $router);
+
+    $response = $page->root($request, $response, $arguments);
+
+    return $response;
+})->setName(ManagerPage::MODULE_SETTING);
 
 $app->run();

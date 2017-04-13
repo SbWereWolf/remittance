@@ -13,7 +13,7 @@ class ManagerApi
 
     const ID = 'id';
 
-    public function add(Request $request, Response $response, array $arguments)
+    public function currencyAdd(Request $request, Response $response, array $arguments)
     {
 
         $parsedBody = $request->getParsedBody();
@@ -43,7 +43,7 @@ class ManagerApi
         return $response;
     }
 
-    public function disable(Request $request, Response $response, array $arguments)
+    public function currencyDisable(Request $request, Response $response, array $arguments)
     {
         $inputArray = new InputArray($arguments);
 
@@ -56,7 +56,7 @@ class ManagerApi
         return $response;
     }
 
-    public function enable(Request $request, Response $response, array $arguments)
+    public function currencyEnable(Request $request, Response $response, array $arguments)
     {
         $inputArray = new InputArray($arguments);
 
