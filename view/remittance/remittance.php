@@ -1,5 +1,9 @@
 <?php
 /* @var $currencies array */
+use Remittance\Web\CustomerApi;
+use Remittance\Web\CustomerPage;
+use Remittance\Web\IPage;
+
 ?>
 <html>
 <head>
@@ -19,7 +23,8 @@ if ($isSet) {
 $isValid = $isArray && $isContain;
 if ($isValid) :?>
     <dl id="transfer-list">
-        <dd><label for="deal-income">Положить</label><input type="number" step="0.0001" id="deal-income"></dd>
+        <dd><label for="deal-income">Положить</label><input type="number" step="0.0001" class="argument"
+                                                            id="deal-income"></dd>
         <?php foreach ($currencies as $currency): ?>
             <?php
             $isObject = $currency instanceof \Remittance\DataAccess\Entity\CurrencyRecord;
@@ -27,7 +32,7 @@ if ($isValid) :?>
                 $code = $currency->code;
                 ?>
                 <dd>
-                    <label><input type="radio" name="transfer" id="transfer-<?= $code ?>"
+                    <label><input type="radio" name="transfer" class="argument"
                                   data-currency-type="<?= $code ?>"><?= $currency->title ?></label>
                 </dd>
             <?php endif ?>
@@ -47,7 +52,7 @@ if ($isValid) :?>
                 $code = $currency->code;
                 ?>
                 <dd>
-                    <label><input type="radio" name="receive" id="receive-<?= $code ?>"
+                    <label><input type="radio" name="receive" class="argument"
                                   data-currency-type="<?= $code ?>"><?= $currency->title ?></label>
                 </dd>
             <?php endif ?>
@@ -55,7 +60,7 @@ if ($isValid) :?>
     </dl>
 <?php endif ?>
 
-<form onsubmit="return false;" method="post">
+<form onsubmit="return false;">
     <dl>
         <dt>Заполните информацию</dt>
         <dd><label for="deal-email">Email</label><input type="text" id="deal-email"></dd>
@@ -63,15 +68,14 @@ if ($isValid) :?>
         <dd><label for="account-transfer">Номер карты отправителя</label><input type="text" id="account-transfer"></dd>
         <dd><label for="fio-receive">ФИО получателя</label><input type="text" id="fio-receive"></dd>
         <dd><label for="account-receive">Номер карты получателя</label><input type="text" id="account-receive"></dd>
-        <dd><input type="submit" value="Обменять сейчас" onclick="doAddOrder();"></dd>
+        <dd><input type="submit" value="Обменять сейчас" class="enquire"></dd>
     </dl>
 
 </form>
 <div id="reception-validity"></div>
 
 </body>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script type="text/javascript">
     function doAddOrder() {
 
@@ -89,7 +93,10 @@ if ($isValid) :?>
 
         $.ajax({
             type: 'POST',
-            url: '/order/add',
+            url: '<?= IPage::ROOT
+            . CustomerPage::MODULE_ORDER
+            . IPage::PATH_SYMBOL
+            . CustomerPage::ACTION_ORDER_ADD ?>',
             data: {
                 deal_income: deal_income,
                 deal_outcome: deal_outcome,
@@ -109,5 +116,39 @@ if ($isValid) :?>
             }
         });
     }
+    function doCalculate() {
+
+        const deal_income = $("input[id='deal-income']").val();
+        const deal_source = $("#transfer-list :input:radio:checked[name='transfer']").data('currency-type');
+        const deal_target = $("#receive-list :input:radio:checked[name='receive']").data('currency-type');
+
+        $.ajax({
+            type: 'POST',
+            url: '<?= IPage::ROOT . CustomerApi::MODULE_COMPUTE ?>',
+            data: {
+                deal_income: deal_income,
+                deal_source: deal_source,
+                deal_target: deal_target
+            },
+            dataType: 'json',
+            success: function (result) {
+
+                const value = result.result;
+                $("output[id='deal-outcome']").html(value);
+            }
+        });
+    }
+    $(document).ready(function () {
+
+            $(".argument").change(
+                doCalculate
+            );
+            $(".enquire").click(
+                doAddOrder
+            );
+        }
+    )
+
+
 </script>
 </html>

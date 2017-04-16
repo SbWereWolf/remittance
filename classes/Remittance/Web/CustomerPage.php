@@ -10,8 +10,11 @@ use Slim\Http\Response;
 use Slim\Views\PhpRenderer;
 
 
-class CustomerPage
+class CustomerPage implements IPage
 {
+    const MODULE_ORDER = 'order';
+    const ACTION_ORDER_ADD = 'add';
+
     private $viewer;
 
     public function __construct(PhpRenderer $viewer)
@@ -22,29 +25,7 @@ class CustomerPage
     public function root(Request $request, Response $response, array $arguments)
     {
         $searcher = new NamedEntitySearch(CurrencyRecord::TABLE_NAME);
-        $records = $searcher->search();
-
-        $isSet = isset($records);
-        $isArray = false;
-        $isContain = false;
-        if ($isSet) {
-            $isArray = is_array($records);
-            $isContain = count($records) > 0;
-        }
-
-        $isValid = $isArray && $isContain;
-        $currencies = array();
-        if ($isValid) {
-
-            foreach ($records as $record) {
-                $asArray = $record->toEntity();
-                $currency = new CurrencyRecord();
-                $currency->setByNamedValue($asArray);
-                $currencies[] = $currency;
-
-            }
-        }
-
+        $currencies = $searcher->searchCurrency();
 
         $response = $this->viewer->render($response,
             "remittance/remittance.php",

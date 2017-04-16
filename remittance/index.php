@@ -5,6 +5,9 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 */
 
+use Remittance\Web\CustomerApi;
+use Remittance\Web\CustomerPage;
+use Remittance\Web\IPage;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -30,17 +33,28 @@ $app = new \Slim\App($container);
 $app->get('/', function (Request $request, Response $response, array $arguments) {
 
     $viewer = $this->get(VIEWER_COMPONENT);
-    $page = new \Remittance\Web\CustomerPage($viewer);
+    $page = new CustomerPage($viewer);
 
     $response = $page->root($request, $response, $arguments);
 
     return $response;
 });
 
-$app->post('/order/add', function (Request $request, Response $response, array $arguments) {
+$pathForAddOrder = IPage::ROOT . CustomerPage::MODULE_ORDER . IPage::PATH_SYMBOL . CustomerPage::ACTION_ORDER_ADD;
+$app->post($pathForAddOrder, function (Request $request, Response $response, array $arguments) {
 
-    $api = new \Remittance\Web\CustomerApi();
+    $api = new CustomerApi();
     $response = $api->add($request, $response, $arguments);
+
+    return $response;
+
+});
+
+$pathForComputeExchange = IPage::ROOT . CustomerApi::MODULE_COMPUTE;
+$app->post($pathForComputeExchange, function (Request $request, Response $response, array $arguments) {
+
+    $api = new CustomerApi();
+    $response = $api->compute($request, $response, $arguments);
 
     return $response;
 

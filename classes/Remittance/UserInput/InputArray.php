@@ -9,10 +9,12 @@
 namespace Remittance\UserInput;
 
 
+use Remittance\Core\ICommon;
+
 class InputArray implements IInputArray
 {
 
-    private $userArray = array();
+    private $userArray = ICommon::EMPTY_ARRAY;
 
     public function __construct(array $userArray)
     {

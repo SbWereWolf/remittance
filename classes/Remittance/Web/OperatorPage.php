@@ -9,6 +9,7 @@
 namespace Remittance\Web;
 
 
+use Remittance\Core\ICommon;
 use Remittance\DataAccess\Entity\TransferRecord;
 use Remittance\DataAccess\Search\TransferSearch;
 use Slim\Http\Request;
@@ -54,7 +55,7 @@ class OperatorPage
         }
 
         $isValid = $isArray && $isContain;
-        $actionLinks = array();
+        $actionLinks = ICommon::EMPTY_ARRAY;
         if ($isValid) {
 
             foreach ($transfers as $transfer) {

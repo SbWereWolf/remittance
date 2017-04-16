@@ -41,8 +41,8 @@ class PrimitiveData extends Record implements IPrimitiveData
         $stored = new $this->classname();
         $wasReadStored = $stored->loadById($this->id);
 
-        $storedEntity = array();
-        $entity = array();
+        $storedEntity = ICommon::EMPTY_ARRAY;
+        $entity = ICommon::EMPTY_ARRAY;
         if ($wasReadStored) {
             $storedEntity = $stored->toEntity();
             $entity = $this->toEntity();

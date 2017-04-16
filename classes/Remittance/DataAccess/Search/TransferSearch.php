@@ -9,6 +9,7 @@
 namespace Remittance\DataAccess\Search;
 
 
+use Remittance\Core\ICommon;
 use Remittance\DataAccess\Entity\TransferRecord;
 use Remittance\DataAccess\Logic\ISqlHandler;
 use Remittance\DataAccess\Logic\SqlHandler;
@@ -94,7 +95,7 @@ class TransferSearch
         $records = SqlHandler::readAllRecords($arguments);
 
         $isContain = count($records);
-        $result = array();
+        $result = ICommon::EMPTY_ARRAY;
         if ($isContain) {
             foreach ($records as $recordValues) {
                 $transfer = new TransferRecord();

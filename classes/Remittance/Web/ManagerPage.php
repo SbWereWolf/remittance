@@ -15,10 +15,8 @@ use Slim\Router;
 use Slim\Views\PhpRenderer;
 
 
-class ManagerPage
+class ManagerPage implements IPage
 {
-    const ROOT = '/';
-    const PATH_SYMBOL = '/';
 
     const MODULE_CURRENCY = 'currency';
 
@@ -160,7 +158,7 @@ class ManagerPage
      */
     private function setCurrencyActions($currencies): array
     {
-        $actionLinks = array();
+        $actionLinks = ICommon::EMPTY_ARRAY;
         foreach ($currencies as $currency) {
             $id = $currency->id;
 
@@ -184,7 +182,7 @@ class ManagerPage
      */
     private function setRateActions($rates): array
     {
-        $actionLinks = array();
+        $actionLinks = ICommon::EMPTY_ARRAY;
         foreach ($rates as $rate) {
 
             $id = $rate->id;

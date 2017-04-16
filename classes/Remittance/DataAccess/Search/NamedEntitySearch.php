@@ -2,6 +2,7 @@
 
 namespace Remittance\DataAccess\Search {
 
+    use Remittance\Core\Common;
     use Remittance\Core\ICommon;
     use Remittance\DataAccess\Entity\CurrencyRecord;
     use Remittance\DataAccess\Entity\NamedEntity;
@@ -116,7 +117,7 @@ namespace Remittance\DataAccess\Search {
             $records = SqlHandler::readAllRecords($arguments);
 
             $isContain = count($records);
-            $result = array();
+            $result = ICommon::EMPTY_ARRAY;
             if ($isContain) {
                 foreach ($records as $recordValues) {
                     $namedEntity = new NamedEntity();
@@ -131,31 +132,20 @@ namespace Remittance\DataAccess\Search {
         public function searchCurrency(array $filterProperties = array(), int $start = 0, int $paging = 0): array
         {
             $records = $this->search($filterProperties, $start, $paging);
+            $isValid = Common::isValidArray($records);
 
-            $isSet = isset($records);
-            $isArray = false;
-            $isContain = false;
-            if ($isSet) {
-                $isArray = is_array($records);
-                $isContain = count($records) > 0;
-            }
-
-            $isValid = $isArray && $isContain;
-
-            $currencies = array();
+            $currencies = ICommon::EMPTY_ARRAY;
             if ($isValid) {
 
                 foreach ($records as $candidate) {
                     $isNamedEntity = $candidate instanceof NamedEntity;
-                    $asArray = array();
+                    $asArray = ICommon::EMPTY_ARRAY;
                     if ($isNamedEntity) {
                         $namedEntity = NamedEntity::adopt($candidate);
                         $asArray = $namedEntity->toEntity();
                     }
 
-                    $isArray = is_array($asArray);
-                    $isContain = count($asArray) > 0;
-                    $isValid = $isArray && $isContain;
+                    $isValid = Common::isValidArray($asArray);
                     if ($isValid) {
 
                         $currency = new CurrencyRecord();

@@ -20,7 +20,7 @@ class SqlHandler implements ISqlHandler
 
     public function __construct($type = ISqlHandler::DATA_READER)
     {
-        $dbCredentials = array();
+        $dbCredentials = ICommon::EMPTY_ARRAY;
         switch ($type) {
             case ISqlHandler::DATA_READER :
                 $dbCredentials = DbCredentials::getDbReader();

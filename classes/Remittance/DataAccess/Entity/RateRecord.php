@@ -52,6 +52,7 @@ class RateRecord extends Entity
         $arguments[ISqlHandler::QUERY_TEXT] =
             'SELECT '
             . self::ID
+            . ' ,' . self::IS_HIDDEN
             . ' ,' . self::SOURCE_CURRENCY
             . ' ,' . self::TARGET_CURRENCY
             . ' ,' . self::EXCHANGE_RATE
@@ -131,13 +132,13 @@ class RateRecord extends Entity
             ' UPDATE '
             . $this->tablename
             . ' SET '
-            . self::SOURCE_CURRENCY . ' = ' . $sourceCurrencyId[ISqlHandler::PLACEHOLDER]
+            . self::IS_HIDDEN . ' = ' . $isHidden[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::SOURCE_CURRENCY . ' = ' . $sourceCurrencyId[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::TARGET_CURRENCY . ' = ' . $targetCurrencyId[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::EXCHANGE_RATE . ' = CAST(' . $exchangeRate[ISqlHandler::PLACEHOLDER] . ' AS DOUBLE PRECISION)'
             . ' , ' . self::FEE . ' = CAST(' . $fee[ISqlHandler::PLACEHOLDER] . ' AS DOUBLE PRECISION)'
             . ' , ' . self::EFFECTIVE_RATE . ' = CAST(' . $effectiveRate[ISqlHandler::PLACEHOLDER] . ' AS DOUBLE PRECISION)'
             . ' , ' . self::IS_DEFAULT . ' = ' . $isDefault[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::IS_HIDDEN . ' = ' . $isHidden[ISqlHandler::PLACEHOLDER]
             . ' WHERE '
             . self::ID . ' = ' . $id[ISqlHandler::PLACEHOLDER]
             . ' RETURNING '

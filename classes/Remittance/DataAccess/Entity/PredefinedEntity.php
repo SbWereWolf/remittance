@@ -10,6 +10,7 @@ namespace Remittance\DataAccess\Entity;
 
 
 use Remittance\Core\Common;
+use Remittance\Core\ICommon;
 use Remittance\DataAccess\Logic\ISqlHandler;
 use Remittance\DataAccess\Logic\SqlHandler;
 
@@ -47,8 +48,8 @@ class PredefinedEntity extends PrimitiveData implements IPredefinedEntity
         $stored = new PredefinedEntity();
         $wasReadStored = $stored->loadById($this->id);
 
-        $storedEntity = array();
-        $entity = array();
+        $storedEntity = ICommon::EMPTY_ARRAY;
+        $entity = ICommon::EMPTY_ARRAY;
         if ($wasReadStored) {
             $storedEntity = $stored->toEntity();
             $entity = $this->toEntity();

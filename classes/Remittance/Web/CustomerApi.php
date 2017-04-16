@@ -4,12 +4,14 @@ namespace Remittance\Web;
 
 
 use Remittance\Customer\Order;
+use Remittance\Exchange\Compute;
 use Remittance\UserInput\InputArray;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class CustomerApi
 {
+    const MODULE_COMPUTE = 'compute';
 
     const DEAL_EMAIL = 'deal_email';
     const FIO_RECEIVE = 'fio_receive';
@@ -54,6 +56,27 @@ class CustomerApi
         $result = var_export($placementMessage, true);
 
 
+        $response = $response->withJson(
+            array('result' => $result)
+        );
+
+        return $response;
+    }
+
+    public function compute(Request $request, Response $response, array $arguments)
+    {
+
+        $parsedBody = $request->getParsedBody();
+        $inputArray = new InputArray($parsedBody);
+
+        $dealSource = $inputArray->getSpecialCharsValue(self::DEAL_SOURCE);
+        $dealTarget = $inputArray->getSpecialCharsValue(self::DEAL_TARGET);
+        $dealIncome = $inputArray->getFloatValue(self::DEAL_INCOME);
+
+        $computer = new Compute($dealSource, $dealTarget, $dealIncome);
+        $outcome = $computer->precomputation();
+
+        $result = var_export($outcome, true);
         $response = $response->withJson(
             array('result' => $result)
         );
