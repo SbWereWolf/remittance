@@ -1,4 +1,5 @@
 <?php
+
 namespace Remittance\Core {
     /**
      * Реализация интерфейса для методов общего назначения
@@ -34,7 +35,7 @@ namespace Remittance\Core {
          * @param $otherArray array второй массив
          * @return bool
          */
-        public static function isOneArrayContainOther(array $oneArray, array $otherArray):bool
+        public static function isOneArrayContainOther(array $oneArray, array $otherArray): bool
         {
             $isContain = true;
             foreach ($otherArray as $key => $column) {
@@ -48,6 +49,24 @@ namespace Remittance\Core {
                 }
             }
             return $isContain;
+        }
+
+        /** Проверить что массив не пустой
+         * @param $arrayCandidate mixed массив
+         * @return bool полученная переменная является массивом в котором содержатся один и больше элементов
+         */
+        public static function isValidArray($arrayCandidate): bool
+        {
+            $isSet = isset($arrayCandidate);
+            $isArray = false;
+            $isContain = false;
+            if ($isSet) {
+                $isArray = is_array($arrayCandidate);
+                $isContain = count($arrayCandidate) > 0;
+            }
+            $isValid = $isArray && $isContain;
+
+            return $isValid;
         }
     }
 }

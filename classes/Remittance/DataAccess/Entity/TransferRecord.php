@@ -1,15 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ktokt
- * Date: 05.04.2017
- * Time: 2:51
- */
 
 namespace Remittance\DataAccess\Entity;
 
 
-use Remittance\Core\Common;
 use Remittance\DataAccess\Logic\ISqlHandler;
 use Remittance\DataAccess\Logic\SqlHandler;
 
@@ -59,7 +52,7 @@ class TransferRecord extends Entity
      * @param string $id идентификатор записи
      * @return bool успех выполнения
      */
-    protected function loadById(string $id):bool
+    protected function loadById(string $id): bool
     {
         $oneParameter = SqlHandler::setBindParameter(':ID', $id, \PDO::PARAM_INT);
 
@@ -102,7 +95,7 @@ class TransferRecord extends Entity
      * @param array $namedValue массив значений
      * @return bool успех выполнения
      */
-    public function setByNamedValue(array $namedValue):bool
+    public function setByNamedValue(array $namedValue): bool
     {
 
         $result = parent::setByNamedValue($namedValue);
@@ -128,7 +121,7 @@ class TransferRecord extends Entity
     /** Формирует массив из свойств экземпляра
      * @return array массив свойств экземпляра
      */
-    public function toEntity():array
+    public function toEntity(): array
     {
         parent::toEntity();
 
@@ -153,7 +146,7 @@ class TransferRecord extends Entity
     /** Обновить данные в БД
      * @return bool успех выполнения
      */
-    protected function updateEntity():bool
+    protected function updateEntity(): bool
     {
         $id = SqlHandler::setBindParameter(':ID', $this->id, \PDO::PARAM_STR);
         $isHidden = SqlHandler::setBindParameter(':IS_HIDDEN', $this->isHidden, \PDO::PARAM_INT);

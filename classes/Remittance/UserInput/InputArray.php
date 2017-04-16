@@ -30,41 +30,42 @@ class InputArray implements IInputArray
         return $clearValue;
     }
 
-    public function getSpecialCharsValue(string $key, array $options = array()):string
+    public function getSpecialCharsValue(string $key, array $options = array()): string
     {
 
         $value = $this->getValue($key, FILTER_SANITIZE_SPECIAL_CHARS, $options);
 
-        $result = (string)$value;
+        $result = strval($value);
 
         return $result;
     }
 
-    public function getBooleanValue(string $key, array $options = array()):bool
+    public function getBooleanValue(string $key, array $options = array()): bool
     {
 
         $value = $this->getValue($key, FILTER_VALIDATE_BOOLEAN, $options);
 
-        $result = (bool)$value;
+        $result = boolval($value);
 
         return $result;
     }
 
-    public function getIntegerValue(string $key, array $options = array()):int
+    public function getIntegerValue(string $key, array $options = array()): int
     {
 
         $value = $this->getValue($key, FILTER_VALIDATE_INT, $options);
 
-        $result = (int)$value;
+        $result = intval($value);
 
         return $result;
     }
-    public function getFloatValue(string $key, array $options = array()):float
+
+    public function getFloatValue(string $key, array $options = array()): float
     {
 
         $value = $this->getValue($key, FILTER_VALIDATE_FLOAT, $options);
 
-        $result = (float)$value;
+        $result = floatval($value);
 
         return $result;
     }

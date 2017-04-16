@@ -3,6 +3,7 @@
 namespace Remittance\DataAccess\Search {
 
     use Remittance\Core\ICommon;
+    use Remittance\DataAccess\Entity\CurrencyRecord;
     use Remittance\DataAccess\Entity\NamedEntity;
     use Remittance\DataAccess\Logic\ISqlHandler;
     use Remittance\DataAccess\Logic\SqlHandler;
@@ -30,7 +31,7 @@ namespace Remittance\DataAccess\Search {
          * @param string $code код записи
          * @return NamedEntity результат поиска, new NamedEntity() если поиск не дал результата
          */
-        public function searchByCode(string $code):NamedEntity
+        public function searchByCode(string $code): NamedEntity
         {
 
             $codeParameter = SqlHandler::setBindParameter(':CODE', $code, \PDO::PARAM_STR);
@@ -68,7 +69,7 @@ namespace Remittance\DataAccess\Search {
          * @param string $id идентификатор записи
          * @return NamedEntity результат поиска, new NamedEntity() если поиск не дал результата
          */
-        public function searchById(string $id):NamedEntity
+        public function searchById(string $id): NamedEntity
         {
 
             $oneParameter = SqlHandler::setBindParameter(':ID', $id, \PDO::PARAM_INT);
@@ -97,7 +98,7 @@ namespace Remittance\DataAccess\Search {
             return $result;
         }
 
-        public function search(array $filterProperties = array(), int $start = 0, int $paging = 0):array
+        public function search(array $filterProperties = array(), int $start = 0, int $paging = 0): array
         {
 
             $arguments[ISqlHandler::QUERY_TEXT] =
@@ -125,6 +126,46 @@ namespace Remittance\DataAccess\Search {
             }
 
             return $result;
+        }
+
+        public function searchCurrency(array $filterProperties = array(), int $start = 0, int $paging = 0): array
+        {
+            $records = $this->search($filterProperties, $start, $paging);
+
+            $isSet = isset($records);
+            $isArray = false;
+            $isContain = false;
+            if ($isSet) {
+                $isArray = is_array($records);
+                $isContain = count($records) > 0;
+            }
+
+            $isValid = $isArray && $isContain;
+
+            $currencies = array();
+            if ($isValid) {
+
+                foreach ($records as $candidate) {
+                    $isNamedEntity = $candidate instanceof NamedEntity;
+                    $asArray = array();
+                    if ($isNamedEntity) {
+                        $namedEntity = NamedEntity::adopt($candidate);
+                        $asArray = $namedEntity->toEntity();
+                    }
+
+                    $isArray = is_array($asArray);
+                    $isContain = count($asArray) > 0;
+                    $isValid = $isArray && $isContain;
+                    if ($isValid) {
+
+                        $currency = new CurrencyRecord();
+                        $currency->setByNamedValue($asArray);
+                        $currencies[] = $currency;
+                    }
+                }
+            }
+
+            return $currencies;
         }
 
     }

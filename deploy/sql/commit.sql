@@ -34,3 +34,23 @@ CREATE UNIQUE INDEX ux_currency_code
   ON public.currency (code);
 CREATE INDEX ix_currency_is_hidden_code
   ON public.currency (is_hidden,code);
+
+CREATE TABLE rate
+(
+  id                 SERIAL NOT NULL PRIMARY KEY,
+  insert_date        TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  is_hidden          INTEGER                  DEFAULT 0,
+  source_currency_id INTEGER,
+  target_currency_id INTEGER,
+  exchange_rate      DOUBLE PRECISION,
+  fee                DOUBLE PRECISION,
+  effective_rate     DOUBLE PRECISION,
+  is_default         INTEGER                  DEFAULT 0
+);
+
+CREATE UNIQUE INDEX ux_rate_source_currency_id_target_currency_id
+  ON rate (source_currency_id, target_currency_id);
+CREATE INDEX ix_rate_is_hidden_id
+  ON rate (is_hidden, id);
+CREATE INDEX ix_rate_is_hidden_source_currency_id
+  ON rate (is_hidden, source_currency_id);

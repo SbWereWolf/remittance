@@ -19,7 +19,7 @@ if ($isSet) {
 $isValid = $isArray && $isContain;
 if ($isValid) :?>
     <dl id="transfer-list">
-        <dd><label for="deal-income">Положить</label><input type="number" id="deal-income"></dd>
+        <dd><label for="deal-income">Положить</label><input type="number" step="0.0001" id="deal-income"></dd>
         <?php foreach ($currencies as $currency): ?>
             <?php
             $isObject = $currency instanceof \Remittance\DataAccess\Entity\CurrencyRecord;

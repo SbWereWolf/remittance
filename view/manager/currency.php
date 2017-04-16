@@ -4,6 +4,7 @@
 /* @var $limit int */
 /* @var $actionLinks array */
 
+use Remittance\Core\Common;
 use Remittance\Web\ManagerPage;
 
 ?>
@@ -45,14 +46,7 @@ use Remittance\Web\ManagerPage;
 <div id="currencies-pager" data-offset="<?= $offset ?>" data-limit="<?= $limit ?>"></div>
 <div id="currencies">
     <?php
-    $isSet = isset($currencies);
-    $isArray = false;
-    $isContain = false;
-    if ($isSet) {
-        $isArray = is_array($currencies);
-        $isContain = count($currencies) > 0;
-    }
-    $isValid = $isArray && $isContain;
+    $isValid = Common::isValidArray($currencies);
     if ($isValid) :?>
         <table id="currencies-list" class="currencies-list">
             <thead>

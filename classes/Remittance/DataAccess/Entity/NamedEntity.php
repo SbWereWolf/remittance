@@ -30,7 +30,14 @@ namespace Remittance\DataAccess\Entity {
         protected $tablename = self::TABLE_NAME;
         protected $classname = self::class;
 
-        public function setByNamedValue(array $namedValue):bool
+        public static function adopt($object): NamedEntity
+        {
+
+            return $object;
+
+        }
+
+        public function setByNamedValue(array $namedValue): bool
         {
 
             $result = parent::setByNamedValue($namedValue);
@@ -59,7 +66,7 @@ namespace Remittance\DataAccess\Entity {
          */
         public function getElementDescription(string $code = self::CODE,
                                               string $title = self::TITLE,
-                                              string $description = self::DESCRIPTION):array
+                                              string $description = self::DESCRIPTION): array
         {
             $result[$code] = $this->code;
             $result[$title] = $this->title;
@@ -71,7 +78,7 @@ namespace Remittance\DataAccess\Entity {
          * @param string $id идентификатор записи
          * @return bool успех выполнения
          */
-        protected function loadById(string $id):bool
+        protected function loadById(string $id): bool
         {
 
             $oneParameter = SqlHandler::setBindParameter(':ID', $id, \PDO::PARAM_INT);
@@ -103,7 +110,7 @@ namespace Remittance\DataAccess\Entity {
         /** Формирует массив из свойств экземпляра
          * @return array массив свойств экземпляра
          */
-        public function toEntity():array
+        public function toEntity(): array
         {
             $result = parent::toEntity();
 
@@ -117,7 +124,7 @@ namespace Remittance\DataAccess\Entity {
         /** Обновить данные в БД
          * @return bool успех выполнения
          */
-        protected function updateEntity():bool
+        protected function updateEntity(): bool
         {
 
             $codeParameter = SqlHandler::setBindParameter(':CODE', $this->code, \PDO::PARAM_STR);

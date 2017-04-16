@@ -39,5 +39,11 @@ namespace Remittance\Core {
          * @return bool
          */
         public static function isOneArrayContainOther(array $oneArray, array $otherArray):bool;
+
+        /** Проверить что массив не пустой
+         * @param $arrayCandidate mixed массив
+         * @return bool полученная переменная является массивом в котором содержатся один и больше элементов
+         */
+        public static function isValidArray($arrayCandidate): bool;
     }
 }

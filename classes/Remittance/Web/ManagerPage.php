@@ -3,8 +3,12 @@
 namespace Remittance\Web;
 
 
+use Remittance\Core\Common;
+use Remittance\Core\ICommon;
 use Remittance\DataAccess\Entity\CurrencyRecord;
+use Remittance\DataAccess\Entity\RateRecord;
 use Remittance\DataAccess\Search\NamedEntitySearch;
+use Remittance\DataAccess\Search\RateSearch;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Router;
@@ -18,12 +22,21 @@ class ManagerPage
 
     const MODULE_CURRENCY = 'currency';
 
-    const ACTION_CURRENCY_ADD = 'add';
+    const ACTION_CURRENCY_ADD = 'currency_add';
     const ACTION_CURRENCY_ENABLE = 'currency_enable';
     const ACTION_CURRENCY_DISABLE = 'currency_disable';
 
-    const MODULE_ACCOUNT = 'account';
     const MODULE_RATE = 'rate';
+    const ACTION_RATE_ADD = 'rate_add';
+    const ACTION_RATE_SAVE = 'rate_save';
+    const ACTION_RATE_DEFAULT = 'rate_default';
+    const ACTION_RATE_ENABLE = 'rate_enable';
+    const ACTION_RATE_DISABLE = 'rate_disable';
+
+    const RATE_SOURCE_CURRENCY_TITLE = 'source_code';
+    const RATE_TARGET_CURRENCY_TITLE = 'target_code';
+
+    const MODULE_ACCOUNT = 'account';
     const MODULE_SETTING = 'setting';
 
     const NAVIGATION_MENU = 'navigation_menu';
@@ -78,40 +91,9 @@ class ManagerPage
     public function currency(Request $request, Response $response, array $arguments)
     {
         $searcher = new NamedEntitySearch(CurrencyRecord::TABLE_NAME);
-        $records = $searcher->search();
 
-        $isSet = isset($records);
-        $isArray = false;
-        $isContain = false;
-        if ($isSet) {
-            $isArray = is_array($records);
-            $isContain = count($records) > 0;
-        }
-
-        $isValid = $isArray && $isContain;
-        $actionLinks = array();
-        $currencies = array();
-        if ($isValid) {
-
-            foreach ($records as $record) {
-                $asArray = $record->toEntity();
-                $currency = new CurrencyRecord();
-                $currency->setByNamedValue($asArray);
-                $currencies[] = $currency;
-
-                $id = $currency->id;
-
-                $disableLink = $this->router->pathFor(
-                    self::ACTION_CURRENCY_DISABLE,
-                    [self::ID => $id]);
-                $enableLink = $this->router->pathFor(
-                    self::ACTION_CURRENCY_ENABLE,
-                    [self::ID => $id]);
-
-                $actionLinks[$id][self::ACTION_CURRENCY_DISABLE] = $disableLink;
-                $actionLinks[$id][self::ACTION_CURRENCY_ENABLE] = $enableLink;
-            }
-        }
+        $currencies = $searcher->searchCurrency();
+        $actionLinks = $this->setCurrencyActions($currencies);
 
         $offset = 0;
         $limit = 0;
@@ -123,6 +105,109 @@ class ManagerPage
         ]);
 
         return $response;
+    }
+
+    public function rate(Request $request, Response $response, array $arguments)
+    {
+        $searcher = new RateSearch();
+        $rates = $searcher->search();
+
+        $isValid = Common::isValidArray($rates);
+        $actionLinks = ICommon::EMPTY_ARRAY;
+        if ($isValid) {
+            $actionLinks = $this->setRateActions($rates);
+        }
+
+        $searcher = new NamedEntitySearch(CurrencyRecord::TABLE_NAME);
+        $currencies = $searcher->searchCurrency();
+        $isValid = Common::isValidArray($currencies);
+        $currencyTitles = ICommon::EMPTY_ARRAY;
+        if ($isValid) {
+            foreach ($rates as $rateCandidate) {
+                $rate = RateRecord::adopt($rateCandidate);
+
+                $source = $searcher->searchById($rate->sourceCurrencyId);
+                $isSourceFound = !empty($source->id);
+
+                $target = $searcher->searchById($rate->targetCurrencyId);
+                $isTargetFound = !empty($target->id);
+
+                $isSuccess = $isSourceFound && $isTargetFound;
+                if ($isSuccess) {
+                    $currencyTitles[$rate->id][self::RATE_SOURCE_CURRENCY_TITLE] = $source->title;
+                    $currencyTitles[$rate->id][self::RATE_TARGET_CURRENCY_TITLE] = $target->title;
+                }
+            }
+        }
+
+        $offset = 0;
+        $limit = 0;
+        $response = $this->viewer->render($response, "manager/rate.php", [
+            'rates' => $rates,
+            'currencies' => $currencies,
+            'offset' => $offset,
+            'limit' => $limit,
+            'actionLinks' => $actionLinks,
+            'currencyTitles' => $currencyTitles,
+        ]);
+
+        return $response;
+    }
+
+    /**
+     * @param $currencies
+     * @return array
+     */
+    private function setCurrencyActions($currencies): array
+    {
+        $actionLinks = array();
+        foreach ($currencies as $currency) {
+            $id = $currency->id;
+
+            $disableLink = $this->router->pathFor(
+                self::ACTION_CURRENCY_DISABLE,
+                [self::ID => $id]);
+            $enableLink = $this->router->pathFor(
+                self::ACTION_CURRENCY_ENABLE,
+                [self::ID => $id]);
+
+            $actionLinks[$id][self::ACTION_CURRENCY_DISABLE] = $disableLink;
+            $actionLinks[$id][self::ACTION_CURRENCY_ENABLE] = $enableLink;
+        }
+        return $actionLinks;
+    }
+
+    /**
+     * @param $rates
+     * @return array|mixed
+     * @internal param $actionLinks
+     */
+    private function setRateActions($rates): array
+    {
+        $actionLinks = array();
+        foreach ($rates as $rate) {
+
+            $id = $rate->id;
+
+            $saveLink = $this->router->pathFor(
+                self::ACTION_RATE_SAVE,
+                [self::ID => $id]);
+            $defaultLink = $this->router->pathFor(
+                self::ACTION_RATE_DEFAULT,
+                [self::ID => $id]);
+            $enableLink = $this->router->pathFor(
+                self::ACTION_RATE_ENABLE,
+                [self::ID => $id]);
+            $disableLink = $this->router->pathFor(
+                self::ACTION_RATE_DISABLE,
+                [self::ID => $id]);
+
+            $actionLinks[$id][self::ACTION_RATE_SAVE] = $saveLink;
+            $actionLinks[$id][self::ACTION_RATE_DEFAULT] = $defaultLink;
+            $actionLinks[$id][self::ACTION_RATE_ENABLE] = $enableLink;
+            $actionLinks[$id][self::ACTION_RATE_DISABLE] = $disableLink;
+        }
+        return $actionLinks;
     }
 
 }
