@@ -2,7 +2,7 @@
 
 namespace Remittance\Web;
 
-use Remittance\Core\Common;
+use Remittance\Operator\Transfer;
 use Remittance\UserInput\InputArray;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -17,8 +17,18 @@ class OperatorApi
         $inputArray = new InputArray($arguments);
         $id = $inputArray->getIntegerValue(self::ID);
 
+        $transfer = new Transfer();
+        $isSuccess = $transfer->assembleTransfer($id);
+
+        $accomplishResult = false;
+        if ($isSuccess) {
+            $accomplishResult = $transfer->accomplish();
+        }
+
+        $resultMessage = $accomplishResult ? 'success' : 'fail';
+
         $response = $response->withJson(
-            array('message' => "success accomplish $id")
+            array('message' => "$resultMessage accomplish $id")
         );
 
         return $response;
@@ -29,12 +39,21 @@ class OperatorApi
         $inputArray = new InputArray($arguments);
         $id = $inputArray->getIntegerValue(self::ID);
 
+        $transfer = new Transfer();
+        $isSuccess = $transfer->assembleTransfer($id);
+
+        $annulResult = false;
+        if ($isSuccess) {
+            $annulResult = $transfer->annul();
+        }
+
+        $resultMessage = $annulResult ? 'success' : 'fail';
+
         $response = $response->withJson(
-            array('message' => "success annul $id")
+            array('message' => "$resultMessage annul $id")
         );
 
         return $response;
-
     }
 
 }

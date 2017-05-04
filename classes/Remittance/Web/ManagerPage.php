@@ -79,7 +79,7 @@ class ManagerPage implements IPage
             ),
         );
 
-        $response = $this->viewer->render($response, "manager/menu.php", [
+        $response = $this->viewer->render($response, "manager/start.php", [
             'menu' => $menu,
         ]);
 
