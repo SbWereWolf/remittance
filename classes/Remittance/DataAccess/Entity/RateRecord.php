@@ -16,6 +16,13 @@ class RateRecord extends Entity
     /** @var string колонка для внешнего ключа ссылки на эту таблицу */
     const EXTERNAL_ID = 'rate_id';
 
+    /** @var string значение для поднятого флага "использовать по умолчанию" */
+    const DEFINE_AS_DEFAULT = true;
+    /** @var string значение для снятого флага "использовать по умолчанию" */
+    const DEFINE_AS_NOT_DEFAULT = false;
+    /** @var string значение по умолчанию для флага "использовать по умолчанию" */
+    const DEFAULT_IS_DEFAULT = self::DEFINE_AS_NOT_DEFAULT;
+
     const SOURCE_CURRENCY = 'source_currency_id';
     const TARGET_CURRENCY = 'target_currency_id';
     const EXCHANGE_RATE = 'exchange_rate';
@@ -39,6 +46,136 @@ class RateRecord extends Entity
 
         return $object;
 
+    }
+
+    public function save(): bool
+    {
+        $exchangeRate = SqlHandler::setBindParameter(':EXCHANGE_RATE', $this->exchangeRate, \PDO::PARAM_STR);
+        $fee = SqlHandler::setBindParameter(':FEE', $this->fee, \PDO::PARAM_STR);
+        $effectiveRate = SqlHandler::setBindParameter(':EFFECTIVE_RATE', $this->effectiveRate, \PDO::PARAM_STR);
+        //$isDefault = SqlHandler::setBindParameter(':IS_DEFAULT', $this->isDefault, \PDO::PARAM_INT);
+        $sourceCurrency = SqlHandler::setBindParameter(':SOURCE_CURRENCY', $this->sourceCurrencyId, \PDO::PARAM_STR);
+        $targetCurrency = SqlHandler::setBindParameter(':TARGET_CURRENCY', $this->targetCurrencyId, \PDO::PARAM_STR);
+        $isHidden = SqlHandler::setBindParameter(':IS_HIDDEN', $this->isHidden, \PDO::PARAM_INT);
+
+        $arguments[ISqlHandler::QUERY_TEXT] =
+            ' UPDATE '
+            . $this->tablename
+            . ' SET '
+            . self::EXCHANGE_RATE . ' = ' . $exchangeRate[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::FEE . ' = ' . $fee[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::EFFECTIVE_RATE . ' = ' . $effectiveRate[ISqlHandler::PLACEHOLDER]
+            //. ' , ' . self::IS_DEFAULT . ' = ' . $isDefault[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::IS_HIDDEN . ' = ' . $isHidden[ISqlHandler::PLACEHOLDER]
+            . ' WHERE '
+            . self::SOURCE_CURRENCY . ' = ' . $sourceCurrency[ISqlHandler::PLACEHOLDER]
+            . ' AND ' . self::TARGET_CURRENCY . ' = ' . $targetCurrency[ISqlHandler::PLACEHOLDER]
+            . ' RETURNING '
+            . self::ID
+            . ' , ' . self::IS_HIDDEN
+            . ' , ' . self::EXCHANGE_RATE
+            . ' , ' . self::FEE
+            . ' , ' . self::EFFECTIVE_RATE
+            . ' , ' . self::IS_DEFAULT
+            . ' , ' . self::SOURCE_CURRENCY
+            . ' , ' . self::TARGET_CURRENCY
+            . ';';
+
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $exchangeRate;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $fee;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $effectiveRate;
+        //$arguments[ISqlHandler::QUERY_PARAMETER][] = $isDefault;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $sourceCurrency;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $targetCurrency;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $isHidden;
+
+        $record = SqlHandler::writeOneRecord($arguments);
+
+        $result = false;
+        if ($record !== ISqlHandler::EMPTY_ARRAY) {
+            $result = $this->setByNamedValue($record);
+        }
+
+        return $result;
+    }
+
+    public function setDefault()
+    {
+        $defineAsDefault = SqlHandler::setBindParameter(':IS_DEFAULT', self::DEFINE_AS_DEFAULT, \PDO::PARAM_INT);
+        $sourceCurrency = SqlHandler::setBindParameter(':SOURCE_CURRENCY', $this->sourceCurrencyId, \PDO::PARAM_STR);
+        $targetCurrency = SqlHandler::setBindParameter(':TARGET_CURRENCY', $this->targetCurrencyId, \PDO::PARAM_STR);
+
+        $arguments[ISqlHandler::QUERY_TEXT] =
+            ' UPDATE '
+            . $this->tablename
+            . ' SET '
+            . self::IS_DEFAULT . ' = ' . $defineAsDefault[ISqlHandler::PLACEHOLDER]
+            . ' WHERE '
+            . self::SOURCE_CURRENCY . ' = ' . $sourceCurrency[ISqlHandler::PLACEHOLDER]
+            . ' AND ' . self::TARGET_CURRENCY . ' = ' . $targetCurrency[ISqlHandler::PLACEHOLDER]
+            . ' RETURNING '
+            . self::ID
+            . ' , ' . self::IS_HIDDEN
+            . ' , ' . self::EXCHANGE_RATE
+            . ' , ' . self::FEE
+            . ' , ' . self::EFFECTIVE_RATE
+            . ' , ' . self::IS_DEFAULT
+            . ' , ' . self::SOURCE_CURRENCY
+            . ' , ' . self::TARGET_CURRENCY
+            . ';';
+
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $defineAsDefault;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $sourceCurrency;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $targetCurrency;
+
+        $record = SqlHandler::writeOneRecord($arguments);
+
+        $result = false;
+        if ($record !== ISqlHandler::EMPTY_ARRAY) {
+            $result = $this->setByNamedValue($record);
+        }
+
+        return $result;
+    }
+
+    public function unsetDefault()
+    {
+        $defineAsNotDefault = SqlHandler::setBindParameter(':IS_DEFAULT', self::DEFINE_AS_NOT_DEFAULT, \PDO::PARAM_INT);
+        $defineAsDefault = SqlHandler::setBindParameter(':IS_DEFAULT', self::DEFINE_AS_DEFAULT, \PDO::PARAM_INT);
+        $sourceCurrency = SqlHandler::setBindParameter(':SOURCE_CURRENCY', $this->sourceCurrencyId, \PDO::PARAM_STR);
+        $targetCurrency = SqlHandler::setBindParameter(':TARGET_CURRENCY', $this->targetCurrencyId, \PDO::PARAM_STR);
+
+        $arguments[ISqlHandler::QUERY_TEXT] =
+            ' UPDATE '
+            . $this->tablename
+            . ' SET '
+            . self::IS_DEFAULT . ' = ' . $defineAsNotDefault[ISqlHandler::PLACEHOLDER]
+            . ' WHERE '
+            . self::SOURCE_CURRENCY . ' = ' . $sourceCurrency[ISqlHandler::PLACEHOLDER]
+            . ' AND ' . self::IS_DEFAULT . ' = ' . $defineAsDefault[ISqlHandler::PLACEHOLDER]
+            . ' RETURNING '
+            . self::ID
+            . ' , ' . self::IS_HIDDEN
+            . ' , ' . self::EXCHANGE_RATE
+            . ' , ' . self::FEE
+            . ' , ' . self::EFFECTIVE_RATE
+            . ' , ' . self::IS_DEFAULT
+            . ' , ' . self::SOURCE_CURRENCY
+            . ' , ' . self::TARGET_CURRENCY
+            . ';';
+
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $defineAsNotDefault;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $defineAsDefault;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $sourceCurrency;
+
+        $record = SqlHandler::writeOneRecord($arguments);
+
+        $result = false;
+        if ($record !== ISqlHandler::EMPTY_ARRAY) {
+            $result = $this->setByNamedValue($record);
+        }
+
+        return $result;
     }
 
     /** Прочитать запись из БД
@@ -91,7 +228,7 @@ class RateRecord extends Entity
         $this->exchangeRate = floatval(SqlHandler::setIfExists(self::EXCHANGE_RATE, $namedValue));
         $this->fee = floatval(SqlHandler::setIfExists(self::FEE, $namedValue));
         $this->effectiveRate = floatval(SqlHandler::setIfExists(self::EFFECTIVE_RATE, $namedValue));
-        $this->isDefault = floatval(SqlHandler::setIfExists(self::IS_DEFAULT, $namedValue));
+        $this->isDefault = boolval(SqlHandler::setIfExists(self::IS_DEFAULT, $namedValue));
 
         return $result;
     }

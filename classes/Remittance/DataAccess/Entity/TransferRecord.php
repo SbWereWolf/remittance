@@ -234,7 +234,7 @@ class TransferRecord extends Entity
         return $result;
     }
 
-    public function saveDocument(): bool
+    public function save(): bool
     {
 
         $incomeAmount = SqlHandler::setBindParameter(':INCOME_AMOUNT', $this->incomeAmount, \PDO::PARAM_STR);

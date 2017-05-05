@@ -5,6 +5,7 @@
 /* @var $limit int */
 /* @var $actionLinks array */
 /* @var $currencyTitles array */
+/* @var $menu array */
 
 use Remittance\Core\Common;
 use Remittance\Core\ICommon;
@@ -33,6 +34,17 @@ use Remittance\Web\ManagerPage;
 </head>
 
 <body>
+
+<?php
+$isSet = isset($menu);
+$isValid = false;
+if ($isSet) {
+    $isValid = Common::isValidArray($menu);
+}
+
+if ($isValid)
+    include('manager_menu.php');
+?>
 
 <form id="add-rate" onsubmit="return false;">
     <dl>
@@ -80,14 +92,12 @@ use Remittance\Web\ManagerPage;
 <div id="pager" data-offset="<?= $offset ?>" data-limit="<?= $limit ?>"></div>
 <div id="rates">
     <?php
+
     $isSet = isset($rates);
-    $isArray = false;
-    $isContain = false;
+    $isValid = false;
     if ($isSet) {
-        $isArray = is_array($rates);
-        $isContain = count($rates) > 0;
+        $isValid = Common::isValidArray($rates);
     }
-    $isValid = $isArray && $isContain;
     if ($isValid) :?>
         <table id="rates-list" class="rates-list">
             <thead>
@@ -139,26 +149,81 @@ use Remittance\Web\ManagerPage;
                         <td cell><?= $rate->fee ?></td>
                         <td cell><?= $rate->effectiveRate ?></td>
                         <td cell><input id="disable-<?= $rate->id ?>"
-                                        type="checkbox" <?= $rate->isDefault ? 'checked' : '' ?>
-                                        disabled>
-                        </td>
-                        <td cell><input id="default-<?= $rate->id ?>"
                                         type="checkbox" <?= $rate->isHidden ? 'checked' : '' ?>
                                         disabled>
                         </td>
-                        <td cell><a class="action" href="javascript:return false;"
-                                    data-action="<?= $actionLinks[$id][ManagerPage::ACTION_RATE_DEFAULT] ?>">По
+                        <td cell><input id="default-<?= $rate->id ?>"
+                                        type="checkbox" <?= $rate->isDefault ? 'checked' : '' ?>
+                                        disabled>
+                        </td>
+                        <?php
+                        $isValid = Common::isValidArray($actionLinks);
+
+                        if (!$isValid):
+                            ?>
+                            <td cell colspan="4">&nbsp;&nbsp;</td>
+                        <?php endif; ?>
+                        <?php
+                        $isExists = false;
+                        $idCollection = ICommon::EMPTY_ARRAY;
+                        if ($isValid) {
+
+                            $idCollection = Common::setIfExists($id, $actionLinks, ICommon::EMPTY_ARRAY);
+                            $isExists = !empty($idCollection);
+                        }
+
+                        if ($isExists):
+                            ?>
+                            <td cell>
+                                <?php
+
+                                $isExist = array_key_exists(ManagerPage::ACTION_RATE_DEFAULT, $idCollection);
+                                if ($isExist):
+                                    ?><a class="action" href="javascript:return false;"
+                                         data-action="<?= $idCollection[ManagerPage::ACTION_RATE_DEFAULT] ?>">По
                                 умолчанию</a>
-                        </td>
-                        <td cell><a class="action" href="javascript:return false;"
-                                    data-action="<?= $actionLinks[$id][ManagerPage::ACTION_RATE_ENABLE] ?>">Включить</a>
-                        </td>
-                        <td cell><a class="action" href="javascript:return false;"
-                                    data-action="<?= $actionLinks[$id][ManagerPage::ACTION_RATE_DISABLE] ?>">Отключить</a>
-                        </td>
-                        <td cell><a class="action" href="javascript:return false;"
-                                    data-action="<?= $actionLinks[$id][ManagerPage::ACTION_RATE_SAVE] ?>">Сохранить</a>
-                        </td>
+                                <?php endif; ?>
+                                <?php if (!$isExist): ?>
+                                    &nbsp;&nbsp;
+                                <?php endif; ?>
+                            </td>
+                            <td cell>
+                                <?php
+                                $isExist = array_key_exists(ManagerPage::ACTION_RATE_ENABLE, $idCollection);
+                                if ($isExist):
+                                    ?><a class="action" href="javascript:return false;"
+                                         data-action="<?= $idCollection[ManagerPage::ACTION_RATE_ENABLE] ?>">
+                                        Включить</a>
+                                <?php endif; ?>
+                                <?php if (!$isExist): ?>
+                                    &nbsp;&nbsp;
+                                <?php endif; ?>
+                            </td>
+                            <td cell>
+                                <?php
+                                $isExist = array_key_exists(ManagerPage::ACTION_RATE_DISABLE, $idCollection);
+                                if ($isExist):
+                                    ?><a class="action" href="javascript:return false;"
+                                         data-action="<?= $idCollection[ManagerPage::ACTION_RATE_DISABLE] ?>">
+                                        Отключить</a>
+                                <?php endif; ?>
+                                <?php if (!$isExist): ?>
+                                    &nbsp;&nbsp;
+                                <?php endif; ?>
+                            </td>
+                            <td cell>
+                                <?php
+                                $isExist = array_key_exists(ManagerPage::ACTION_RATE_SAVE, $idCollection);
+                                if ($isExist):
+                                    ?><a class="action" href="javascript:return false;"
+                                         data-action="<?= $idCollection[ManagerPage::ACTION_RATE_SAVE] ?>">Отключить</a>
+                                <?php endif; ?>
+                                <?php if (!$isExist): ?>
+                                    &nbsp;&nbsp;
+                                <?php endif; ?>
+                            </td>
+                        <?php endif; ?>
+
                     </tr>
                 <?php endif ?>
             <?php endforeach; ?>

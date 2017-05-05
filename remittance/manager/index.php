@@ -123,7 +123,8 @@ $app->post($pathForRateSave, function (Request $request, Response $response, arr
 
 $pathForRateDefault = ManagerPage::ROOT . implode(ManagerPage::PATH_SYMBOL,
         array(ManagerPage::MODULE_RATE,
-            ManagerPage::ACTION_RATE_DEFAULT));
+            ManagerPage::ACTION_RATE_DEFAULT,
+            '{' . ManagerPage::ID . '}'));
 $app->post($pathForRateDefault, function (Request $request, Response $response, array $arguments) {
 
     $api = new \Remittance\Web\ManagerApi();
@@ -135,7 +136,8 @@ $app->post($pathForRateDefault, function (Request $request, Response $response, 
 
 $pathForRateEnable = ManagerPage::ROOT . implode(ManagerPage::PATH_SYMBOL,
         array(ManagerPage::MODULE_RATE,
-            ManagerPage::ACTION_RATE_ENABLE));
+            ManagerPage::ACTION_RATE_ENABLE,
+            '{' . ManagerPage::ID . '}'));
 $app->post($pathForRateEnable, function (Request $request, Response $response, array $arguments) {
 
     $api = new \Remittance\Web\ManagerApi();
@@ -147,7 +149,8 @@ $app->post($pathForRateEnable, function (Request $request, Response $response, a
 
 $pathForRateDisable = ManagerPage::ROOT . implode(ManagerPage::PATH_SYMBOL,
         array(ManagerPage::MODULE_RATE,
-            ManagerPage::ACTION_RATE_DISABLE));
+            ManagerPage::ACTION_RATE_DISABLE,
+            '{' . ManagerPage::ID . '}'));
 $app->post($pathForRateDisable, function (Request $request, Response $response, array $arguments) {
 
     $api = new \Remittance\Web\ManagerApi();

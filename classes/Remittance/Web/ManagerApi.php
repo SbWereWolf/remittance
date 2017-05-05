@@ -32,7 +32,7 @@ class ManagerApi
         $currency->code = $code;
         $currency->title = $title;
         $currency->description = $description;
-        $currency->disable = $disable;
+        $currency->isDisable = $disable;
 
         $addMessage = $currency->add();
 
@@ -49,11 +49,19 @@ class ManagerApi
     public function currencyDisable(Request $request, Response $response, array $arguments)
     {
         $inputArray = new InputArray($arguments);
-
         $id = $inputArray->getIntegerValue(self::ID);
 
+        $currency = new Currency();
+        $isSuccess = $currency->assembleCurrency($id);
+
+        $disableResult = false;
+        if ($isSuccess) {
+            $disableResult = $currency->disable();
+        }
+
+        $resultMessage = $disableResult ? 'success' : 'fail';
         $response = $response->withJson(
-            array('message' => "success disable $id")
+            array('message' => "$resultMessage disable $id")
         );
 
         return $response;
@@ -62,15 +70,22 @@ class ManagerApi
     public function currencyEnable(Request $request, Response $response, array $arguments)
     {
         $inputArray = new InputArray($arguments);
-
         $id = $inputArray->getIntegerValue(self::ID);
 
+        $currency = new Currency();
+        $isSuccess = $currency->assembleCurrency($id);
+
+        $enableResult = false;
+        if ($isSuccess) {
+            $enableResult = $currency->enable();
+        }
+
+        $resultMessage = $enableResult ? 'success' : 'fail';
         $response = $response->withJson(
-            array('message' => "success enable $id")
+            array('message' => "$resultMessage enable $id")
         );
 
         return $response;
-
     }
 
     public function rateAdd(Request $request, Response $response, array $arguments)
@@ -99,8 +114,8 @@ class ManagerApi
         $rate->targetCurrency = $targetCurrency;
         $rate->rate = $exchangeRate;
         $rate->fee = $fee;
-        $rate->default = $default;
-        $rate->disable = $disable;
+        $rate->isDefault = $default;
+        $rate->isDisable = $disable;
 
         $message = $rate->add();
 
@@ -133,8 +148,17 @@ class ManagerApi
 
         $id = $inputArray->getIntegerValue(self::ID);
 
+        $rate = new Rate();
+        $isSuccess = $rate->assembleRate($id);
+
+        $setAsDefault = false;
+        if ($isSuccess) {
+            $setAsDefault = $rate->setAsDefault();
+        }
+
+        $resultMessage = $setAsDefault ? 'success' : 'fail';
         $response = $response->withJson(
-            array('message' => "success enable $id")
+            array('message' => "$resultMessage set as default $id")
         );
 
         return $response;
@@ -147,12 +171,20 @@ class ManagerApi
 
         $id = $inputArray->getIntegerValue(self::ID);
 
+        $rate = new Rate();
+        $isSuccess = $rate->assembleRate($id);
+
+        $setEnable = false;
+        if ($isSuccess) {
+            $setEnable = $rate->enable();
+        }
+
+        $resultMessage = $setEnable ? 'success' : 'fail';
         $response = $response->withJson(
-            array('message' => "success enable $id")
+            array('message' => "$resultMessage enable $id")
         );
 
         return $response;
-
     }
 
     public function rateDisable(Request $request, Response $response, array $arguments)
@@ -161,8 +193,17 @@ class ManagerApi
 
         $id = $inputArray->getIntegerValue(self::ID);
 
+        $rate = new Rate();
+        $isSuccess = $rate->assembleRate($id);
+
+        $setDisable = false;
+        if ($isSuccess) {
+            $setDisable = $rate->disable();
+        }
+
+        $resultMessage = $setDisable ? 'success' : 'fail';
         $response = $response->withJson(
-            array('message' => "success enable $id")
+            array('message' => "$resultMessage disable $id")
         );
 
         return $response;

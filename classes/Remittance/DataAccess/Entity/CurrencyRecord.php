@@ -3,11 +3,6 @@
 namespace Remittance\DataAccess\Entity;
 
 
-use Remittance\Core\Common;
-use Remittance\DataAccess\Logic\ISqlHandler;
-use Remittance\DataAccess\Logic\SqlHandler;
-
-
 class CurrencyRecord extends NamedEntity
 {
 

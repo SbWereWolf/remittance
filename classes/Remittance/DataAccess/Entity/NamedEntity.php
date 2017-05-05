@@ -30,6 +30,47 @@ namespace Remittance\DataAccess\Entity {
         protected $tablename = self::TABLE_NAME;
         protected $classname = self::class;
 
+        public function save():bool
+        {
+            $code = SqlHandler::setBindParameter(':CODE', $this->code, \PDO::PARAM_STR);
+            $title = SqlHandler::setBindParameter(':TITLE', $this->title, \PDO::PARAM_STR);
+            $description = SqlHandler::setBindParameter(':DESCRIPTION', $this->description, \PDO::PARAM_STR);
+
+            $isHidden = SqlHandler::setBindParameter(':IS_HIDDEN', $this->isHidden, \PDO::PARAM_INT);
+
+            $arguments[ISqlHandler::QUERY_TEXT] =
+                ' UPDATE '
+                . $this->tablename
+                . ' SET '
+                . self::CODE . ' = ' . $code[ISqlHandler::PLACEHOLDER]
+                . ' , ' . self::TITLE . ' = ' . $title[ISqlHandler::PLACEHOLDER]
+                . ' , ' . self::DESCRIPTION . ' = ' . $description[ISqlHandler::PLACEHOLDER]
+                . ' , ' . self::IS_HIDDEN . ' = ' . $isHidden[ISqlHandler::PLACEHOLDER]
+                . ' WHERE '
+                . self::CODE . ' = ' . $code[ISqlHandler::PLACEHOLDER]
+                . ' RETURNING '
+                . self::ID
+                . ' , ' . self::IS_HIDDEN
+                . ' , ' . self::CODE
+                . ' , ' . self::TITLE
+                . ' , ' . self::DESCRIPTION
+                . ';';
+
+            $arguments[ISqlHandler::QUERY_PARAMETER][] = $code;
+            $arguments[ISqlHandler::QUERY_PARAMETER][] = $title;
+            $arguments[ISqlHandler::QUERY_PARAMETER][] = $description;
+            $arguments[ISqlHandler::QUERY_PARAMETER][] = $isHidden;
+
+            $record = SqlHandler::writeOneRecord($arguments);
+
+            $result = false;
+            if ($record !== ISqlHandler::EMPTY_ARRAY) {
+                $result = $this->setByNamedValue($record);
+            }
+
+            return $result;
+        }
+
         public static function adopt($object): NamedEntity
         {
 

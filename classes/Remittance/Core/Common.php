@@ -57,13 +57,9 @@ namespace Remittance\Core {
          */
         public static function isValidArray($arrayCandidate): bool
         {
-            $isSet = isset($arrayCandidate);
-            $isArray = false;
-            $isContain = false;
-            if ($isSet) {
-                $isArray = is_array($arrayCandidate);
-                $isContain = count($arrayCandidate) > 0;
-            }
+            $isArray = is_array($arrayCandidate);
+            $isContain = count($arrayCandidate) > 0;
+
             $isValid = $isArray && $isContain;
 
             return $isValid;

@@ -60,24 +60,7 @@ class ManagerPage implements IPage
     public function root(Request $request, Response $response, array $arguments)
     {
 
-        $menuRoot = $this->router->pathFor(self::ROOT);
-        $currencyLink = $this->router->pathFor(self::MODULE_CURRENCY);
-        $accountLink = $this->router->pathFor(self::MODULE_ACCOUNT);
-        $rateLink = $this->router->pathFor(self::MODULE_RATE);
-        $settingLink = $this->router->pathFor(self::MODULE_SETTING);
-        $menu = array(
-            self::NAVIGATION_MENU => array(
-                self::ROOT => $menuRoot,
-            ),
-            self::REFERENCES_LINKS => array(
-                self::CURRENCY_REFERENCE => $currencyLink,
-                self::ACCOUNTS_REFERENCE => $accountLink,
-                self::RATES_REFERENCE => $rateLink,
-            ),
-            self::SETTINGS_LINKS => array(
-                self::SETTINGS_COMMON => $settingLink,
-            ),
-        );
+        $menu = $this->assembleModuleLinks();
 
         $response = $this->viewer->render($response, "manager/start.php", [
             'menu' => $menu,
@@ -88,6 +71,8 @@ class ManagerPage implements IPage
 
     public function currency(Request $request, Response $response, array $arguments)
     {
+        $menu = $this->assembleModuleLinks();
+
         $searcher = new NamedEntitySearch(CurrencyRecord::TABLE_NAME);
 
         $currencies = $searcher->searchCurrency();
@@ -100,6 +85,7 @@ class ManagerPage implements IPage
             'offset' => $offset,
             'limit' => $limit,
             'actionLinks' => $actionLinks,
+            'menu' => $menu,
         ]);
 
         return $response;
@@ -107,6 +93,8 @@ class ManagerPage implements IPage
 
     public function rate(Request $request, Response $response, array $arguments)
     {
+        $menu = $this->assembleModuleLinks();
+
         $searcher = new RateSearch();
         $rates = $searcher->search();
 
@@ -147,6 +135,7 @@ class ManagerPage implements IPage
             'limit' => $limit,
             'actionLinks' => $actionLinks,
             'currencyTitles' => $currencyTitles,
+            'menu' => $menu,
         ]);
 
         return $response;
@@ -180,16 +169,13 @@ class ManagerPage implements IPage
      * @return array|mixed
      * @internal param $actionLinks
      */
-    private function setRateActions($rates): array
+    private function setRateActions(array $rates): array
     {
         $actionLinks = ICommon::EMPTY_ARRAY;
         foreach ($rates as $rate) {
 
             $id = $rate->id;
 
-            $saveLink = $this->router->pathFor(
-                self::ACTION_RATE_SAVE,
-                [self::ID => $id]);
             $defaultLink = $this->router->pathFor(
                 self::ACTION_RATE_DEFAULT,
                 [self::ID => $id]);
@@ -200,12 +186,35 @@ class ManagerPage implements IPage
                 self::ACTION_RATE_DISABLE,
                 [self::ID => $id]);
 
-            $actionLinks[$id][self::ACTION_RATE_SAVE] = $saveLink;
             $actionLinks[$id][self::ACTION_RATE_DEFAULT] = $defaultLink;
             $actionLinks[$id][self::ACTION_RATE_ENABLE] = $enableLink;
             $actionLinks[$id][self::ACTION_RATE_DISABLE] = $disableLink;
         }
         return $actionLinks;
+    }
+
+    /**
+     * @return array
+     */
+    private function assembleModuleLinks(): array
+    {
+        $currencyLink = $this->router->pathFor(self::MODULE_CURRENCY);
+        $accountLink = $this->router->pathFor(self::MODULE_ACCOUNT);
+        $rateLink = $this->router->pathFor(self::MODULE_RATE);
+        $settingLink = $this->router->pathFor(self::MODULE_SETTING);
+        $menu = array(
+            self::REFERENCES_LINKS => array(
+                self::CURRENCY_REFERENCE => $currencyLink,
+                self::ACCOUNTS_REFERENCE => $accountLink,
+                self::RATES_REFERENCE => $rateLink,
+            ),
+            self::SETTINGS_LINKS => array(
+                self::SETTINGS_COMMON => $settingLink,
+            ),
+        );
+
+
+        return $menu;
     }
 
 }

@@ -105,7 +105,6 @@ class Transfer
         $this->statusComment = 'выполнено';
         $result = $this->save();
 
-
         return $result;
     }
 
@@ -125,12 +124,11 @@ class Transfer
     {
 
         $record = $this->assembleRecord();
-        $result = $record->saveDocument();
+        $result = $record->save();
 
         if ($result) {
             $this->assume($record);
         }
-
 
         return $result;
     }

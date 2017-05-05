@@ -3,6 +3,7 @@
 /* @var $offset int */
 /* @var $limit int */
 /* @var $actionLinks array */
+/* @var $menu array */
 
 use Remittance\Core\Common;
 use Remittance\Web\ManagerPage;
@@ -28,6 +29,17 @@ use Remittance\Web\ManagerPage;
 </head>
 
 <body>
+
+<?php
+$isSet = isset($menu);
+$isValid = false;
+if($isSet){
+    $isValid = Common::isValidArray($menu);
+}
+
+if ($isValid)
+    include('manager_menu.php');
+?>
 
 <form onsubmit="return false;" method="post">
     <dl>
