@@ -1,5 +1,6 @@
 <?php
 
+use Remittance\Web\IPage;
 use Remittance\Web\ManagerPage;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -47,7 +48,7 @@ $app->get($pathForCurrencyModule, function (Request $request, Response $response
     return $response;
 })->setName(ManagerPage::MODULE_CURRENCY);
 
-$pathForCurrencyAdd = ManagerPage::ROOT . implode(ManagerPage::PATH_SYMBOL,
+$pathForCurrencyAdd = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
         array(ManagerPage::MODULE_CURRENCY,
             ManagerPage::ACTION_CURRENCY_ADD));
 $app->post($pathForCurrencyAdd, function (Request $request, Response $response, array $arguments) {
@@ -57,9 +58,9 @@ $app->post($pathForCurrencyAdd, function (Request $request, Response $response, 
 
     return $response;
 
-});
+})->setName(ManagerPage::ACTION_CURRENCY_ADD);
 
-$pathForCurrencyDisable = ManagerPage::ROOT . implode(ManagerPage::PATH_SYMBOL,
+$pathForCurrencyDisable = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
         array(ManagerPage::MODULE_CURRENCY,
             ManagerPage::ACTION_CURRENCY_DISABLE,
             '{' . ManagerPage::ID . '}'));
@@ -72,7 +73,7 @@ $app->post($pathForCurrencyDisable, function (Request $request, Response $respon
 
 })->setName(ManagerPage::ACTION_CURRENCY_DISABLE);
 
-$pathForCurrencyEnable = ManagerPage::ROOT . implode(ManagerPage::PATH_SYMBOL,
+$pathForCurrencyEnable = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
         array(ManagerPage::MODULE_CURRENCY,
             ManagerPage::ACTION_CURRENCY_ENABLE,
             '{' . ManagerPage::ID . '}'));
@@ -97,7 +98,7 @@ $app->get($pathForRateModule, function (Request $request, Response $response, ar
     return $response;
 })->setName(ManagerPage::MODULE_RATE);
 
-$pathForRateAdd = ManagerPage::ROOT . implode(ManagerPage::PATH_SYMBOL,
+$pathForRateAdd = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
         array(ManagerPage::MODULE_RATE,
             ManagerPage::ACTION_RATE_ADD));
 $app->post($pathForRateAdd, function (Request $request, Response $response, array $arguments) {
@@ -109,7 +110,7 @@ $app->post($pathForRateAdd, function (Request $request, Response $response, arra
 
 });
 
-$pathForRateSave = ManagerPage::ROOT . implode(ManagerPage::PATH_SYMBOL,
+$pathForRateSave = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
         array(ManagerPage::MODULE_RATE,
             ManagerPage::ACTION_RATE_SAVE));
 $app->post($pathForRateSave, function (Request $request, Response $response, array $arguments) {
@@ -121,7 +122,7 @@ $app->post($pathForRateSave, function (Request $request, Response $response, arr
 
 })->setName(ManagerPage::ACTION_RATE_SAVE);
 
-$pathForRateDefault = ManagerPage::ROOT . implode(ManagerPage::PATH_SYMBOL,
+$pathForRateDefault = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
         array(ManagerPage::MODULE_RATE,
             ManagerPage::ACTION_RATE_DEFAULT,
             '{' . ManagerPage::ID . '}'));
@@ -134,7 +135,7 @@ $app->post($pathForRateDefault, function (Request $request, Response $response, 
 
 })->setName(ManagerPage::ACTION_RATE_DEFAULT);
 
-$pathForRateEnable = ManagerPage::ROOT . implode(ManagerPage::PATH_SYMBOL,
+$pathForRateEnable = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
         array(ManagerPage::MODULE_RATE,
             ManagerPage::ACTION_RATE_ENABLE,
             '{' . ManagerPage::ID . '}'));
@@ -147,7 +148,7 @@ $app->post($pathForRateEnable, function (Request $request, Response $response, a
 
 })->setName(ManagerPage::ACTION_RATE_ENABLE);
 
-$pathForRateDisable = ManagerPage::ROOT . implode(ManagerPage::PATH_SYMBOL,
+$pathForRateDisable = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
         array(ManagerPage::MODULE_RATE,
             ManagerPage::ACTION_RATE_DISABLE,
             '{' . ManagerPage::ID . '}'));

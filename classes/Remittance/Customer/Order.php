@@ -3,6 +3,7 @@
 namespace Remittance\Customer;
 
 
+use Remittance\Exchange\Compute;
 use Remittance\Operator\Transfer;
 
 class Order
@@ -16,6 +17,19 @@ class Order
     public $accountTransfer = '';
     public $fioReceive = '';
     public $accountReceive = '';
+
+    /**
+     * @return bool
+     * @internal param $order
+     */
+    public function validate(): bool
+    {
+        $computer = new Compute($this->dealSource, $this->dealTarget, $this->dealIncome);
+        $outcome = $computer->precomputation();
+        $isValid = $outcome == $this->dealOutcome;
+
+        return $isValid;
+    }
 
     public function place():string
     {

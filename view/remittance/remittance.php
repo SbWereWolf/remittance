@@ -1,8 +1,8 @@
 <?php
 /* @var $currencies array */
-use Remittance\Web\CustomerApi;
+/* @var $actionLinks array */
+
 use Remittance\Web\CustomerPage;
-use Remittance\Web\IPage;
 
 ?>
 <html>
@@ -93,10 +93,7 @@ if ($isValid) :?>
 
         $.ajax({
             type: 'POST',
-            url: '<?= IPage::ROOT
-            . CustomerPage::MODULE_ORDER
-            . IPage::PATH_SYMBOL
-            . CustomerPage::ACTION_ORDER_ADD ?>',
+            url: '<?= $actionLinks[CustomerPage::ACTION_ORDER_ADD] ?>',
             data: {
                 deal_income: deal_income,
                 deal_outcome: deal_outcome,
@@ -124,7 +121,7 @@ if ($isValid) :?>
 
         $.ajax({
             type: 'POST',
-            url: '<?= IPage::ROOT . CustomerApi::MODULE_COMPUTE ?>',
+            url: '<?= $actionLinks[CustomerPage::ACTION_COMPUTE] ?>',
             data: {
                 deal_income: deal_income,
                 deal_source: deal_source,

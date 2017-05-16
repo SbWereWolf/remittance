@@ -7,7 +7,6 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 use Remittance\Web\CustomerApi;
 use Remittance\Web\CustomerPage;
-use Remittance\Web\IPage;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -25,6 +24,7 @@ $configuration['addContentLengthHeader'] = false;
 
 $container = new \Slim\Container(['settings' => $configuration]);
 
+const ROUTER_COMPONENT = 'router';
 const VIEWER_COMPONENT = 'view';
 $container[VIEWER_COMPONENT] = new \Slim\Views\PhpRenderer(APPLICATION_ROOT . DIRECTORY_SEPARATOR . 'view');
 
@@ -32,15 +32,16 @@ $app = new \Slim\App($container);
 
 $app->get('/', function (Request $request, Response $response, array $arguments) {
 
+    $router = $this->get(ROUTER_COMPONENT);
     $viewer = $this->get(VIEWER_COMPONENT);
-    $page = new CustomerPage($viewer);
+    $page = new CustomerPage($viewer, $router);
 
     $response = $page->root($request, $response, $arguments);
 
     return $response;
 });
 
-$pathForAddOrder = IPage::ROOT . CustomerPage::MODULE_ORDER . IPage::PATH_SYMBOL . CustomerPage::ACTION_ORDER_ADD;
+$pathForAddOrder = CustomerPage::ROOT . CustomerPage::ACTION_ORDER_ADD;
 $app->post($pathForAddOrder, function (Request $request, Response $response, array $arguments) {
 
     $api = new CustomerApi();
@@ -48,9 +49,9 @@ $app->post($pathForAddOrder, function (Request $request, Response $response, arr
 
     return $response;
 
-});
+})->setName(CustomerPage::ACTION_ORDER_ADD);
 
-$pathForComputeExchange = IPage::ROOT . CustomerApi::MODULE_COMPUTE;
+$pathForComputeExchange = CustomerPage::ROOT . CustomerPage::ACTION_COMPUTE;
 $app->post($pathForComputeExchange, function (Request $request, Response $response, array $arguments) {
 
     $api = new CustomerApi();
@@ -58,6 +59,6 @@ $app->post($pathForComputeExchange, function (Request $request, Response $respon
 
     return $response;
 
-});
+})->setName(CustomerPage::ACTION_COMPUTE);
 
 $app->run();

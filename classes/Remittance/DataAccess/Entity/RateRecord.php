@@ -140,10 +140,9 @@ class RateRecord extends Entity
 
     public function unsetDefault()
     {
-        $defineAsNotDefault = SqlHandler::setBindParameter(':IS_DEFAULT', self::DEFINE_AS_NOT_DEFAULT, \PDO::PARAM_INT);
-        $defineAsDefault = SqlHandler::setBindParameter(':IS_DEFAULT', self::DEFINE_AS_DEFAULT, \PDO::PARAM_INT);
+        $defineAsNotDefault = SqlHandler::setBindParameter(':UNSET_DEFAULT', self::DEFINE_AS_NOT_DEFAULT, \PDO::PARAM_INT);
+        $defineAsDefault = SqlHandler::setBindParameter(':SET_DEFAULT', self::DEFINE_AS_DEFAULT, \PDO::PARAM_INT);
         $sourceCurrency = SqlHandler::setBindParameter(':SOURCE_CURRENCY', $this->sourceCurrencyId, \PDO::PARAM_STR);
-        $targetCurrency = SqlHandler::setBindParameter(':TARGET_CURRENCY', $this->targetCurrencyId, \PDO::PARAM_STR);
 
         $arguments[ISqlHandler::QUERY_TEXT] =
             ' UPDATE '
@@ -170,10 +169,7 @@ class RateRecord extends Entity
 
         $record = SqlHandler::writeOneRecord($arguments);
 
-        $result = false;
-        if ($record !== ISqlHandler::EMPTY_ARRAY) {
-            $result = $this->setByNamedValue($record);
-        }
+        $result = $record !== ISqlHandler::EMPTY_ARRAY;
 
         return $result;
     }

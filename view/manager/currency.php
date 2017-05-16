@@ -6,6 +6,7 @@
 /* @var $menu array */
 
 use Remittance\Core\Common;
+use Remittance\DataAccess\Entity\CurrencyRecord;
 use Remittance\Web\ManagerPage;
 
 ?>
@@ -80,17 +81,19 @@ if ($isValid)
             </tfoot>
             <?php foreach ($currencies as $currency): ?>
                 <?php
-                $isObject = $currency instanceof \Remittance\DataAccess\Entity\CurrencyRecord;
+                $isObject = $currency instanceof CurrencyRecord;
                 if ($isObject) :
-                    $id = $currency->id ?>
+
+                    $asNamed = CurrencyRecord::adopt($currency);
+                    $id = $asNamed->id ?>
                     <tr>
-                        <td cell><?= $currency->code ?></td>
-                        <td cell><?= $currency->title ?></td>
-                        <td cell><input id="disable-<?= $currency->code ?>"
-                                        type="checkbox" <?= $currency->isHidden ? 'checked' : '' ?>
+                        <td cell><?= $asNamed->code ?></td>
+                        <td cell><?= $asNamed->title ?></td>
+                        <td cell><input id="disable-<?= $asNamed->code ?>"
+                                        type="checkbox" <?= $asNamed->isHidden ? 'checked' : '' ?>
                                         disabled>
                         </td>
-                        <td cell><?= $currency->description ?></td>
+                        <td cell><?= $asNamed->description ?></td>
                         <td cell><a class="action" href="javascript:return false;"
                                     data-action="<?= $actionLinks[$id][ManagerPage::ACTION_CURRENCY_ENABLE] ?>">Включить</a>
                         </td>
@@ -118,7 +121,7 @@ if ($isValid)
 
         $.ajax({
             type: 'POST',
-            url: '/manager/currency/add',
+            url: '<?= $actionLinks[ManagerPage::ACTION_CURRENCY_ADD] ?>',
             data: {
                 code: code,
                 title: title,

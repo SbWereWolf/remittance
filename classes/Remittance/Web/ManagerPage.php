@@ -147,7 +147,8 @@ class ManagerPage implements IPage
      */
     private function setCurrencyActions($currencies): array
     {
-        $actionLinks = ICommon::EMPTY_ARRAY;
+        $actionLinks[ManagerPage::ACTION_CURRENCY_ADD] = $this->router->pathFor(self::ACTION_CURRENCY_ADD);
+
         foreach ($currencies as $currency) {
             $id = $currency->id;
 

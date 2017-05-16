@@ -11,7 +11,6 @@ use Slim\Http\Response;
 
 class CustomerApi
 {
-    const MODULE_COMPUTE = 'compute';
 
     const DEAL_EMAIL = 'deal_email';
     const FIO_RECEIVE = 'fio_receive';
@@ -51,10 +50,19 @@ class CustomerApi
         $order->dealTarget = $dealTarget;
         $order->dealOutcome = $dealOutcome;
 
-        $placementMessage = $order->place();
+        $isValid = $order->validate();
 
-        $result = var_export($placementMessage, true);
+        $result = 'fail';
+        if (!$isValid) {
+            $result = 'error. please refresh data-page ("F5")';
+        }
 
+        if ($isValid) {
+
+            $placementMessage = $order->place();
+
+            $result = var_export($placementMessage, true);
+        }
 
         $response = $response->withJson(
             array('result' => $result)
@@ -83,4 +91,6 @@ class CustomerApi
 
         return $response;
     }
+
+
 }
