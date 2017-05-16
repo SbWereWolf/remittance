@@ -26,7 +26,7 @@ class TransferRecord extends Entity
     const DOCUMENT_DATE = 'document_date';
     const INCOME_ACCOUNT = 'income_account';
     const OUTCOME_ACCOUNT = 'outcome_account';
-    const STATUS = 'status';
+    const TRANSFER_STATUS_ID = 'transfer_status_id';
     const STATUS_COMMENT = 'status_comment';
     const STATUS_TIME = 'status_time';
 
@@ -41,13 +41,20 @@ class TransferRecord extends Entity
     public $documentDate = '';
     public $incomeAccount = '';
     public $outcomeAccount = '';
-    public $status = 0;
+    public $transferStatusId = 0;
     public $statusComment = '';
     public $statusTime = '';
     /** @var string имя таблицы для хранения сущности */
     protected $tablename = self::TABLE_NAME;
     /** @var string имя класса, используется в мутировании */
     protected $classname = self::class;
+
+    public static function adopt($object): TransferRecord
+    {
+
+        return $object;
+
+    }
 
     /** Прочитать запись из БД
      * @param string $id идентификатор записи
@@ -71,7 +78,7 @@ class TransferRecord extends Entity
             . ' ,' . self::DOCUMENT_DATE
             . ' ,' . self::INCOME_ACCOUNT
             . ' ,' . self::OUTCOME_ACCOUNT
-            . ' ,' . self::STATUS
+            . ' ,' . self::TRANSFER_STATUS_ID
             . ' ,' . self::STATUS_COMMENT
             . ' ,' . self::STATUS_TIME
             . ' FROM '
@@ -112,7 +119,7 @@ class TransferRecord extends Entity
         $this->documentDate = SqlHandler::setIfExists(self::DOCUMENT_DATE, $namedValue);
         $this->incomeAccount = SqlHandler::setIfExists(self::INCOME_ACCOUNT, $namedValue);
         $this->outcomeAccount = SqlHandler::setIfExists(self::OUTCOME_ACCOUNT, $namedValue);
-        $this->status = SqlHandler::setIfExists(self::STATUS, $namedValue);
+        $this->transferStatusId = SqlHandler::setIfExists(self::TRANSFER_STATUS_ID, $namedValue);
         $this->statusComment = SqlHandler::setIfExists(self::STATUS_COMMENT, $namedValue);
         $this->statusTime = SqlHandler::setIfExists(self::STATUS_TIME, $namedValue);
 
@@ -137,7 +144,7 @@ class TransferRecord extends Entity
         $result [self::DOCUMENT_DATE] = $this->documentDate;
         $result [self::INCOME_ACCOUNT] = $this->incomeAccount;
         $result [self::OUTCOME_ACCOUNT] = $this->outcomeAccount;
-        $result [self::STATUS] = $this->status;
+        $result [self::TRANSFER_STATUS_ID] = $this->transferStatusId;
         $result [self::STATUS_COMMENT] = $this->statusComment;
         $result [self::STATUS_TIME] = $this->statusTime;
 
@@ -163,7 +170,7 @@ class TransferRecord extends Entity
         $documentDate = SqlHandler::setBindParameter(':DOCUMENT_DATE', $this->documentDate, \PDO::PARAM_STR);
         $incomeAccount = SqlHandler::setBindParameter(':INCOME_ACCOUNT', $this->incomeAccount, \PDO::PARAM_STR);
         $outcomeAccount = SqlHandler::setBindParameter(':OUTCOME_ACCOUNT', $this->outcomeAccount, \PDO::PARAM_STR);
-        $status = SqlHandler::setBindParameter(':STATUS', $this->status, \PDO::PARAM_STR);
+        $status = SqlHandler::setBindParameter(':STATUS_ID', $this->transferStatusId, \PDO::PARAM_STR);
         $statusComment = SqlHandler::setBindParameter(':STATUS_COMMENT', $this->statusComment, \PDO::PARAM_STR);
         $statusTime = SqlHandler::setBindParameter(':STATUS_TIME', $this->statusTime, \PDO::PARAM_STR);
 
@@ -182,7 +189,7 @@ class TransferRecord extends Entity
             . ' , ' . self::DOCUMENT_DATE . ' = ' . $documentDate[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::INCOME_ACCOUNT . ' = ' . $incomeAccount[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::OUTCOME_ACCOUNT . ' = ' . $outcomeAccount[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::STATUS . ' = ' . $status[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::TRANSFER_STATUS_ID . ' = ' . $status[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::STATUS_COMMENT . ' = ' . $statusComment[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::STATUS_TIME . ' = ' . $statusTime[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::IS_HIDDEN . ' = ' . $isHidden[ISqlHandler::PLACEHOLDER]
@@ -202,7 +209,7 @@ class TransferRecord extends Entity
             . ' , ' . self::DOCUMENT_DATE
             . ' , ' . self::INCOME_ACCOUNT
             . ' , ' . self::OUTCOME_ACCOUNT
-            . ' , ' . self::STATUS
+            . ' , ' . self::TRANSFER_STATUS_ID
             . ' , ' . self::STATUS_COMMENT
             . ' , ' . self::STATUS_TIME
             . ';';
@@ -248,7 +255,7 @@ class TransferRecord extends Entity
         $documentDate = SqlHandler::setBindParameter(':DOCUMENT_DATE', $this->documentDate, \PDO::PARAM_STR);
         $incomeAccount = SqlHandler::setBindParameter(':INCOME_ACCOUNT', $this->incomeAccount, \PDO::PARAM_STR);
         $outcomeAccount = SqlHandler::setBindParameter(':OUTCOME_ACCOUNT', $this->outcomeAccount, \PDO::PARAM_STR);
-        $status = SqlHandler::setBindParameter(':STATUS', $this->status, \PDO::PARAM_STR);
+        $status = SqlHandler::setBindParameter(':STATUS_ID', $this->transferStatusId, \PDO::PARAM_STR);
         $statusComment = SqlHandler::setBindParameter(':STATUS_COMMENT', $this->statusComment, \PDO::PARAM_STR);
         $statusTime = SqlHandler::setBindParameter(':STATUS_TIME', $this->statusTime, \PDO::PARAM_STR);
 
@@ -269,7 +276,7 @@ class TransferRecord extends Entity
             . ' , ' . self::DOCUMENT_DATE . ' = ' . $documentDate[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::INCOME_ACCOUNT . ' = ' . $incomeAccount[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::OUTCOME_ACCOUNT . ' = ' . $outcomeAccount[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::STATUS . ' = ' . $status[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::TRANSFER_STATUS_ID . ' = ' . $status[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::STATUS_COMMENT . ' = ' . $statusComment[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::STATUS_TIME . ' = ' . $statusTime[ISqlHandler::PLACEHOLDER]
             . ' WHERE '
@@ -290,7 +297,7 @@ class TransferRecord extends Entity
             . ' , ' . self::DOCUMENT_DATE
             . ' , ' . self::INCOME_ACCOUNT
             . ' , ' . self::OUTCOME_ACCOUNT
-            . ' , ' . self::STATUS
+            . ' , ' . self::TRANSFER_STATUS_ID
             . ' , ' . self::STATUS_COMMENT
             . ' , ' . self::STATUS_TIME
             . ';';

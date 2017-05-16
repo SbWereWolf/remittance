@@ -4,14 +4,17 @@ namespace Remittance\Operator;
 
 use Remittance\Customer\Order;
 use Remittance\DataAccess\Entity\TransferRecord;
+use Remittance\DataAccess\Entity\TransferStatusRecord;
+use Remittance\DataAccess\Search\NamedEntitySearch;
 use Remittance\DataAccess\Search\TransferSearch;
 
 
 class Transfer
 {
-    const STATUS_RECEIVED = 0;
-    const STATUS_ACCOMPLISH = 1;
-    const STATUS_ANNUL = 9;
+    const STATUS_RECEIVED = 'RECEIVED';
+    const STATUS_ACCOMPLISH = 'ACCOMPLISH';
+    const STATUS_ANNUL = 'ANNUL';
+
     const ACTION_ACCOMPLISH = 'accomplish';
 
     const FORMAT_DOCUMENT_DATE = 'Ymd h:i:s';
@@ -29,7 +32,7 @@ class Transfer
     public $documentDate = '';
     public $incomeAccount = '';
     public $outcomeAccount = '';
-    public $status = self::STATUS_RECEIVED;
+    public $statusCode = self::STATUS_RECEIVED;
     public $statusComment = '';
     public $statusTime = '';
 
@@ -45,7 +48,10 @@ class Transfer
 
             $record->documentNumber = $record->id;
             $record->documentDate = date(self::FORMAT_DOCUMENT_DATE);
-            $record->status = $this->status;
+
+            $statusId = $this->getTransferStatusId();
+            $record->transferStatusId = $statusId;
+
             $record->statusComment = 'принята заявка с сайта';
             $record->statusTime = date(self::FORMAT_STATUS_TIME);
             $record->reportEmail = $orderDetail->dealEmail;
@@ -81,7 +87,10 @@ class Transfer
 
         $this->documentNumber = $record->documentNumber;
         $this->documentDate = $record->documentDate;
-        $this->status = $record->status;
+
+        $statusCode = $this->getTransferStatusCode($record);
+        $this->statusCode = $statusCode;
+
         $this->statusComment = $record->statusComment;
         $this->statusTime = $record->statusTime;
         $this->dealEmail = $record->reportEmail;
@@ -100,7 +109,7 @@ class Transfer
     public function accomplish(): bool
     {
 
-        $this->status = self::STATUS_ACCOMPLISH;
+        $this->statusCode = self::STATUS_ACCOMPLISH;
         $this->statusTime = date(self::FORMAT_STATUS_TIME);
         $this->statusComment = 'выполнено';
         $result = $this->save();
@@ -111,7 +120,7 @@ class Transfer
     public function annul(): bool
     {
 
-        $this->status = self::STATUS_ANNUL;
+        $this->statusCode = self::STATUS_ANNUL;
         $this->statusTime = date(self::FORMAT_STATUS_TIME);
         $this->statusComment = 'отменено';
         $result = $this->save();
@@ -140,7 +149,10 @@ class Transfer
 
         $record->documentNumber = $this->documentNumber;
         $record->documentDate = $this->documentDate;
-        $record->status = $this->status;
+
+        $statusId = $this->getTransferStatusId();
+        $record->transferStatusId = $statusId;
+
         $record->statusComment = $this->statusComment;
         $record->statusTime = $this->statusTime;
         $record->reportEmail = $this->dealEmail;
@@ -166,7 +178,43 @@ class Transfer
         $transferRecord = $searcher->searchById($id);
         $result = $this->assume($transferRecord);
 
-
         return $result;
+    }
+
+    /**
+     * @return string идентификатор записи статуса Заявки на перевод
+     */
+    private function getTransferStatusId(): string
+    {
+        $searcher = new NamedEntitySearch(TransferStatusRecord::TABLE_NAME);
+        $transferStatus = $searcher->searchByCode($this->statusCode);
+        $id = $transferStatus->id;
+
+        return $id;
+    }
+
+    /**
+     * @param TransferRecord $record запись Заявки на перевод
+     * @return string код статуса Заявки наперевод
+     */
+    private function getTransferStatusCode(TransferRecord $record): string
+    {
+        $searcher = new NamedEntitySearch(TransferStatusRecord::TABLE_NAME);
+        $transferStatus = $searcher->searchById($record->transferStatusId);
+        $code = $transferStatus->code;
+
+        return $code;
+    }
+
+    /** Получить имя для статуса Заявки на перевод
+     * @return string Имя статуса Заявки на перевод
+     */
+    public function getTransferStatusTitle(): string
+    {
+        $searcher = new NamedEntitySearch(TransferStatusRecord::TABLE_NAME);
+        $transferStatus = $searcher->searchByCode($this->statusCode);
+        $title = $transferStatus->title;
+
+        return $title;
     }
 }

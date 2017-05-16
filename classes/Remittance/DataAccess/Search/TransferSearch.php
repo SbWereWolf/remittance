@@ -46,7 +46,7 @@ class TransferSearch
             . ' ,' . TransferRecord::DOCUMENT_DATE
             . ' ,' . TransferRecord::INCOME_ACCOUNT
             . ' ,' . TransferRecord::OUTCOME_ACCOUNT
-            . ' ,' . TransferRecord::STATUS
+            . ' ,' . TransferRecord::TRANSFER_STATUS_ID
             . ' ,' . TransferRecord::STATUS_COMMENT
             . ' ,' . TransferRecord::STATUS_TIME
             . ' FROM '
@@ -84,7 +84,7 @@ class TransferSearch
             . ' ,' . TransferRecord::DOCUMENT_DATE
             . ' ,' . TransferRecord::INCOME_ACCOUNT
             . ' ,' . TransferRecord::OUTCOME_ACCOUNT
-            . ' ,' . TransferRecord::STATUS
+            . ' ,' . TransferRecord::TRANSFER_STATUS_ID
             . ' ,' . TransferRecord::STATUS_COMMENT
             . ' ,' . TransferRecord::STATUS_TIME
             . ' FROM '

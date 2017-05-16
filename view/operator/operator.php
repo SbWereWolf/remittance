@@ -1,9 +1,11 @@
 <?php
-/* @var $transfers array */
+/* @var $transferView array */
 /* @var $offset int */
 /* @var $limit int */
 /* @var $actionLinks array */
 
+use Remittance\Core\Common;
+use Remittance\Core\ICommon;
 use Remittance\Web\OperatorPage as OperatorPage;
 
 ?>
@@ -32,14 +34,13 @@ use Remittance\Web\OperatorPage as OperatorPage;
 <div id="transfers-pager" data-offset="<?= $offset ?>" data-limit="<?= $limit ?>"></div>
 <div id="transfers">
     <?php
-    $isSet = isset($transfers);
-    $isArray = false;
-    $isContain = false;
+    $isSet = isset($transferView);
+
+    $isValid = false;
     if ($isSet) {
-        $isArray = is_array($transfers);
-        $isContain = count($transfers) > 0;
+        $isValid = Common::isValidArray($transferView);
     }
-    $isValid = $isArray && $isContain;
+
     if ($isValid) :?>
         <table id="transfers-list" class="transfers-list">
             <thead>
@@ -69,26 +70,58 @@ use Remittance\Web\OperatorPage as OperatorPage;
                 <td><a id="next-page" href="#" onclick="moveNext();">NEXT</a></td>
             </tr>
             </tfoot>
-            <?php foreach ($transfers as $transfer): ?>
+            <?php foreach ($transferView as $viewRow): ?>
                 <?php
-                $isObject = is_object($transfer);
-                if ($isObject) :
-                    $id = $transfer->id ?>
+
+                $isValid = Common::isValidArray($viewRow);
+                if ($isValid) :
+
+                    $id = Common::setIfExists(OperatorPage::ID, $viewRow, ICommon::EMPTY_VALUE);
+                    $empty = ICommon::EMPTY_VALUE;
+                    ?>
                     <tr>
-                        <td cell><?= $transfer->documentNumber ?></td>
-                        <td cell><?= $transfer->documentDate ?></td>
-                        <td cell><?= $transfer->status ?></td>
-                        <td cell><?= $transfer->reportEmail ?></td>
-                        <td cell><?= $transfer->transferName ?></td>
-                        <td cell><?= $transfer->transferAccount ?></td>
-                        <td cell><?= $transfer->incomeAccount ?></td>
-                        <td cell><?= $transfer->incomeAmount ?></td>
-                        <td cell><?= $transfer->receiveName ?></td>
-                        <td cell><?= $transfer->receiveAccount ?></td>
-                        <td cell><?= $transfer->outcomeAccount ?></td>
-                        <td cell><?= $transfer->outcomeAmount ?></td>
-                        <td cell><?= $transfer->statusComment ?></td>
-                        <td cell><?= $transfer->statusTime ?></td>
+                        <td cell><?= Common::setIfExists(OperatorPage::DOCUMENT_NUMBER,
+                                $viewRow,
+                                $empty) ?></td>
+                        <td cell><?= Common::setIfExists(OperatorPage::DOCUMENT_DATE,
+                                $viewRow,
+                                $empty) ?></td>
+                        <td cell><?= Common::setIfExists(OperatorPage::TRANSFER_STATUS,
+                                $viewRow,
+                                $empty) ?></td>
+                        <td cell><?= Common::setIfExists(OperatorPage::DEAL_EMAIL,
+                                $viewRow,
+                                $empty) ?></td>
+                        <td cell><?= Common::setIfExists(OperatorPage::FIO_TRANSFER,
+                                $viewRow,
+                                $empty) ?></td>
+                        <td cell><?= Common::setIfExists(OperatorPage::ACCOUNT_TRANSFER,
+                                $viewRow,
+                                $empty) ?></td>
+                        <td cell><?= Common::setIfExists(OperatorPage::INCOME_ACCOUNT,
+                                $viewRow,
+                                $empty) ?></td>
+                        <td cell><?= Common::setIfExists(OperatorPage::DEAL_INCOME,
+                                $viewRow,
+                                $empty) ?></td>
+                        <td cell><?= Common::setIfExists(OperatorPage::FIO_RECEIVE,
+                                $viewRow,
+                                $empty) ?></td>
+                        <td cell><?= Common::setIfExists(OperatorPage::ACCOUNT_RECEIVE,
+                                $viewRow,
+                                $empty) ?></td>
+                        <td cell><?= Common::setIfExists(OperatorPage::OUTCOME_ACCOUNT,
+                                $viewRow,
+                                $empty) ?></td>
+                        <td cell><?= Common::setIfExists(OperatorPage::DEAL_OUTCOME,
+                                $viewRow,
+                                $empty) ?></td>
+                        <td cell><?= Common::setIfExists(OperatorPage::STATUS_COMMENT,
+                                $viewRow,
+                                $empty) ?></td>
+                        <td cell><?= Common::setIfExists(OperatorPage::STATUS_TIME,
+                                $viewRow,
+                                $empty) ?></td>
                         <td cell><a class="action" href="javascript:return false;"
                                     data-action="<?= $actionLinks[$id][OperatorPage::ACTION_ACCOMPLISH] ?>">Выполнить</a>
                         </td>
