@@ -7,8 +7,11 @@ use Remittance\Core\Common;
 use Remittance\Core\ICommon;
 use Remittance\DataAccess\Entity\CurrencyRecord;
 use Remittance\DataAccess\Entity\RateRecord;
+use Remittance\DataAccess\Entity\VolumeRecord;
 use Remittance\DataAccess\Search\NamedEntitySearch;
 use Remittance\DataAccess\Search\RateSearch;
+use Remittance\DataAccess\Search\VolumeSearch;
+use Remittance\Manager\Volume;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Router;
@@ -34,7 +37,14 @@ class ManagerPage implements IPage
     const RATE_SOURCE_CURRENCY_TITLE = 'source_code';
     const RATE_TARGET_CURRENCY_TITLE = 'target_code';
 
-    const MODULE_ACCOUNT = 'account';
+    const MODULE_VOLUME = 'volume';
+    const ACTION_VOLUME_ADD = 'volume_add';
+    const ACTION_VOLUME_SAVE = 'volume_save';
+    const ACTION_VOLUME_ENABLE = 'volume_enable';
+    const ACTION_VOLUME_DISABLE = 'volume_disable';
+
+    const CURRENCY_TITLE = 'currency_code';
+
     const MODULE_SETTING = 'setting';
 
     const NAVIGATION_MENU = 'navigation_menu';
@@ -60,7 +70,7 @@ class ManagerPage implements IPage
     public function root(Request $request, Response $response, array $arguments)
     {
 
-        $menu = $this->assembleModuleLinks();
+        $menu = $this->assembleManagerLinks();
 
         $response = $this->viewer->render($response, "manager/start.php", [
             'menu' => $menu,
@@ -71,7 +81,7 @@ class ManagerPage implements IPage
 
     public function currency(Request $request, Response $response, array $arguments)
     {
-        $menu = $this->assembleModuleLinks();
+        $menu = $this->assembleManagerLinks();
 
         $searcher = new NamedEntitySearch(CurrencyRecord::TABLE_NAME);
 
@@ -93,7 +103,7 @@ class ManagerPage implements IPage
 
     public function rate(Request $request, Response $response, array $arguments)
     {
-        $menu = $this->assembleModuleLinks();
+        $menu = $this->assembleManagerLinks();
 
         $searcher = new RateSearch();
         $rates = $searcher->search();
@@ -141,6 +151,52 @@ class ManagerPage implements IPage
         return $response;
     }
 
+    public function volume(Request $request, Response $response, array $arguments)
+    {
+        $menu = $this->assembleManagerLinks();
+
+        $searcher = new VolumeSearch();
+        $volumes = $searcher->search();
+
+        $isValid = Common::isValidArray($volumes);
+        $actionLinks = ICommon::EMPTY_ARRAY;
+        if ($isValid) {
+            $actionLinks = $this->setVolumeActions($volumes);
+        }
+
+        $searcher = new NamedEntitySearch(CurrencyRecord::TABLE_NAME);
+        $currencies = $searcher->searchCurrency();
+        $isValid = Common::isValidArray($currencies);
+        $currencyTitles = ICommon::EMPTY_ARRAY;
+        if ($isValid) {
+            foreach ($volumes as $volumeCandidate) {
+                $volume = VolumeRecord::adopt($volumeCandidate);
+
+                $currency = $volume->getCurrencyRecord();
+                $isCurrencyFound = !empty($currency->id);
+
+                $isSuccess = $isCurrencyFound;
+                if ($isSuccess) {
+                    $currencyTitles[$volume->id][self::CURRENCY_TITLE] = $currency->title;
+                }
+            }
+        }
+
+        $offset = 0;
+        $limit = 0;
+        $response = $this->viewer->render($response, "manager/volume.php", [
+            'volumes' => $volumes,
+            'currencies' => $currencies,
+            'offset' => $offset,
+            'limit' => $limit,
+            'actionLinks' => $actionLinks,
+            'currencyTitles' => $currencyTitles,
+            'menu' => $menu,
+        ]);
+
+        return $response;
+    }
+
     /**
      * @param $currencies
      * @return array
@@ -161,6 +217,37 @@ class ManagerPage implements IPage
 
             $actionLinks[$id][self::ACTION_CURRENCY_DISABLE] = $disableLink;
             $actionLinks[$id][self::ACTION_CURRENCY_ENABLE] = $enableLink;
+        }
+        return $actionLinks;
+    }
+
+    /**
+     * @param $volumes
+     * @return array|mixed
+     * @internal param $actionLinks
+     */
+    private function setVolumeActions(array $volumes): array
+    {
+        $actionLinks = ICommon::EMPTY_ARRAY;
+        foreach ($volumes as $volumeCandidate) {
+
+            $isObject = $volumeCandidate instanceof VolumeRecord;
+            if($isObject){
+                $volume = VolumeRecord::adopt($volumeCandidate);
+
+                $id = $volume->id;
+
+                $enableLink = $this->router->pathFor(
+                    self::ACTION_VOLUME_ENABLE,
+                    [self::ID => $id]);
+                $disableLink = $this->router->pathFor(
+                    self::ACTION_VOLUME_DISABLE,
+                    [self::ID => $id]);
+
+                $actionLinks[$id][self::ACTION_VOLUME_ENABLE] = $enableLink;
+                $actionLinks[$id][self::ACTION_VOLUME_DISABLE] = $disableLink;
+            }
+
         }
         return $actionLinks;
     }
@@ -197,10 +284,10 @@ class ManagerPage implements IPage
     /**
      * @return array
      */
-    private function assembleModuleLinks(): array
+    private function assembleManagerLinks(): array
     {
         $currencyLink = $this->router->pathFor(self::MODULE_CURRENCY);
-        $accountLink = $this->router->pathFor(self::MODULE_ACCOUNT);
+        $accountLink = $this->router->pathFor(self::MODULE_VOLUME);
         $rateLink = $this->router->pathFor(self::MODULE_RATE);
         $settingLink = $this->router->pathFor(self::MODULE_SETTING);
         $menu = array(

@@ -210,5 +210,104 @@ class ManagerApi
 
     }
 
+    public function volumeAdd(Request $request, Response $response, array $arguments)
+    {
+        $parsedBody = $request->getParsedBody();
+        $formData = Common::setIfExists('form_data', $parsedBody, ICommon::EMPTY_VALUE);
+
+        $isValid = !empty($formData);
+        $rateData = ICommon::EMPTY_ARRAY;
+        if ($isValid) {
+            parse_str($formData, $rateData);
+        }
+
+        $inputArray = new InputArray($rateData);
+
+        $sourceCurrency = $inputArray->getSpecialCharsValue('source_currency');
+        $targetCurrency = $inputArray->getSpecialCharsValue('target_currency');
+        $exchangeRate = $inputArray->getFloatValue('rate');
+        $fee = $inputArray->getFloatValue('fee');
+        $default = $inputArray->getBooleanValue('default');
+        $disable = $inputArray->getBooleanValue('disable');
+
+        $rate = new Rate();
+
+        $rate->sourceCurrency = $sourceCurrency;
+        $rate->targetCurrency = $targetCurrency;
+        $rate->rate = $exchangeRate;
+        $rate->fee = $fee;
+        $rate->isDefault = $default;
+        $rate->isDisable = $disable;
+
+        $message = $rate->add();
+
+        $response = $response->withJson(
+            array('result' => $message)
+        );
+
+        return $response;
+
+    }
+
+    public function volumeSave(Request $request, Response $response, array $arguments)
+    {
+        $parsedBody = $request->getParsedBody();
+        $inputArray = new InputArray($parsedBody);
+
+        $id = $inputArray->getIntegerValue(self::ID);
+
+        $response = $response->withJson(
+            array('message' => "success enable $id")
+        );
+
+        return $response;
+
+    }
+
+    public function volumeEnable(Request $request, Response $response, array $arguments)
+    {
+        $inputArray = new InputArray($arguments);
+
+        $id = $inputArray->getIntegerValue(self::ID);
+
+        $rate = new Rate();
+        $isSuccess = $rate->assembleRate($id);
+
+        $setEnable = false;
+        if ($isSuccess) {
+            $setEnable = $rate->enable();
+        }
+
+        $resultMessage = $setEnable ? 'success' : 'fail';
+        $response = $response->withJson(
+            array('message' => "$resultMessage enable $id")
+        );
+
+        return $response;
+    }
+
+    public function volumeDisable(Request $request, Response $response, array $arguments)
+    {
+        $inputArray = new InputArray($arguments);
+
+        $id = $inputArray->getIntegerValue(self::ID);
+
+        $rate = new Rate();
+        $isSuccess = $rate->assembleRate($id);
+
+        $setDisable = false;
+        if ($isSuccess) {
+            $setDisable = $rate->disable();
+        }
+
+        $resultMessage = $setDisable ? 'success' : 'fail';
+        $response = $response->withJson(
+            array('message' => "$resultMessage disable $id")
+        );
+
+        return $response;
+
+    }
+
 
 }

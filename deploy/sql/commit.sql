@@ -62,10 +62,10 @@ CREATE TABLE rate
   is_hidden          INTEGER                  DEFAULT 0,
   source_currency_id INTEGER
     CONSTRAINT fk_rate_source_currency_id
-    REFERENCES currency,
+    REFERENCES currency (id),
   target_currency_id INTEGER
     CONSTRAINT fk_rate_target_currency_id
-    REFERENCES currency,
+    REFERENCES currency (id),
   exchange_rate      DOUBLE PRECISION,
   fee                DOUBLE PRECISION,
   effective_rate     DOUBLE PRECISION,
@@ -78,6 +78,26 @@ CREATE INDEX ix_rate_is_hidden_id
   ON rate (is_hidden, id);
 CREATE INDEX ix_rate_is_hidden_source_currency_id
   ON rate (is_hidden, source_currency_id);
+
+CREATE TABLE volume
+(
+  id          SERIAL PRIMARY KEY,
+  insert_date TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  is_hidden   INTEGER                  DEFAULT 0,
+  currency_id INTEGER
+    CONSTRAINT fk_volume_currency_id
+    REFERENCES currency (id),
+  volume      DOUBLE PRECISION,
+  reserve     DOUBLE PRECISION,
+  limitation  DOUBLE PRECISION,
+  total  DOUBLE PRECISION
+);
+
+CREATE UNIQUE INDEX ux_volume_currency_id
+  ON volume (currency_id);
+CREATE INDEX ix_volume_is_hidden_id
+  ON volume (is_hidden, id);
+
 
 
 /* --==88 DML 88==-- */

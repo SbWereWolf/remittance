@@ -79,9 +79,9 @@ class RateSearch
         $result = ICommon::EMPTY_ARRAY;
         if ($isContain) {
             foreach ($records as $recordValues) {
-                $transfer = new RateRecord();
-                $transfer->setByNamedValue($recordValues);
-                $result[] = $transfer;
+                $rateRecord = new RateRecord();
+                $rateRecord->setByNamedValue($recordValues);
+                $result[] = $rateRecord;
             }
         }
 

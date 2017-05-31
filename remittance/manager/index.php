@@ -161,17 +161,70 @@ $app->post($pathForRateDisable, function (Request $request, Response $response, 
 
 })->setName(ManagerPage::ACTION_RATE_DISABLE);
 
-$pathForAccountModule = ManagerPage::ROOT . ManagerPage::MODULE_ACCOUNT;
-$app->get($pathForAccountModule, function (Request $request, Response $response, array $arguments) {
+$pathForVolumeModule = ManagerPage::ROOT . ManagerPage::MODULE_VOLUME;
+$app->get($pathForVolumeModule, function (Request $request, Response $response, array $arguments) {
 
     $router = $this->get(ROUTER_COMPONENT);
     $viewer = $this->get(VIEWER_COMPONENT);
     $page = new ManagerPage($viewer, $router);
 
-    $response = $page->root($request, $response, $arguments);
+    $response = $page->volume($request, $response, $arguments);
 
     return $response;
-})->setName(ManagerPage::MODULE_ACCOUNT);
+})->setName(ManagerPage::MODULE_VOLUME);
+
+//*--*
+$pathForVolumeAdd = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
+        array(ManagerPage::MODULE_VOLUME,
+            ManagerPage::ACTION_VOLUME_ADD));
+$app->post($pathForVolumeAdd, function (Request $request, Response $response, array $arguments) {
+
+    $api = new \Remittance\Web\ManagerApi();
+    $response = $api->volumeAdd($request, $response, $arguments);
+
+    return $response;
+
+});
+
+$pathForVolumeSave = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
+        array(ManagerPage::MODULE_VOLUME,
+            ManagerPage::ACTION_VOLUME_SAVE));
+$app->post($pathForVolumeSave, function (Request $request, Response $response, array $arguments) {
+
+    $api = new \Remittance\Web\ManagerApi();
+    $response = $api->volumeSave($request, $response, $arguments);
+
+    return $response;
+
+})->setName(ManagerPage::ACTION_VOLUME_SAVE);
+
+$pathForVolumeEnable = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
+        array(ManagerPage::MODULE_VOLUME,
+            ManagerPage::ACTION_VOLUME_ENABLE,
+            '{' . ManagerPage::ID . '}'));
+$app->post($pathForVolumeEnable, function (Request $request, Response $response, array $arguments) {
+
+    $api = new \Remittance\Web\ManagerApi();
+    $response = $api->volumeEnable($request, $response, $arguments);
+
+    return $response;
+
+})->setName(ManagerPage::ACTION_VOLUME_ENABLE);
+
+$pathForVolumeDisable = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
+        array(ManagerPage::MODULE_VOLUME,
+            ManagerPage::ACTION_VOLUME_DISABLE,
+            '{' . ManagerPage::ID . '}'));
+$app->post($pathForVolumeDisable, function (Request $request, Response $response, array $arguments) {
+
+    $api = new \Remittance\Web\ManagerApi();
+    $response = $api->volumeDisable($request, $response, $arguments);
+
+    return $response;
+
+})->setName(ManagerPage::ACTION_VOLUME_DISABLE);
+
+//*--*
 
 $pathForSettingModule = ManagerPage::ROOT . ManagerPage::MODULE_SETTING;
 $app->get($pathForSettingModule, function (Request $request, Response $response, array $arguments) {

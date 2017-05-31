@@ -24,12 +24,20 @@ class Compute
         $searcher = new RateSearch();
         $exchangeRate = $searcher->searchExchangeRate($this->source, $this->target);
 
+        $result = NAN;
         $isExists = !empty($exchangeRate->id);
-        $outcome = 0;
         if ($isExists) {
-            $outcome = $this->income * (1 - $exchangeRate->fee) * $exchangeRate->exchangeRate;
+            $outcome = $this->calculate($exchangeRate->fee,$exchangeRate->exchangeRate);
+            $result = round($outcome ,2);
         }
 
+        return $result;
+    }
+
+    public function calculate(float $fee, float $rate):float
+    {
+
+        $outcome = $this->income * (1 - $fee) * $rate;
         $result = round(floatval($outcome),2);
 
         return $result;

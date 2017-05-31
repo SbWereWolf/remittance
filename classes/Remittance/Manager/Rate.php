@@ -10,6 +10,7 @@ use Remittance\DataAccess\Entity\RateRecord;
 use Remittance\DataAccess\Search\NamedEntitySearch;
 use Remittance\DataAccess\Search\RateSearch;
 use const false;
+use Remittance\Exchange\Compute;
 
 class Rate
 {
@@ -190,8 +191,11 @@ class Rate
 
         $isValid = $isSourceDefined && $isTargetDefined;
         if($isValid){
+
+            $computer = new Compute('','',1);
+            $record->effectiveRate = $computer->calculate($this->fee,$this->rate) ;
+
             $record->isHidden = $this->isDisable;
-            $record->effectiveRate = (1 - $this->fee) * $this->rate;
             $record->exchangeRate = $this->rate;
             $record->fee = $this->fee;
             $record->isDefault = $this->isDefault;
@@ -200,7 +204,7 @@ class Rate
         return $record;
     }
 
-    private function assumeRecord($record)
+    private function assumeRecord(RateRecord $record)
     {
 
         $searcher = new NamedEntitySearch(CurrencyRecord::TABLE_NAME);
