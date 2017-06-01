@@ -5,9 +5,9 @@ CREATE TABLE public.transfer_status
   id          SERIAL PRIMARY KEY,
   insert_date TIMESTAMPTZ DEFAULT now(),
   is_hidden   INTEGER     DEFAULT 0,
-  code        VARCHAR(4000),
-  title       VARCHAR(4000),
-  description VARCHAR(4000)
+  code        TEXT,
+  title       TEXT,
+  description TEXT
 );
 CREATE UNIQUE INDEX ux_transfer_status_code
   ON public.transfer_status (code);
@@ -46,9 +46,9 @@ CREATE TABLE public.currency
   id          SERIAL PRIMARY KEY,
   insert_date TIMESTAMPTZ DEFAULT now(),
   is_hidden   INTEGER     DEFAULT 0,
-  code        VARCHAR(4000),
-  title       VARCHAR(4000),
-  description VARCHAR(4000)
+  code        TEXT,
+  title       TEXT,
+  description TEXT
 );
 CREATE UNIQUE INDEX ux_currency_code
   ON public.currency (code);

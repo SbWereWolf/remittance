@@ -7,6 +7,7 @@ use Remittance\DataAccess\Entity\TransferRecord;
 use Remittance\DataAccess\Entity\TransferStatusRecord;
 use Remittance\DataAccess\Search\NamedEntitySearch;
 use Remittance\DataAccess\Search\TransferSearch;
+use Remittance\Manager\Volume;
 
 
 class Transfer
@@ -30,8 +31,8 @@ class Transfer
 
     public $documentNumber = '';
     public $documentDate = '';
-    public $incomeAccount = '';
-    public $outcomeAccount = '';
+    public $incomeCurrency = '';
+    public $outcomeCurrency = '';
     public $statusCode = self::STATUS_RECEIVED;
     public $statusComment = '';
     public $statusTime = '';
@@ -98,9 +99,9 @@ class Transfer
         $this->accountTransfer = $record->transferAccount;
         $this->fioReceive = $record->receiveName;
         $this->accountReceive = $record->receiveAccount;
-        $this->incomeAccount = $record->incomeAccount;
+        $this->incomeCurrency = $record->incomeAccount;
         $this->dealIncome = $record->incomeAmount;
-        $this->outcomeAccount = $record->outcomeAccount;
+        $this->outcomeCurrency = $record->outcomeAccount;
         $this->dealOutcome = $record->outcomeAmount;
 
         return true;
@@ -109,10 +110,21 @@ class Transfer
     public function accomplish(): bool
     {
 
-        $this->statusCode = self::STATUS_ACCOMPLISH;
-        $this->statusTime = date(self::FORMAT_STATUS_TIME);
-        $this->statusComment = 'выполнено';
-        $result = $this->save();
+        $outcomeVolume = new Volume();
+        $isSuccess = $outcomeVolume->applyOutcome($this->outcomeCurrency, $this->dealOutcome);
+
+        $incomeVolume = new Volume();
+        if ($isSuccess) {
+            $isSuccess = $incomeVolume->applyIncome($this->incomeCurrency, $this->dealIncome);
+        }
+
+        $result = false;
+        if ($isSuccess) {
+            $this->statusCode = self::STATUS_ACCOMPLISH;
+            $this->statusTime = date(self::FORMAT_STATUS_TIME);
+            $this->statusComment = 'выполнено';
+            $result = $this->save();
+        }
 
         return $result;
     }
@@ -160,9 +172,9 @@ class Transfer
         $record->transferAccount = $this->accountTransfer;
         $record->receiveName = $this->fioReceive;
         $record->receiveAccount = $this->accountReceive;
-        $record->incomeAccount = $this->incomeAccount;
+        $record->incomeAccount = $this->incomeCurrency;
         $record->incomeAmount = $this->dealIncome;
-        $record->outcomeAccount = $this->outcomeAccount;
+        $record->outcomeAccount = $this->outcomeCurrency;
         $record->outcomeAmount = $this->dealOutcome;
 
         return $record;

@@ -32,7 +32,7 @@ class VolumeSearch
             . VolumeRecord::ID
             . ' ,' . VolumeRecord::IS_HIDDEN
             . ' ,' . VolumeRecord::CURRENCY_ID
-            . ' ,' . VolumeRecord::VOLUME
+            . ' ,' . VolumeRecord::AMOUNT
             . ' ,' . VolumeRecord::RESERVE
             . ' ,' . VolumeRecord::LIMITATION
             . ' ,' . VolumeRecord::TOTAL
@@ -62,7 +62,7 @@ class VolumeSearch
             . VolumeRecord::ID
             . ' ,' . VolumeRecord::IS_HIDDEN
             . ' ,' . VolumeRecord::CURRENCY_ID
-            . ' ,' . VolumeRecord::VOLUME
+            . ' ,' . VolumeRecord::AMOUNT
             . ' ,' . VolumeRecord::RESERVE
             . ' ,' . VolumeRecord::LIMITATION
             . ' ,' . VolumeRecord::TOTAL
@@ -95,7 +95,7 @@ class VolumeSearch
             . 'R.' . VolumeRecord::ID
             . ' , R.' . VolumeRecord::IS_HIDDEN
             . ' , R.' . VolumeRecord::CURRENCY_ID
-            . ' , R.' . VolumeRecord::VOLUME
+            . ' , R.' . VolumeRecord::AMOUNT
             . ' , R.' . VolumeRecord::RESERVE
             . ' , R.' . VolumeRecord::LIMITATION
             . ' , R.' . VolumeRecord::TOTAL

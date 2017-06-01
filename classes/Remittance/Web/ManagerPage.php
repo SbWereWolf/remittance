@@ -11,7 +11,6 @@ use Remittance\DataAccess\Entity\VolumeRecord;
 use Remittance\DataAccess\Search\NamedEntitySearch;
 use Remittance\DataAccess\Search\RateSearch;
 use Remittance\DataAccess\Search\VolumeSearch;
-use Remittance\Manager\Volume;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Router;
@@ -29,7 +28,7 @@ class ManagerPage implements IPage
 
     const MODULE_RATE = 'rate';
     const ACTION_RATE_ADD = 'rate_add';
-    const ACTION_RATE_SAVE = 'rate_save';
+    const ACTION_RATE_EDIT = 'rate_edit';
     const ACTION_RATE_DEFAULT = 'rate_default';
     const ACTION_RATE_ENABLE = 'rate_enable';
     const ACTION_RATE_DISABLE = 'rate_disable';
@@ -39,7 +38,7 @@ class ManagerPage implements IPage
 
     const MODULE_VOLUME = 'volume';
     const ACTION_VOLUME_ADD = 'volume_add';
-    const ACTION_VOLUME_SAVE = 'volume_save';
+    const ACTION_VOLUME_EDIT = 'volume_edit';
     const ACTION_VOLUME_ENABLE = 'volume_enable';
     const ACTION_VOLUME_DISABLE = 'volume_disable';
 
@@ -53,7 +52,7 @@ class ManagerPage implements IPage
     const SETTINGS_LINKS = 'settings_links';
     const SETTINGS_COMMON = 'settings_common';
     const CURRENCY_REFERENCE = 'currency_reference';
-    const ACCOUNTS_REFERENCE = 'accounts_reference';
+    const VOLUME_REFERENCE = 'accounts_reference';
     const RATES_REFERENCE = 'rates_reference';
 
     const ID = 'id';
@@ -108,11 +107,7 @@ class ManagerPage implements IPage
         $searcher = new RateSearch();
         $rates = $searcher->search();
 
-        $isValid = Common::isValidArray($rates);
-        $actionLinks = ICommon::EMPTY_ARRAY;
-        if ($isValid) {
-            $actionLinks = $this->setRateActions($rates);
-        }
+        $actionLinks = $this->setRateActions($rates);
 
         $searcher = new NamedEntitySearch(CurrencyRecord::TABLE_NAME);
         $currencies = $searcher->searchCurrency();
@@ -157,12 +152,7 @@ class ManagerPage implements IPage
 
         $searcher = new VolumeSearch();
         $volumes = $searcher->search();
-
-        $isValid = Common::isValidArray($volumes);
-        $actionLinks = ICommon::EMPTY_ARRAY;
-        if ($isValid) {
-            $actionLinks = $this->setVolumeActions($volumes);
-        }
+        $actionLinks = $this->setVolumeActions($volumes);
 
         $searcher = new NamedEntitySearch(CurrencyRecord::TABLE_NAME);
         $currencies = $searcher->searchCurrency();
@@ -229,26 +219,36 @@ class ManagerPage implements IPage
     private function setVolumeActions(array $volumes): array
     {
         $actionLinks = ICommon::EMPTY_ARRAY;
-        foreach ($volumes as $volumeCandidate) {
 
-            $isObject = $volumeCandidate instanceof VolumeRecord;
-            if($isObject){
-                $volume = VolumeRecord::adopt($volumeCandidate);
+        $addVolumeLink = $this->router->pathFor(
+            self::ACTION_VOLUME_ADD);
+        $actionLinks[self::ACTION_VOLUME_ADD] = $addVolumeLink;
 
-                $id = $volume->id;
+        $isValid = Common::isValidArray($volumes);
 
-                $enableLink = $this->router->pathFor(
-                    self::ACTION_VOLUME_ENABLE,
-                    [self::ID => $id]);
-                $disableLink = $this->router->pathFor(
-                    self::ACTION_VOLUME_DISABLE,
-                    [self::ID => $id]);
+        if ($isValid) {
+            foreach ($volumes as $volumeCandidate) {
 
-                $actionLinks[$id][self::ACTION_VOLUME_ENABLE] = $enableLink;
-                $actionLinks[$id][self::ACTION_VOLUME_DISABLE] = $disableLink;
+                $isObject = $volumeCandidate instanceof VolumeRecord;
+                if ($isObject) {
+                    $volume = VolumeRecord::adopt($volumeCandidate);
+
+                    $id = $volume->id;
+
+                    $enableLink = $this->router->pathFor(
+                        self::ACTION_VOLUME_ENABLE,
+                        [self::ID => $id]);
+                    $disableLink = $this->router->pathFor(
+                        self::ACTION_VOLUME_DISABLE,
+                        [self::ID => $id]);
+
+                    $actionLinks[$id][self::ACTION_VOLUME_ENABLE] = $enableLink;
+                    $actionLinks[$id][self::ACTION_VOLUME_DISABLE] = $disableLink;
+                }
+
             }
-
         }
+
         return $actionLinks;
     }
 
@@ -259,25 +259,33 @@ class ManagerPage implements IPage
      */
     private function setRateActions(array $rates): array
     {
-        $actionLinks = ICommon::EMPTY_ARRAY;
-        foreach ($rates as $rate) {
+        $addRateLink = $this->router->pathFor(
+            self::ACTION_RATE_ADD);
 
-            $id = $rate->id;
+        $actionLinks[self::ACTION_RATE_ADD] = $addRateLink;
 
-            $defaultLink = $this->router->pathFor(
-                self::ACTION_RATE_DEFAULT,
-                [self::ID => $id]);
-            $enableLink = $this->router->pathFor(
-                self::ACTION_RATE_ENABLE,
-                [self::ID => $id]);
-            $disableLink = $this->router->pathFor(
-                self::ACTION_RATE_DISABLE,
-                [self::ID => $id]);
+        $isValid = Common::isValidArray($rates);
+        if ($isValid) {
+            foreach ($rates as $rate) {
 
-            $actionLinks[$id][self::ACTION_RATE_DEFAULT] = $defaultLink;
-            $actionLinks[$id][self::ACTION_RATE_ENABLE] = $enableLink;
-            $actionLinks[$id][self::ACTION_RATE_DISABLE] = $disableLink;
+                $id = $rate->id;
+
+                $defaultLink = $this->router->pathFor(
+                    self::ACTION_RATE_DEFAULT,
+                    [self::ID => $id]);
+                $enableLink = $this->router->pathFor(
+                    self::ACTION_RATE_ENABLE,
+                    [self::ID => $id]);
+                $disableLink = $this->router->pathFor(
+                    self::ACTION_RATE_DISABLE,
+                    [self::ID => $id]);
+
+                $actionLinks[$id][self::ACTION_RATE_DEFAULT] = $defaultLink;
+                $actionLinks[$id][self::ACTION_RATE_ENABLE] = $enableLink;
+                $actionLinks[$id][self::ACTION_RATE_DISABLE] = $disableLink;
+            }
         }
+
         return $actionLinks;
     }
 
@@ -287,13 +295,13 @@ class ManagerPage implements IPage
     private function assembleManagerLinks(): array
     {
         $currencyLink = $this->router->pathFor(self::MODULE_CURRENCY);
-        $accountLink = $this->router->pathFor(self::MODULE_VOLUME);
+        $volumeLink = $this->router->pathFor(self::MODULE_VOLUME);
         $rateLink = $this->router->pathFor(self::MODULE_RATE);
         $settingLink = $this->router->pathFor(self::MODULE_SETTING);
         $menu = array(
             self::REFERENCES_LINKS => array(
                 self::CURRENCY_REFERENCE => $currencyLink,
-                self::ACCOUNTS_REFERENCE => $accountLink,
+                self::VOLUME_REFERENCE => $volumeLink,
                 self::RATES_REFERENCE => $rateLink,
             ),
             self::SETTINGS_LINKS => array(

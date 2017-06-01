@@ -46,8 +46,8 @@ class Order
             $this->dealEmail = $transfer->dealEmail;
             $this->dealIncome = $transfer->dealIncome;
             $this->dealOutcome = $transfer->dealOutcome;
-            $this->dealSource = $transfer->incomeAccount;
-            $this->dealTarget = $transfer->outcomeAccount;
+            $this->dealSource = $transfer->incomeCurrency;
+            $this->dealTarget = $transfer->outcomeCurrency;
             $this->fioReceive = $transfer->fioReceive;
             $this->fioTransfer = $transfer->fioTransfer;
 

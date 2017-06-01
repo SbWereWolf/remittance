@@ -108,11 +108,11 @@ $app->post($pathForRateAdd, function (Request $request, Response $response, arra
 
     return $response;
 
-});
+})->setName(ManagerPage::ACTION_RATE_ADD);
 
 $pathForRateSave = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
         array(ManagerPage::MODULE_RATE,
-            ManagerPage::ACTION_RATE_SAVE));
+            ManagerPage::ACTION_RATE_EDIT));
 $app->post($pathForRateSave, function (Request $request, Response $response, array $arguments) {
 
     $api = new \Remittance\Web\ManagerApi();
@@ -120,7 +120,7 @@ $app->post($pathForRateSave, function (Request $request, Response $response, arr
 
     return $response;
 
-})->setName(ManagerPage::ACTION_RATE_SAVE);
+})->setName(ManagerPage::ACTION_RATE_EDIT);
 
 $pathForRateDefault = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
         array(ManagerPage::MODULE_RATE,
@@ -184,11 +184,11 @@ $app->post($pathForVolumeAdd, function (Request $request, Response $response, ar
 
     return $response;
 
-});
+})->setName(ManagerPage::ACTION_VOLUME_ADD);
 
 $pathForVolumeSave = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
         array(ManagerPage::MODULE_VOLUME,
-            ManagerPage::ACTION_VOLUME_SAVE));
+            ManagerPage::ACTION_VOLUME_EDIT));
 $app->post($pathForVolumeSave, function (Request $request, Response $response, array $arguments) {
 
     $api = new \Remittance\Web\ManagerApi();
@@ -196,7 +196,7 @@ $app->post($pathForVolumeSave, function (Request $request, Response $response, a
 
     return $response;
 
-})->setName(ManagerPage::ACTION_VOLUME_SAVE);
+})->setName(ManagerPage::ACTION_VOLUME_EDIT);
 
 $pathForVolumeEnable = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
         array(ManagerPage::MODULE_VOLUME,

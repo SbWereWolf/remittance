@@ -35,11 +35,11 @@ if ($isValid):
                     <dd><a href="<?= $rate ?>">Ставки</a></dd>
                 <?php endif; ?>
                 <?php
-                $account = Common::setIfExists(ManagerPage::ACCOUNTS_REFERENCE, $reference, $empty);
-                $isExists = !empty($account);
+                $volume = Common::setIfExists(ManagerPage::VOLUME_REFERENCE, $reference, $empty);
+                $isExists = !empty($volume);
                 if ($isExists):
                     ?>
-                    <dd><a href="<?= $account ?>">Счета</a></dd>
+                    <dd><a href="<?= $volume ?>">Объёмы</a></dd>
                 <?php endif; ?>
             </dl>
         <?php endif; ?>

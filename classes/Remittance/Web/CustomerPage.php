@@ -3,8 +3,11 @@
 namespace Remittance\Web;
 
 
+use Remittance\Core\Common;
 use Remittance\DataAccess\Entity\CurrencyRecord;
+use Remittance\DataAccess\Entity\VolumeRecord;
 use Remittance\DataAccess\Search\NamedEntitySearch;
+use Remittance\DataAccess\Search\VolumeSearch;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Router;
@@ -29,14 +32,32 @@ class CustomerPage implements IPage
 
     public function root(Request $request, Response $response, array $arguments)
     {
-        $searcher = new NamedEntitySearch(CurrencyRecord::TABLE_NAME);
-        $currencies = $searcher->searchCurrency();
+        $currencySearcher = new NamedEntitySearch(CurrencyRecord::TABLE_NAME);
+        $currencies = $currencySearcher->searchCurrency();
+
+        $volumeSearcher = new VolumeSearch();
+        $volumes = $volumeSearcher->search();
+        $isValid = Common::isValidArray($volumes);
+
+        $currenciesVolume = Common::EMPTY_ARRAY;
+        if ($isValid) {
+            foreach ($volumes as $volumeCandidate) {
+                $isObject = $volumeCandidate instanceof VolumeRecord;
+                if ($isObject) {
+                    $volume = VolumeRecord::adopt($volumeCandidate);
+
+                    $currenciesVolume[$volume->currencyId] = $volume->amount;
+                }
+
+            }
+        }
 
         $actionLinks = $this->setCustomerActions();
 
         $response = $this->viewer->render($response,
             "remittance/remittance.php",
             ['currencies' => $currencies,
+                'currenciesVolume' => $currenciesVolume,
                 'actionLinks' => $actionLinks]);
 
         return $response;

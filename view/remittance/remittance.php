@@ -1,7 +1,10 @@
 <?php
 /* @var $currencies array */
+/* @var $currenciesVolume array */
 /* @var $actionLinks array */
 
+use Remittance\Core\Common;
+use Remittance\DataAccess\Entity\CurrencyRecord;
 use Remittance\Web\CustomerPage;
 
 ?>
@@ -25,15 +28,16 @@ if ($isValid) :?>
     <dl id="transfer-list">
         <dd><label for="deal-income">Положить</label><input type="number" step="0.0001" class="argument"
                                                             id="deal-income"></dd>
-        <?php foreach ($currencies as $currency): ?>
+        <?php foreach ($currencies as $currencyCandidate): ?>
             <?php
-            $isObject = $currency instanceof \Remittance\DataAccess\Entity\CurrencyRecord;
+            $isObject = $currencyCandidate instanceof CurrencyRecord;
             if ($isObject) :
-                $code = $currency->code;
+                $currency = CurrencyRecord::adopt($currencyCandidate);
                 ?>
                 <dd>
                     <label><input type="radio" name="transfer" class="argument"
-                                  data-currency-type="<?= $code ?>"><?= $currency->title ?></label>
+                                  data-currency-type="<?= $currency->code ?>"><?= $currency->title ?>
+                    </label>
                 </dd>
             <?php endif ?>
         <?php endforeach; ?>
@@ -45,15 +49,27 @@ if ($isValid) :?>
         <dd><label for="deal-outcome">Получить</label>
             <output id="deal-outcome"></output>
         </dd>
-        <?php foreach ($currencies as $currency): ?>
+        <?php foreach ($currencies as $currencyCandidate): ?>
             <?php
-            $isObject = $currency instanceof \Remittance\DataAccess\Entity\CurrencyRecord;
+            $isObject = $currencyCandidate instanceof CurrencyRecord;
             if ($isObject) :
+
+                $currency = CurrencyRecord::adopt($currencyCandidate);
+
                 $code = $currency->code;
+                $id = $currency->id;
+
+                $volume = Common::setIfExists($id, $currenciesVolume, Common::EMPTY_VALUE);
                 ?>
                 <dd>
                     <label><input type="radio" name="receive" class="argument"
-                                  data-currency-type="<?= $code ?>"><?= $currency->title ?></label>
+                                  data-currency-type="<?= $code ?>"><?= $currency->title ?>
+                        <?php
+                        $isExists = !empty($volume);
+                        if ($isExists): ?>
+                            (<?= $volume ?>)
+                        <?php endif; ?>
+                    </label>
                 </dd>
             <?php endif ?>
         <?php endforeach; ?>

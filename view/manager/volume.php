@@ -10,7 +10,7 @@
 use Remittance\Core\Common;
 use Remittance\Core\ICommon;
 use Remittance\DataAccess\Entity\CurrencyRecord;
-use Remittance\DataAccess\Entity\RateRecord;
+use Remittance\DataAccess\Entity\VolumeRecord;
 use Remittance\Web\ManagerPage;
 
 ?>
@@ -46,29 +46,36 @@ if ($isValid)
     include('manager_menu.php');
 ?>
 
-<form id="add-rate" onsubmit="return false;">
+<form id="add-volume" onsubmit="return false;">
     <dl>
         <dt>Добавить Объём</dt>
-        <dd><label for="currency">Валюта Положить</label>
+        <dd><label for="currency">Валюта</label>
             <?php
             $isValid = Common::isValidArray($currencies);
             if ($isValid) :?>
                 <select id="currency" name="currency">
                     <?php
                     foreach ($currencies as $currencyCandidate):
-                        $currency = CurrencyRecord::adopt($currencyCandidate);
-                        ?>
-                        <option value="<?= $currency->code ?>"><?= $currency->title ?></option>
+
+                        $isObject = $currencyCandidate instanceof CurrencyRecord;
+                        if ($isObject):
+                            $currency = CurrencyRecord::adopt($currencyCandidate);
+                            ?>
+                            <option value="<?= $currency->code ?>"><?= $currency->title ?></option>
+                        <?php endif; ?>
                     <?php endforeach; ?>
                 </select>
             <?php endif ?>
         </dd>
-        <dd><label for="rate">Ставка</label><input type="number" step="0.0001" id="rate" name="rate"></dd>
-        <dd><label for="fee">Коммиссия</label><input type="number" step="0.0001" id="fee" name="fee"></dd>
-        <dd><label for="disable">Флаг ставка отключена</label><input type="checkbox" id="disable" name="disable"></dd>
-        <dd><label for="default">Флаг ставка по умолчанию</label><input type="checkbox" id="default" name="default">
+        <dd><label for="volume">Объём</label><input type="number" step="0.0001" id="volume" name="volume"></dd>
+        <dd><label for="reserve">Резерв</label><input type="number" step="0.0001" id="reserve" name="reserve"></dd>
+        <dd><label for="limitation">Лимит</label><input type="number" step="0.0001" id="limitation" name="limitation">
         </dd>
-        <dd><input type="submit" value="Добавить" onclick="doAddRate();"></dd>
+        <dd><label for="total">Использовано лимита</label><input type="number" step="0.0001" id="total" name="total">
+        </dd>
+        <dd><label for="disable">Флаг объём отключен</label><input type="checkbox" id="disable" name="disable"></dd>
+        </dd>
+        <dd><input type="submit" value="Добавить" onclick="doAddVolume();"></dd>
     </dl>
 
 </form>
@@ -88,58 +95,48 @@ if ($isValid)
         <table id="rates-list" class="rates-list">
             <thead>
             <tr>
-                <th cell>Валюта Положить</th>
-                <th cell>Валюта Получить</th>
-                <th cell>Ставка</th>
-                <th cell>Коммиссия</th>
-                <th cell>Действующая ставка</th>
-                <th cell>флаг Ставка отключена</th>
-                <th cell>флаг Обмен по умолчанию</th>
-                <th cell>По умолчанию</th>
+                <th cell>Валюта</th>
+                <th cell>Объём</th>
+                <th cell>Резерв</th>
+                <th cell>Лимит</th>
+                <th cell>Использовано</th>
+                <th cell>Флаг объём отключен</th>
                 <th cell>Включить</th>
                 <th cell>Отключить</th>
-                <th cell>Сохранить</th>
+                <th cell>Изменить</th>
             </tr>
             </thead>
             <tfoot>
             <tr>
                 <td><a id="previous-page" href="#" onclick="movePrevious();">PREVIOUS</a></td>
-                <td id="navigation-spacer" colspan="9">&nbsp;&nbsp;</td>
+                <td id="navigation-spacer" colspan="7">&nbsp;&nbsp;</td>
                 <td><a id="next-page" href="#" onclick="moveNext();">NEXT</a></td>
             </tr>
             </tfoot>
-            <?php foreach ($volumes as $rateCandidate): ?>
+            <?php foreach ($volumes as $volumeCandidate): ?>
                 <?php
-                $isObject = $rateCandidate instanceof RateRecord;
+                $isObject = $volumeCandidate instanceof VolumeRecord;
                 if ($isObject) :
-                    $rate = RateRecord::adopt($rateCandidate);
-                    $id = $rate->id;
+                    $volume = VolumeRecord::adopt($volumeCandidate);
+                    $id = $volume->id;
 
                     $titles = Common::setIfExists($id, $currencyTitles, ICommon::EMPTY_ARRAY);
                     $isExists = !empty($titles);
-                    $source = ICommon::EMPTY_VALUE;
-                    $target = ICommon::EMPTY_VALUE;
+                    $currencyTitle = ICommon::EMPTY_VALUE;
                     if ($isExists) {
-                        $source = Common::setIfExists(ManagerPage::RATE_SOURCE_CURRENCY_TITLE,
-                            $titles,
-                            ICommon::EMPTY_VALUE);
-                        $target = Common::setIfExists(ManagerPage::RATE_TARGET_CURRENCY_TITLE,
+                        $currencyTitle = Common::setIfExists(ManagerPage::CURRENCY_TITLE,
                             $titles,
                             ICommon::EMPTY_VALUE);
                     }
                     ?>
                     <tr>
-                        <td cell><?= $source ?></td>
-                        <td cell><?= $target ?></td>
-                        <td cell><?= $rate->exchangeRate ?></td>
-                        <td cell><?= $rate->fee ?></td>
-                        <td cell><?= $rate->effectiveRate ?></td>
-                        <td cell><input id="disable-<?= $rate->id ?>"
-                                        type="checkbox" <?= $rate->isHidden ? 'checked' : '' ?>
-                                        disabled>
-                        </td>
-                        <td cell><input id="default-<?= $rate->id ?>"
-                                        type="checkbox" <?= $rate->isDefault ? 'checked' : '' ?>
+                        <td cell><?= $currencyTitle ?></td>
+                        <td cell><?= $volume->amount ?></td>
+                        <td cell><?= $volume->reserve ?></td>
+                        <td cell><?= $volume->limitation ?></td>
+                        <td cell><?= $volume->total ?></td>
+                        <td cell><input id="disable-<?= $volume->id ?>"
+                                        type="checkbox" <?= $volume->isHidden ? 'checked' : '' ?>
                                         disabled>
                         </td>
                         <?php
@@ -147,7 +144,7 @@ if ($isValid)
 
                         if (!$isValid):
                             ?>
-                            <td cell colspan="4">&nbsp;&nbsp;</td>
+                            <td cell colspan="3">&nbsp;&nbsp;</td>
                         <?php endif; ?>
                         <?php
                         $isExists = false;
@@ -162,23 +159,10 @@ if ($isValid)
                             ?>
                             <td cell>
                                 <?php
-
-                                $isExist = array_key_exists(ManagerPage::ACTION_RATE_DEFAULT, $idCollection);
+                                $isExist = array_key_exists(ManagerPage::ACTION_VOLUME_ENABLE, $idCollection);
                                 if ($isExist):
                                     ?><a class="action" href="javascript:return false;"
-                                         data-action="<?= $idCollection[ManagerPage::ACTION_RATE_DEFAULT] ?>">По
-                                умолчанию</a>
-                                <?php endif; ?>
-                                <?php if (!$isExist): ?>
-                                    &nbsp;&nbsp;
-                                <?php endif; ?>
-                            </td>
-                            <td cell>
-                                <?php
-                                $isExist = array_key_exists(ManagerPage::ACTION_RATE_ENABLE, $idCollection);
-                                if ($isExist):
-                                    ?><a class="action" href="javascript:return false;"
-                                         data-action="<?= $idCollection[ManagerPage::ACTION_RATE_ENABLE] ?>">
+                                         data-action="<?= $idCollection[ManagerPage::ACTION_VOLUME_ENABLE] ?>">
                                         Включить</a>
                                 <?php endif; ?>
                                 <?php if (!$isExist): ?>
@@ -187,10 +171,10 @@ if ($isValid)
                             </td>
                             <td cell>
                                 <?php
-                                $isExist = array_key_exists(ManagerPage::ACTION_RATE_DISABLE, $idCollection);
+                                $isExist = array_key_exists(ManagerPage::ACTION_VOLUME_DISABLE, $idCollection);
                                 if ($isExist):
                                     ?><a class="action" href="javascript:return false;"
-                                         data-action="<?= $idCollection[ManagerPage::ACTION_RATE_DISABLE] ?>">
+                                         data-action="<?= $idCollection[ManagerPage::ACTION_VOLUME_DISABLE] ?>">
                                         Отключить</a>
                                 <?php endif; ?>
                                 <?php if (!$isExist): ?>
@@ -199,10 +183,11 @@ if ($isValid)
                             </td>
                             <td cell>
                                 <?php
-                                $isExist = array_key_exists(ManagerPage::ACTION_RATE_SAVE, $idCollection);
+                                $isExist = array_key_exists(ManagerPage::ACTION_VOLUME_EDIT, $idCollection);
                                 if ($isExist):
                                     ?><a class="action" href="javascript:return false;"
-                                         data-action="<?= $idCollection[ManagerPage::ACTION_RATE_SAVE] ?>">Отключить</a>
+                                         data-action="<?= $idCollection[ManagerPage::ACTION_VOLUME_EDIT] ?>">
+                                        Изменить</a>
                                 <?php endif; ?>
                                 <?php if (!$isExist): ?>
                                     &nbsp;&nbsp;
@@ -221,13 +206,21 @@ if ($isValid)
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
 <script type="text/javascript">
-    function doAddRate() {
+    function doAddVolume() {
 
-        var form_data = $("#add-rate").serialize();
+        var form_data = $("#add-volume").serialize();
 
         $.ajax({
             type: 'POST',
-            url: '<?= ManagerPage::MODULE_RATE . ManagerPage::PATH_SYMBOL . ManagerPage::ACTION_RATE_ADD ?>',
+            <?php
+            $isExist = array_key_exists(ManagerPage::ACTION_VOLUME_ADD, $actionLinks);
+
+            $link = '';
+            if ($isExist) {
+                $link = $actionLinks[ManagerPage::ACTION_VOLUME_ADD];
+            }
+            ?>
+            url: '<?= $link ?>',
             data: {
                 form_data: form_data
             },

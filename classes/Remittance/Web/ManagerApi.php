@@ -7,6 +7,7 @@ use Remittance\Core\Common;
 use Remittance\Core\ICommon;
 use Remittance\Manager\Currency;
 use Remittance\Manager\Rate;
+use Remittance\Manager\Volume;
 use Remittance\UserInput\InputArray;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -223,23 +224,23 @@ class ManagerApi
 
         $inputArray = new InputArray($rateData);
 
-        $sourceCurrency = $inputArray->getSpecialCharsValue('source_currency');
-        $targetCurrency = $inputArray->getSpecialCharsValue('target_currency');
-        $exchangeRate = $inputArray->getFloatValue('rate');
-        $fee = $inputArray->getFloatValue('fee');
-        $default = $inputArray->getBooleanValue('default');
+        $currency = $inputArray->getSpecialCharsValue('currency');
+        $volumeValue = $inputArray->getFloatValue('volume');
+        $reserve = $inputArray->getFloatValue('reserve');
+        $limitation = $inputArray->getFloatValue('limitation');
+        $total = $inputArray->getFloatValue('total');
         $disable = $inputArray->getBooleanValue('disable');
 
-        $rate = new Rate();
+        $volume = new Volume();
 
-        $rate->sourceCurrency = $sourceCurrency;
-        $rate->targetCurrency = $targetCurrency;
-        $rate->rate = $exchangeRate;
-        $rate->fee = $fee;
-        $rate->isDefault = $default;
-        $rate->isDisable = $disable;
+        $volume->currency = $currency;
+        $volume->amount = $volumeValue;
+        $volume->reserve = $reserve;
+        $volume->limitation = $limitation;
+        $volume->total = $total;
+        $volume->isDisable = $disable;
 
-        $message = $rate->add();
+        $message = $volume->add();
 
         $response = $response->withJson(
             array('result' => $message)
@@ -270,12 +271,12 @@ class ManagerApi
 
         $id = $inputArray->getIntegerValue(self::ID);
 
-        $rate = new Rate();
-        $isSuccess = $rate->assembleRate($id);
+        $volume = new Volume();
+        $isSuccess = $volume->assembleVolume($id);
 
         $setEnable = false;
         if ($isSuccess) {
-            $setEnable = $rate->enable();
+            $setEnable = $volume->enable();
         }
 
         $resultMessage = $setEnable ? 'success' : 'fail';
@@ -292,12 +293,12 @@ class ManagerApi
 
         $id = $inputArray->getIntegerValue(self::ID);
 
-        $rate = new Rate();
-        $isSuccess = $rate->assembleRate($id);
+        $volume = new Volume();
+        $isSuccess = $volume->assembleVolume($id);
 
         $setDisable = false;
         if ($isSuccess) {
-            $setDisable = $rate->disable();
+            $setDisable = $volume->disable();
         }
 
         $resultMessage = $setDisable ? 'success' : 'fail';

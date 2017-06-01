@@ -112,7 +112,7 @@ if ($isValid)
                 <th cell>По умолчанию</th>
                 <th cell>Включить</th>
                 <th cell>Отключить</th>
-                <th cell>Сохранить</th>
+                <th cell>Изменить</th>
             </tr>
             </thead>
             <tfoot>
@@ -213,10 +213,10 @@ if ($isValid)
                             </td>
                             <td cell>
                                 <?php
-                                $isExist = array_key_exists(ManagerPage::ACTION_RATE_SAVE, $idCollection);
+                                $isExist = array_key_exists(ManagerPage::ACTION_RATE_EDIT, $idCollection);
                                 if ($isExist):
                                     ?><a class="action" href="javascript:return false;"
-                                         data-action="<?= $idCollection[ManagerPage::ACTION_RATE_SAVE] ?>">Отключить</a>
+                                         data-action="<?= $idCollection[ManagerPage::ACTION_RATE_EDIT] ?>">Изменить</a>
                                 <?php endif; ?>
                                 <?php if (!$isExist): ?>
                                     &nbsp;&nbsp;
@@ -241,7 +241,15 @@ if ($isValid)
 
         $.ajax({
             type: 'POST',
-            url: '<?= ManagerPage::MODULE_RATE . ManagerPage::PATH_SYMBOL . ManagerPage::ACTION_RATE_ADD ?>',
+            <?php
+            $isExist = array_key_exists(ManagerPage::ACTION_RATE_ADD, $actionLinks);
+
+            $link = '';
+            if ($isExist) {
+                $link = $actionLinks[ManagerPage::ACTION_RATE_ADD];
+            }
+            ?>
+            url: '<?= $link ?>',
             data: {
                 form_data: form_data
             },

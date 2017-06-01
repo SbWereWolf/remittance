@@ -8,7 +8,6 @@ use Remittance\DataAccess\Entity\CurrencyRecord;
 use Remittance\DataAccess\Entity\NamedEntity;
 use Remittance\DataAccess\Entity\VolumeRecord;
 use Remittance\DataAccess\Search\NamedEntitySearch;
-use const false;
 use Remittance\DataAccess\Search\VolumeSearch;
 
 class Volume
@@ -21,11 +20,41 @@ class Volume
     const DEFAULT_IS_DISABLE = self::DEFINE_AS_ENABLE;
 
     public $currency = '';
-    public $volume = 0;
+    public $amount = 0;
     public $reserve = 0;
     public $limitation = 0;
     public $total = 0;
     public $isDisable = self::DEFAULT_IS_DISABLE;
+
+    /**
+     * @param $currency
+     * @param $amount
+     * @return bool
+     */
+    public function applyOutcome(string $currency, float $amount): bool
+    {
+        $isSuccess = $this->assembleByCurrency($currency);
+
+        if ($isSuccess) {
+            $isSuccess = $this->outcome($amount);
+        }
+        return $isSuccess;
+    }
+
+    /**
+     * @param $currency
+     * @param $amount
+     * @return bool
+     */
+    public function applyIncome(string $currency, float $amount): bool
+    {
+        $isSuccess = $this->assembleByCurrency($currency);
+
+        if ($isSuccess) {
+            $isSuccess = $this->income($amount);
+        }
+        return $isSuccess;
+    }
 
 
     public function add(): string
@@ -44,7 +73,7 @@ class Volume
         if ($isCurrencyDefined) {
 
             $record->isHidden = $this->isDisable;
-            $record->volume = $this->volume;
+            $record->amount = $this->amount;
             $record->reserve = $this->reserve;
             $record->limitation = $this->limitation;
             $record->total = $this->total;
@@ -64,13 +93,13 @@ class Volume
         if ($isSuccess) {
 
             $this->isDisable = $record->isHidden;
-            $this->volume = $record->volume;
+            $this->amount = $record->amount;
             $this->reserve = $record->reserve;
             $this->limitation = $record->limitation;
             $this->total = $record->total;
             $this->currency = $currencyEntity->code;
 
-            $result = "Добавлен объём $this->volume ( резерв $this->reserve ) для валюты $this->currency с лимитом $this->limitation , использовано всего $this->total";
+            $result = "Добавлен объём $this->amount ( резерв $this->reserve ) для валюты $this->currency с лимитом $this->limitation , использовано всего $this->total";
         }
         if (!$isSuccess) {
             $result = "Ошибка добавления объёма для валюты";
@@ -91,7 +120,7 @@ class Volume
         if ($isCurrencyFound) {
 
             $this->isDisable = $foundRecord->isHidden;
-            $this->volume = $foundRecord->volume;
+            $this->amount = $foundRecord->amount;
             $this->reserve = $foundRecord->reserve;
             $this->limitation = $foundRecord->limitation;
             $this->total = $foundRecord->total;
@@ -134,7 +163,7 @@ class Volume
         $isValid = $isCurrencyDefined ;
         if ($isValid) {
             $record->isHidden = $this->isDisable;
-            $record->volume = $this->volume;
+            $record->amount = $this->amount;
             $record->reserve = $this->reserve;
             $record->limitation = $this->limitation;
             $record->total = $this->total;
@@ -143,7 +172,7 @@ class Volume
         return $record;
     }
 
-    private function assumeRecord(VolumeRecord $record)
+    private function assumeRecord(VolumeRecord $record): bool
     {
 
         $currency = $record->getCurrencyRecord();
@@ -154,7 +183,7 @@ class Volume
             $this->currency = $currency->code;
 
             $this->isDisable = $record->isHidden;
-            $this->volume = $record->volume;
+            $this->amount = $record->amount;
             $this->reserve = $record->reserve;
             $this->limitation = $record->limitation;
             $this->total = $record->total;
@@ -189,6 +218,49 @@ class Volume
         $currencyRecord = $searcher->searchByCode($this->currency);
 
         return $currencyRecord;
+    }
+
+    public function income($income): bool
+    {
+        $searcher = new VolumeSearch();
+        $record = $searcher->searchByCurrency($this->currency);
+
+        $isSuccess = $record->income($income);
+
+        if ($isSuccess) {
+            $isSuccess = $this->assumeRecord($record);
+        }
+
+        return $isSuccess;
+    }
+
+    public function outcome($outcome): bool
+    {
+        $searcher = new VolumeSearch();
+        $record = $searcher->searchByCurrency($this->currency);
+
+        $isSuccess = $record->outcome($outcome);
+
+        if ($isSuccess) {
+            $isSuccess = $this->assumeRecord($record);
+        }
+
+        return $isSuccess;
+    }
+
+    /**
+     * @param $currency
+     * @return bool
+     */
+    private function assembleByCurrency(string $currency): bool
+    {
+        $searcher = new VolumeSearch();
+
+        $incomeRecord = $searcher->searchByCurrency($currency);
+        $isSuccess = $this->assumeRecord($incomeRecord);
+
+
+        return $isSuccess;
     }
 
 }

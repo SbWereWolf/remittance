@@ -144,11 +144,11 @@ class OperatorPage
                     $rowView[self::DEAL_EMAIL] = $transfer->dealEmail;
                     $rowView[self::FIO_TRANSFER] = $transfer->fioTransfer;
                     $rowView[self::ACCOUNT_TRANSFER] = $transfer->accountTransfer;
-                    $rowView[self::INCOME_ACCOUNT] = $transfer->incomeAccount;
+                    $rowView[self::INCOME_ACCOUNT] = $transfer->incomeCurrency;
                     $rowView[self::DEAL_INCOME] = $transfer->dealIncome;
                     $rowView[self::FIO_RECEIVE] = $transfer->fioReceive;
                     $rowView[self::ACCOUNT_RECEIVE] = $transfer->accountReceive;
-                    $rowView[self::OUTCOME_ACCOUNT] = $transfer->outcomeAccount;
+                    $rowView[self::OUTCOME_ACCOUNT] = $transfer->outcomeCurrency;
                     $rowView[self::DEAL_OUTCOME] = $transfer->dealOutcome;
                     $rowView[self::STATUS_COMMENT] = $transfer->statusComment;
                     $rowView[self::STATUS_TIME] = $transfer->statusTime;
