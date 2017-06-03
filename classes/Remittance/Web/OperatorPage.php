@@ -41,6 +41,8 @@ class OperatorPage
     const TRANSFER_STATUS = 'transfer_status_id';
     const STATUS_COMMENT = 'status_comment';
     const STATUS_TIME = 'status_time';
+    const AWAIT_NAME = 'await_name';
+    const AWAIT_ACCOUNT = 'await_account';
 
     private $router;
     private $viewer;
@@ -152,6 +154,8 @@ class OperatorPage
                     $rowView[self::DEAL_OUTCOME] = $transfer->dealOutcome;
                     $rowView[self::STATUS_COMMENT] = $transfer->statusComment;
                     $rowView[self::STATUS_TIME] = $transfer->statusTime;
+                    $rowView[self::AWAIT_NAME] = $transfer->fioAwait;
+                    $rowView[self::AWAIT_ACCOUNT] = $transfer->accountAwait;
 
                     $transferView[] = $rowView;
 

@@ -162,7 +162,8 @@ class ManagerPage implements IPage
             foreach ($volumes as $volumeCandidate) {
                 $volume = VolumeRecord::adopt($volumeCandidate);
 
-                $currency = $volume->getCurrencyRecord();
+                $currencySearcher = new NamedEntitySearch(CurrencyRecord::TABLE_NAME);
+                $currency = $currencySearcher->searchById($volume->currencyId);
                 $isCurrencyFound = !empty($currency->id);
 
                 $isSuccess = $isCurrencyFound;

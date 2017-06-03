@@ -51,6 +51,8 @@ use Remittance\Web\OperatorPage as OperatorPage;
                 <th cell>Почта</th>
                 <th cell>ФИО отправителя</th>
                 <th cell>Счёт отправителя</th>
+                <th cell>ФИО промежуточное</th>
+                <th cell>Счёт промежуточный</th>
                 <th cell>Счёт поступления</th>
                 <th cell>Сумма Положить</th>
                 <th cell>ФИО получателя</th>
@@ -66,7 +68,7 @@ use Remittance\Web\OperatorPage as OperatorPage;
             <tfoot>
             <tr>
                 <td><a id="previous-page" href="#" onclick="movePrevious();">PREVIOUS</a></td>
-                <td id="transfers-pages" colspan="14">&nbsp;&nbsp;</td>
+                <td id="transfers-pages" colspan="16">&nbsp;&nbsp;</td>
                 <td><a id="next-page" href="#" onclick="moveNext();">NEXT</a></td>
             </tr>
             </tfoot>
@@ -96,6 +98,12 @@ use Remittance\Web\OperatorPage as OperatorPage;
                                 $viewRow,
                                 $empty) ?></td>
                         <td cell><?= Common::setIfExists(OperatorPage::ACCOUNT_TRANSFER,
+                                $viewRow,
+                                $empty) ?></td>
+                        <td cell><?= Common::setIfExists(OperatorPage::AWAIT_NAME,
+                                $viewRow,
+                                $empty) ?></td>
+                        <td cell><?= Common::setIfExists(OperatorPage::AWAIT_ACCOUNT,
                                 $viewRow,
                                 $empty) ?></td>
                         <td cell><?= Common::setIfExists(OperatorPage::INCOME_ACCOUNT,

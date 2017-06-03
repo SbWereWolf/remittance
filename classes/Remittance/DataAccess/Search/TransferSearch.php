@@ -49,6 +49,8 @@ class TransferSearch
             . ' ,' . TransferRecord::TRANSFER_STATUS_ID
             . ' ,' . TransferRecord::STATUS_COMMENT
             . ' ,' . TransferRecord::STATUS_TIME
+            . ' ,' . TransferRecord::AWAIT_NAME
+            . ' ,' . TransferRecord::AWAIT_ACCOUNT
             . ' FROM '
             . $this->tablename
             . ' WHERE '
@@ -87,6 +89,8 @@ class TransferSearch
             . ' ,' . TransferRecord::TRANSFER_STATUS_ID
             . ' ,' . TransferRecord::STATUS_COMMENT
             . ' ,' . TransferRecord::STATUS_TIME
+            . ' ,' . TransferRecord::AWAIT_NAME
+            . ' ,' . TransferRecord::AWAIT_ACCOUNT
             . ' FROM '
             . $this->tablename
             . ' ORDER BY ' . TransferRecord::ID . ' DESC'

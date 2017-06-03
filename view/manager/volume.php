@@ -69,6 +69,9 @@ if ($isValid)
         </dd>
         <dd><label for="volume">Объём</label><input type="number" step="0.0001" id="volume" name="volume"></dd>
         <dd><label for="reserve">Резерв</label><input type="number" step="0.0001" id="reserve" name="reserve"></dd>
+        <dd><label for="account-name">ФИО</label><input type="text" id="account-name" name="account_name"></dd>
+        <dd><label for="account-number">Номер счёта</label><input type="text" id="account-number" name="account_number">
+        </dd>
         <dd><label for="limitation">Лимит</label><input type="number" step="0.0001" id="limitation" name="limitation">
         </dd>
         <dd><label for="total">Использовано лимита</label><input type="number" step="0.0001" id="total" name="total">
@@ -98,6 +101,8 @@ if ($isValid)
                 <th cell>Валюта</th>
                 <th cell>Объём</th>
                 <th cell>Резерв</th>
+                <th cell>ФИО</th>
+                <th cell>Номер счёта</th>
                 <th cell>Лимит</th>
                 <th cell>Использовано</th>
                 <th cell>Флаг объём отключен</th>
@@ -109,7 +114,7 @@ if ($isValid)
             <tfoot>
             <tr>
                 <td><a id="previous-page" href="#" onclick="movePrevious();">PREVIOUS</a></td>
-                <td id="navigation-spacer" colspan="7">&nbsp;&nbsp;</td>
+                <td id="navigation-spacer" colspan="9">&nbsp;&nbsp;</td>
                 <td><a id="next-page" href="#" onclick="moveNext();">NEXT</a></td>
             </tr>
             </tfoot>
@@ -133,6 +138,8 @@ if ($isValid)
                         <td cell><?= $currencyTitle ?></td>
                         <td cell><?= $volume->amount ?></td>
                         <td cell><?= $volume->reserve ?></td>
+                        <td cell><?= $volume->accountName ?></td>
+                        <td cell><?= $volume->accountNumber ?></td>
                         <td cell><?= $volume->limitation ?></td>
                         <td cell><?= $volume->total ?></td>
                         <td cell><input id="disable-<?= $volume->id ?>"

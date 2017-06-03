@@ -5,7 +5,6 @@ namespace Remittance\DataAccess\Entity;
 
 use Remittance\DataAccess\Logic\ISqlHandler;
 use Remittance\DataAccess\Logic\SqlHandler;
-use Remittance\DataAccess\Search\NamedEntitySearch;
 
 
 class VolumeRecord extends Entity
@@ -20,12 +19,16 @@ class VolumeRecord extends Entity
     const CURRENCY_ID = 'currency_id';
     const AMOUNT = 'volume';
     const RESERVE = 'reserve';
+    const ACCOUNT_NAME = 'account_name';
+    const ACCOUNT_NUMBER = 'account_number';
     const LIMITATION = 'limitation';
     const TOTAL = 'total';
 
     public $currencyId = 0;
     public $amount = 0;
     public $reserve = 0;
+    public $accountName = '';
+    public $accountNumber = '';
     public $limitation = 0;
     public $total = 0;
 
@@ -33,27 +36,16 @@ class VolumeRecord extends Entity
     protected $tablename = self::TABLE_NAME;
     protected $classname = self::class;
 
-    /**
-     * @return NamedEntity
-     */
-    public function getCurrencyRecord(): NamedEntity
-    {
-        $searcher = new NamedEntitySearch(CurrencyRecord::TABLE_NAME);
-        $currencyEntity = $searcher->searchById($this->currencyId);
-
-        return $currencyEntity;
-    }
-
     public static function adopt($object): VolumeRecord
     {
-
         return $object;
-
     }
 
     public function save(): bool
     {
         $reserve = SqlHandler::setBindParameter(':RESERVE', $this->reserve, \PDO::PARAM_STR);
+        $accountName = SqlHandler::setBindParameter(':ACCOUNT_NAME', $this->accountName, \PDO::PARAM_STR);
+        $accountNumber = SqlHandler::setBindParameter(':ACCOUNT_NUMBER', $this->accountNumber, \PDO::PARAM_STR);
         $limitation = SqlHandler::setBindParameter(':LIMITATION', $this->limitation, \PDO::PARAM_STR);
         $total = SqlHandler::setBindParameter(':TOTAL', $this->total, \PDO::PARAM_STR);
         $currencyId = SqlHandler::setBindParameter(':CURRENCY_ID', $this->currencyId, \PDO::PARAM_INT);
@@ -65,6 +57,8 @@ class VolumeRecord extends Entity
             . $this->tablename
             . ' SET '
             . self::RESERVE . ' = CAST(' . $reserve[ISqlHandler::PLACEHOLDER] . ' AS DOUBLE PRECISION)'
+            . ' , ' . self::ACCOUNT_NAME . ' = ' . $accountName[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::ACCOUNT_NUMBER . ' = ' . $accountNumber[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::AMOUNT . ' = CAST(' . $volume[ISqlHandler::PLACEHOLDER] . ' AS DOUBLE PRECISION)'
             . ' , ' . self::LIMITATION . ' = CAST(' . $limitation[ISqlHandler::PLACEHOLDER] . ' AS DOUBLE PRECISION)'
             . ' , ' . self::TOTAL . ' = CAST(' . $total[ISqlHandler::PLACEHOLDER] . ' AS DOUBLE PRECISION)'
@@ -74,14 +68,18 @@ class VolumeRecord extends Entity
             . ' RETURNING '
             . self::ID
             . ' , ' . self::IS_HIDDEN
-            . ' , ' . self::RESERVE
-            . ' , ' . self::LIMITATION
-            . ' , ' . self::TOTAL
             . ' , ' . self::CURRENCY_ID
             . ' , ' . self::AMOUNT
+            . ' , ' . self::RESERVE
+            . ' , ' . self::ACCOUNT_NAME
+            . ' , ' . self::ACCOUNT_NUMBER
+            . ' , ' . self::LIMITATION
+            . ' , ' . self::TOTAL
             . ';';
 
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $reserve;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $accountName;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $accountNumber;
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $limitation;
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $total;
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $currencyId;
@@ -117,6 +115,8 @@ class VolumeRecord extends Entity
             . ' , ' . self::CURRENCY_ID
             . ' , ' . self::AMOUNT
             . ' , ' . self::RESERVE
+            . ' , ' . self::ACCOUNT_NAME
+            . ' , ' . self::ACCOUNT_NUMBER
             . ' , ' . self::LIMITATION
             . ' , ' . self::TOTAL
             . ';';
@@ -155,6 +155,8 @@ class VolumeRecord extends Entity
             . ' , ' . self::CURRENCY_ID
             . ' , ' . self::AMOUNT
             . ' , ' . self::RESERVE
+            . ' , ' . self::ACCOUNT_NAME
+            . ' , ' . self::ACCOUNT_NUMBER
             . ' , ' . self::LIMITATION
             . ' , ' . self::TOTAL
             . ';';
@@ -187,6 +189,8 @@ class VolumeRecord extends Entity
             . ' ,' . self::CURRENCY_ID
             . ' ,' . self::AMOUNT
             . ' ,' . self::RESERVE
+            . ' ,' . self::ACCOUNT_NAME
+            . ' ,' . self::ACCOUNT_NUMBER
             . ' ,' . self::LIMITATION
             . ' ,' . self::TOTAL
             . ' FROM '
@@ -219,6 +223,8 @@ class VolumeRecord extends Entity
         $this->currencyId = intval(SqlHandler::setIfExists(self::CURRENCY_ID, $namedValue));
         $this->amount = floatval(SqlHandler::setIfExists(self::AMOUNT, $namedValue));
         $this->reserve = floatval(SqlHandler::setIfExists(self::RESERVE, $namedValue));
+        $this->accountName = strval(SqlHandler::setIfExists(self::ACCOUNT_NAME, $namedValue));
+        $this->accountNumber = strval(SqlHandler::setIfExists(self::ACCOUNT_NUMBER, $namedValue));
         $this->limitation = floatval(SqlHandler::setIfExists(self::LIMITATION, $namedValue));
         $this->total = floatval(SqlHandler::setIfExists(self::TOTAL, $namedValue));
 
@@ -235,6 +241,8 @@ class VolumeRecord extends Entity
         $result [self::CURRENCY_ID] = intval($this->currencyId);
         $result [self::AMOUNT] = floatval($this->amount);
         $result [self::RESERVE] = floatval($this->reserve);
+        $result [self::ACCOUNT_NAME] = strval($this->accountName);
+        $result [self::ACCOUNT_NUMBER] = strval($this->accountNumber);
         $result [self::LIMITATION] = floatval($this->limitation);
         $result [self::TOTAL] = floatval($this->total);
 
@@ -252,6 +260,8 @@ class VolumeRecord extends Entity
         $currencyId = SqlHandler::setBindParameter(':CURRENCY_ID', $this->currencyId, \PDO::PARAM_INT);
         $volume = SqlHandler::setBindParameter(':VOLUME', $this->amount, \PDO::PARAM_STR);
         $reserve = SqlHandler::setBindParameter(':RESERVE', $this->reserve, \PDO::PARAM_STR);
+        $accountName = SqlHandler::setBindParameter(':ACCOUNT_NAME', $this->accountName, \PDO::PARAM_STR);
+        $accountNumber = SqlHandler::setBindParameter(':ACCOUNT_NUMBER', $this->accountNumber, \PDO::PARAM_STR);
         $limitation = SqlHandler::setBindParameter(':LIMITATION', $this->limitation, \PDO::PARAM_STR);
         $total = SqlHandler::setBindParameter(':TOTAL', $this->total, \PDO::PARAM_STR);
 
@@ -263,6 +273,8 @@ class VolumeRecord extends Entity
             . ' , ' . self::CURRENCY_ID . ' = ' . $currencyId[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::AMOUNT . ' = CAST(' . $volume[ISqlHandler::PLACEHOLDER] . ' AS DOUBLE PRECISION)'
             . ' , ' . self::RESERVE . ' = CAST(' . $reserve[ISqlHandler::PLACEHOLDER] . ' AS DOUBLE PRECISION)'
+            . ' , ' . self::ACCOUNT_NAME . ' = ' . $accountName[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::ACCOUNT_NUMBER . ' = ' . $accountNumber[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::LIMITATION . ' = CAST(' . $limitation[ISqlHandler::PLACEHOLDER] . ' AS DOUBLE PRECISION)'
             . ' , ' . self::TOTAL . ' = CAST(' . $total[ISqlHandler::PLACEHOLDER] . ' AS DOUBLE PRECISION)'
             . ' WHERE '
@@ -273,6 +285,8 @@ class VolumeRecord extends Entity
             . ' , ' . self::CURRENCY_ID
             . ' , ' . self::AMOUNT
             . ' , ' . self::RESERVE
+            . ' , ' . self::ACCOUNT_NAME
+            . ' , ' . self::ACCOUNT_NUMBER
             . ' , ' . self::LIMITATION
             . ' , ' . self::TOTAL
             . ';';
@@ -280,6 +294,8 @@ class VolumeRecord extends Entity
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $currencyId;
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $volume;
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $reserve;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $accountName;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $accountNumber;
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $limitation;
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $total;
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $isHidden;

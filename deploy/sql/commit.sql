@@ -27,6 +27,8 @@ CREATE TABLE transfer
     REFERENCES transfer_status (id),
   status_comment     TEXT,
   status_time        TEXT,
+  await_name         TEXT,
+  await_account      TEXT,
   income_account     TEXT,
   income_amount      TEXT,
   outcome_account    TEXT,
@@ -37,6 +39,8 @@ CREATE TABLE transfer
   receive_account    TEXT
 );
 
+CREATE INDEX ix_transfer_transfer_status_id
+  ON transfer (transfer_status_id);
 CREATE INDEX ix_transfer_is_hidden_id
   ON transfer (is_hidden, id);
 
@@ -73,31 +77,34 @@ CREATE TABLE rate
 );
 
 CREATE UNIQUE INDEX ux_rate_source_currency_id_target_currency_id
-  ON rate (source_currency_id, target_currency_id);
+  ON public.rate (source_currency_id, target_currency_id);
+CREATE INDEX ix_rate_target_currency_id
+  ON public.rate (target_currency_id);
 CREATE INDEX ix_rate_is_hidden_id
-  ON rate (is_hidden, id);
+  ON public.rate (is_hidden, id);
 CREATE INDEX ix_rate_is_hidden_source_currency_id
-  ON rate (is_hidden, source_currency_id);
+  ON public.rate (is_hidden, source_currency_id);
 
 CREATE TABLE volume
 (
-  id          SERIAL PRIMARY KEY,
-  insert_date TIMESTAMP WITH TIME ZONE DEFAULT now(),
-  is_hidden   INTEGER                  DEFAULT 0,
-  currency_id INTEGER
+  id             SERIAL PRIMARY KEY,
+  insert_date    TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  is_hidden      INTEGER                  DEFAULT 0,
+  currency_id    INTEGER
     CONSTRAINT fk_volume_currency_id
     REFERENCES currency (id),
-  volume      DOUBLE PRECISION,
-  reserve     DOUBLE PRECISION,
-  limitation  DOUBLE PRECISION,
-  total  DOUBLE PRECISION
+  volume         DOUBLE PRECISION,
+  reserve        DOUBLE PRECISION,
+  account_name   TEXT,
+  account_number TEXT,
+  limitation     DOUBLE PRECISION,
+  total          DOUBLE PRECISION
 );
 
 CREATE UNIQUE INDEX ux_volume_currency_id
-  ON volume (currency_id);
+  ON public.volume (currency_id);
 CREATE INDEX ix_volume_is_hidden_id
-  ON volume (is_hidden, id);
-
+  ON public.volume (is_hidden, id);
 
 
 /* --==88 DML 88==-- */

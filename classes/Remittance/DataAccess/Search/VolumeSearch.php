@@ -34,6 +34,8 @@ class VolumeSearch
             . ' ,' . VolumeRecord::CURRENCY_ID
             . ' ,' . VolumeRecord::AMOUNT
             . ' ,' . VolumeRecord::RESERVE
+            . ' ,' . VolumeRecord::ACCOUNT_NAME
+            . ' ,' . VolumeRecord::ACCOUNT_NUMBER
             . ' ,' . VolumeRecord::LIMITATION
             . ' ,' . VolumeRecord::TOTAL
             . ' FROM '
@@ -64,6 +66,8 @@ class VolumeSearch
             . ' ,' . VolumeRecord::CURRENCY_ID
             . ' ,' . VolumeRecord::AMOUNT
             . ' ,' . VolumeRecord::RESERVE
+            . ' ,' . VolumeRecord::ACCOUNT_NAME
+            . ' ,' . VolumeRecord::ACCOUNT_NUMBER
             . ' ,' . VolumeRecord::LIMITATION
             . ' ,' . VolumeRecord::TOTAL
             . ' FROM '
@@ -86,6 +90,10 @@ class VolumeSearch
         return $result;
     }
 
+    /** Найти Объём по коду валюты
+     * @param string $currencyCode код валюты
+     * @return VolumeRecord запись Объёма
+     */
     public function searchByCurrency(string $currencyCode): VolumeRecord
     {
         $currency = SqlHandler::setBindParameter(':CURRENCY', $currencyCode, \PDO::PARAM_STR);
@@ -97,6 +105,8 @@ class VolumeSearch
             . ' , R.' . VolumeRecord::CURRENCY_ID
             . ' , R.' . VolumeRecord::AMOUNT
             . ' , R.' . VolumeRecord::RESERVE
+            . ' , R.' . VolumeRecord::ACCOUNT_NAME
+            . ' , R.' . VolumeRecord::ACCOUNT_NUMBER
             . ' , R.' . VolumeRecord::LIMITATION
             . ' , R.' . VolumeRecord::TOTAL
             . ' FROM '

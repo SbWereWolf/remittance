@@ -12,16 +12,18 @@ use Remittance\DataAccess\Search\VolumeSearch;
 
 class Volume
 {
-    /** @var string значение для поднятого флага "отключен" */
+    /** @var boolean значение для поднятого флага "отключен" */
     const DEFINE_AS_DISABLE = true;
-    /** @var string значение для снятого флага "отключен" */
+    /** @var boolean значение для снятого флага "отключен" */
     const DEFINE_AS_ENABLE = false;
-    /** @var string значение по умолчанию для признака "отключен" */
+    /** @var boolean значение по умолчанию для флага "отключен" */
     const DEFAULT_IS_DISABLE = self::DEFINE_AS_ENABLE;
 
     public $currency = '';
     public $amount = 0;
     public $reserve = 0;
+    public $accountName = '';
+    public $accountNumber = '';
     public $limitation = 0;
     public $total = 0;
     public $isDisable = self::DEFAULT_IS_DISABLE;
@@ -75,6 +77,8 @@ class Volume
             $record->isHidden = $this->isDisable;
             $record->amount = $this->amount;
             $record->reserve = $this->reserve;
+            $record->accountName = $this->accountName;
+            $record->accountNumber = $this->accountNumber;
             $record->limitation = $this->limitation;
             $record->total = $this->total;
             $record->currencyId = $currencyRecord->id;
@@ -84,7 +88,8 @@ class Volume
 
         $currencyEntity = new NamedEntity();
         if ($isSuccess) {
-            $currencyEntity = $record->getCurrencyRecord();
+            $currencySearcher = new NamedEntitySearch(CurrencyRecord::TABLE_NAME);
+            $currencyEntity = $currencySearcher->searchById($record->currencyId);
         }
         $isCurrencyFound = !empty($currencyEntity->id);
 
@@ -95,6 +100,8 @@ class Volume
             $this->isDisable = $record->isHidden;
             $this->amount = $record->amount;
             $this->reserve = $record->reserve;
+            $this->accountName = $record->accountName;
+            $this->accountNumber = $record->accountNumber;
             $this->limitation = $record->limitation;
             $this->total = $record->total;
             $this->currency = $currencyEntity->code;
@@ -114,7 +121,8 @@ class Volume
         $searcher = new VolumeSearch();
         $foundRecord = $searcher->searchById($id);
 
-        $currency = $foundRecord->getCurrencyRecord();
+        $currencySearcher = new NamedEntitySearch(CurrencyRecord::TABLE_NAME);
+        $currency = $currencySearcher->searchById($foundRecord->currencyId);
         $isCurrencyFound = !empty($currency->id);
 
         if ($isCurrencyFound) {
@@ -122,6 +130,8 @@ class Volume
             $this->isDisable = $foundRecord->isHidden;
             $this->amount = $foundRecord->amount;
             $this->reserve = $foundRecord->reserve;
+            $this->accountName = $foundRecord->accountName;
+            $this->accountNumber = $foundRecord->accountNumber;
             $this->limitation = $foundRecord->limitation;
             $this->total = $foundRecord->total;
 
@@ -165,6 +175,8 @@ class Volume
             $record->isHidden = $this->isDisable;
             $record->amount = $this->amount;
             $record->reserve = $this->reserve;
+            $record->accountName = $this->accountName;
+            $record->accountNumber = $this->accountNumber;
             $record->limitation = $this->limitation;
             $record->total = $this->total;
         }
@@ -175,7 +187,8 @@ class Volume
     private function assumeRecord(VolumeRecord $record): bool
     {
 
-        $currency = $record->getCurrencyRecord();
+        $currencySearcher = new NamedEntitySearch(CurrencyRecord::TABLE_NAME);
+        $currency = $currencySearcher->searchById($record->currencyId);
         $isCurrencyFound = !empty($currency->id);
 
         if ($isCurrencyFound) {
@@ -185,6 +198,8 @@ class Volume
             $this->isDisable = $record->isHidden;
             $this->amount = $record->amount;
             $this->reserve = $record->reserve;
+            $this->accountName = $record->accountName;
+            $this->accountNumber = $record->accountNumber;
             $this->limitation = $record->limitation;
             $this->total = $record->total;
         }

@@ -12,7 +12,7 @@ use Remittance\UserInput\InputArray;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class ManagerApi
+class ManagerApi implements IApi
 {
 
     const ID = 'id';
@@ -92,7 +92,7 @@ class ManagerApi
     public function rateAdd(Request $request, Response $response, array $arguments)
     {
         $parsedBody = $request->getParsedBody();
-        $formData = Common::setIfExists('form_data', $parsedBody, ICommon::EMPTY_VALUE);
+        $formData = Common::setIfExists(self::FORM_DATA, $parsedBody, ICommon::EMPTY_VALUE);
 
         $isValid = !empty($formData);
         $rateData = ICommon::EMPTY_ARRAY;
@@ -214,19 +214,21 @@ class ManagerApi
     public function volumeAdd(Request $request, Response $response, array $arguments)
     {
         $parsedBody = $request->getParsedBody();
-        $formData = Common::setIfExists('form_data', $parsedBody, ICommon::EMPTY_VALUE);
+        $formData = Common::setIfExists(self::FORM_DATA, $parsedBody, ICommon::EMPTY_VALUE);
 
         $isValid = !empty($formData);
-        $rateData = ICommon::EMPTY_ARRAY;
+        $volumeData = ICommon::EMPTY_ARRAY;
         if ($isValid) {
-            parse_str($formData, $rateData);
+            parse_str($formData, $volumeData);
         }
 
-        $inputArray = new InputArray($rateData);
+        $inputArray = new InputArray($volumeData);
 
         $currency = $inputArray->getSpecialCharsValue('currency');
-        $volumeValue = $inputArray->getFloatValue('volume');
+        $amount = $inputArray->getFloatValue('volume');
         $reserve = $inputArray->getFloatValue('reserve');
+        $accountName = $inputArray->getSpecialCharsValue('account_name');
+        $accountNumber = $inputArray->getSpecialCharsValue('account_number');
         $limitation = $inputArray->getFloatValue('limitation');
         $total = $inputArray->getFloatValue('total');
         $disable = $inputArray->getBooleanValue('disable');
@@ -234,8 +236,10 @@ class ManagerApi
         $volume = new Volume();
 
         $volume->currency = $currency;
-        $volume->amount = $volumeValue;
+        $volume->amount = $amount;
         $volume->reserve = $reserve;
+        $volume->accountName = $accountName;
+        $volume->accountNumber = $accountNumber;
         $volume->limitation = $limitation;
         $volume->total = $total;
         $volume->isDisable = $disable;

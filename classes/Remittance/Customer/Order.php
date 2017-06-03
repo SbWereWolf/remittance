@@ -3,6 +3,8 @@
 namespace Remittance\Customer;
 
 
+use Remittance\DataAccess\Entity\CurrencyRecord;
+use Remittance\DataAccess\Search\NamedEntitySearch;
 use Remittance\Exchange\Compute;
 use Remittance\Operator\Transfer;
 
@@ -20,7 +22,6 @@ class Order
 
     /**
      * @return bool
-     * @internal param $order
      */
     public function validate(): bool
     {
@@ -38,6 +39,14 @@ class Order
 
         $isSuccess = $transfer->add($this);
 
+        $currency = new CurrencyRecord();
+        if ($isSuccess) {
+            $currencySearcher = new NamedEntitySearch(CurrencyRecord::TABLE_NAME);
+            $currency = $currencySearcher->searchByCode($transfer->incomeCurrency);
+
+            $isSuccess = !empty($currency->id);
+        }
+
         $result = '';
         if ($isSuccess) {
 
@@ -51,7 +60,9 @@ class Order
             $this->fioReceive = $transfer->fioReceive;
             $this->fioTransfer = $transfer->fioTransfer;
 
-            $result = "Добавлен заказ № $transfer->documentNumber от $transfer->documentDate"
+            $result = 'Ожидается поступление'
+                . " $transfer->dealIncome на счёт $transfer->accountAwait $transfer->fioAwait ($currency->title)"
+                . ", добавлен заказ № $transfer->documentNumber от $transfer->documentDate"
                 . ", адрес для уведомлений : $this->dealEmail;";
         }
         if (!$isSuccess) {

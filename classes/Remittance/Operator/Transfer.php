@@ -7,6 +7,7 @@ use Remittance\DataAccess\Entity\TransferRecord;
 use Remittance\DataAccess\Entity\TransferStatusRecord;
 use Remittance\DataAccess\Search\NamedEntitySearch;
 use Remittance\DataAccess\Search\TransferSearch;
+use Remittance\DataAccess\Search\VolumeSearch;
 use Remittance\Manager\Volume;
 
 
@@ -24,6 +25,8 @@ class Transfer
     public $dealIncome = 0;
     public $dealOutcome = 0;
     public $dealEmail = '';
+    public $fioAwait = '';
+    public $accountAwait = '';
     public $fioTransfer = '';
     public $accountTransfer = '';
     public $fioReceive = '';
@@ -40,9 +43,14 @@ class Transfer
     public function add(Order $orderDetail):bool
     {
 
-        $record = new TransferRecord();
+        $volumeSearcher = new VolumeSearch();
+        $volume = $volumeSearcher->searchByCurrency($orderDetail->dealSource);
 
-        $isSuccess = $record->addEntity();
+        $record = new TransferRecord();
+        $isSuccess = !empty($volume->id);
+        if ($isSuccess) {
+            $isSuccess = $record->addEntity();
+        }
 
         if ($isSuccess) {
             $record->isHidden = TransferRecord::DEFINE_AS_NOT_HIDDEN;
@@ -61,6 +69,9 @@ class Transfer
             $record->incomeAmount = $orderDetail->dealIncome;
             $record->outcomeAccount = $orderDetail->dealTarget;
             $record->outcomeAmount = $orderDetail->dealOutcome;
+
+            $record->awaitAccount = $volume->accountNumber;
+            $record->awaitName = $volume->accountName;
 
             $record->transferAccount = $orderDetail->accountTransfer;
             $record->transferName = $orderDetail->fioTransfer;
@@ -95,6 +106,8 @@ class Transfer
         $this->statusComment = $record->statusComment;
         $this->statusTime = $record->statusTime;
         $this->dealEmail = $record->reportEmail;
+        $this->fioAwait = $record->awaitName;
+        $this->accountAwait = $record->awaitAccount;
         $this->fioTransfer = $record->transferName;
         $this->accountTransfer = $record->transferAccount;
         $this->fioReceive = $record->receiveName;
