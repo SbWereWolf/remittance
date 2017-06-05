@@ -25,16 +25,14 @@ class RateRecord extends Entity
 
     const SOURCE_CURRENCY = 'source_currency_id';
     const TARGET_CURRENCY = 'target_currency_id';
-    const EXCHANGE_RATE = 'exchange_rate';
+    const RATIO = 'exchange_rate';
     const FEE = 'fee';
-    const EFFECTIVE_RATE = 'effective_rate';
     const IS_DEFAULT = 'is_default';
 
     public $sourceCurrencyId = 0;
     public $targetCurrencyId = 0;
-    public $exchangeRate = 0;
+    public $ratio = 0;
     public $fee = 0;
-    public $effectiveRate = 0;
     public $isDefault = 0;
 
     /** @var string имя таблицы для хранения сущности */
@@ -50,9 +48,8 @@ class RateRecord extends Entity
 
     public function save(): bool
     {
-        $exchangeRate = SqlHandler::setBindParameter(':EXCHANGE_RATE', $this->exchangeRate, \PDO::PARAM_STR);
+        $exchangeRate = SqlHandler::setBindParameter(':EXCHANGE_RATE', $this->ratio, \PDO::PARAM_STR);
         $fee = SqlHandler::setBindParameter(':FEE', $this->fee, \PDO::PARAM_STR);
-        $effectiveRate = SqlHandler::setBindParameter(':EFFECTIVE_RATE', $this->effectiveRate, \PDO::PARAM_STR);
         //$isDefault = SqlHandler::setBindParameter(':IS_DEFAULT', $this->isDefault, \PDO::PARAM_INT);
         $sourceCurrency = SqlHandler::setBindParameter(':SOURCE_CURRENCY', $this->sourceCurrencyId, \PDO::PARAM_STR);
         $targetCurrency = SqlHandler::setBindParameter(':TARGET_CURRENCY', $this->targetCurrencyId, \PDO::PARAM_STR);
@@ -62,9 +59,8 @@ class RateRecord extends Entity
             ' UPDATE '
             . $this->tablename
             . ' SET '
-            . self::EXCHANGE_RATE . ' = ' . $exchangeRate[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::FEE . ' = ' . $fee[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::EFFECTIVE_RATE . ' = ' . $effectiveRate[ISqlHandler::PLACEHOLDER]
+            . self::RATIO . ' = CAST(' . $exchangeRate[ISqlHandler::PLACEHOLDER] . ' AS DOUBLE PRECISION)'
+            . ' , ' . self::FEE . ' = CAST(' . $fee[ISqlHandler::PLACEHOLDER] . ' AS DOUBLE PRECISION)'
             //. ' , ' . self::IS_DEFAULT . ' = ' . $isDefault[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::IS_HIDDEN . ' = ' . $isHidden[ISqlHandler::PLACEHOLDER]
             . ' WHERE '
@@ -73,9 +69,8 @@ class RateRecord extends Entity
             . ' RETURNING '
             . self::ID
             . ' , ' . self::IS_HIDDEN
-            . ' , ' . self::EXCHANGE_RATE
+            . ' , ' . self::RATIO
             . ' , ' . self::FEE
-            . ' , ' . self::EFFECTIVE_RATE
             . ' , ' . self::IS_DEFAULT
             . ' , ' . self::SOURCE_CURRENCY
             . ' , ' . self::TARGET_CURRENCY
@@ -83,7 +78,6 @@ class RateRecord extends Entity
 
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $exchangeRate;
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $fee;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $effectiveRate;
         //$arguments[ISqlHandler::QUERY_PARAMETER][] = $isDefault;
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $sourceCurrency;
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $targetCurrency;
@@ -116,9 +110,8 @@ class RateRecord extends Entity
             . ' RETURNING '
             . self::ID
             . ' , ' . self::IS_HIDDEN
-            . ' , ' . self::EXCHANGE_RATE
+            . ' , ' . self::RATIO
             . ' , ' . self::FEE
-            . ' , ' . self::EFFECTIVE_RATE
             . ' , ' . self::IS_DEFAULT
             . ' , ' . self::SOURCE_CURRENCY
             . ' , ' . self::TARGET_CURRENCY
@@ -155,9 +148,8 @@ class RateRecord extends Entity
             . ' RETURNING '
             . self::ID
             . ' , ' . self::IS_HIDDEN
-            . ' , ' . self::EXCHANGE_RATE
+            . ' , ' . self::RATIO
             . ' , ' . self::FEE
-            . ' , ' . self::EFFECTIVE_RATE
             . ' , ' . self::IS_DEFAULT
             . ' , ' . self::SOURCE_CURRENCY
             . ' , ' . self::TARGET_CURRENCY
@@ -188,9 +180,8 @@ class RateRecord extends Entity
             . ' ,' . self::IS_HIDDEN
             . ' ,' . self::SOURCE_CURRENCY
             . ' ,' . self::TARGET_CURRENCY
-            . ' ,' . self::EXCHANGE_RATE
+            . ' ,' . self::RATIO
             . ' ,' . self::FEE
-            . ' ,' . self::EFFECTIVE_RATE
             . ' ,' . self::IS_DEFAULT
             . ' FROM '
             . $this->tablename
@@ -221,9 +212,8 @@ class RateRecord extends Entity
 
         $this->sourceCurrencyId = intval(SqlHandler::setIfExists(self::SOURCE_CURRENCY, $namedValue));
         $this->targetCurrencyId = intval(SqlHandler::setIfExists(self::TARGET_CURRENCY, $namedValue));
-        $this->exchangeRate = floatval(SqlHandler::setIfExists(self::EXCHANGE_RATE, $namedValue));
+        $this->ratio = floatval(SqlHandler::setIfExists(self::RATIO, $namedValue));
         $this->fee = floatval(SqlHandler::setIfExists(self::FEE, $namedValue));
-        $this->effectiveRate = floatval(SqlHandler::setIfExists(self::EFFECTIVE_RATE, $namedValue));
         $this->isDefault = boolval(SqlHandler::setIfExists(self::IS_DEFAULT, $namedValue));
 
         return $result;
@@ -238,9 +228,8 @@ class RateRecord extends Entity
 
         $result [self::SOURCE_CURRENCY] = intval($this->sourceCurrencyId);
         $result [self::TARGET_CURRENCY] = intval($this->targetCurrencyId);
-        $result [self::EXCHANGE_RATE] = floatval($this->exchangeRate);
+        $result [self::RATIO] = floatval($this->ratio);
         $result [self::FEE] = floatval($this->fee);
-        $result [self::EFFECTIVE_RATE] = floatval($this->effectiveRate);
         $result [self::IS_DEFAULT] = intval($this->isDefault);
 
         return $result;
@@ -256,9 +245,8 @@ class RateRecord extends Entity
 
         $sourceCurrencyId = SqlHandler::setBindParameter(':SOURCE_CURRENCY', $this->sourceCurrencyId, \PDO::PARAM_INT);
         $targetCurrencyId = SqlHandler::setBindParameter(':TARGET_CURRENCY', $this->targetCurrencyId, \PDO::PARAM_INT);
-        $exchangeRate = SqlHandler::setBindParameter(':EXCHANGE_RATE', $this->exchangeRate, \PDO::PARAM_STR);
+        $exchangeRate = SqlHandler::setBindParameter(':EXCHANGE_RATE', $this->ratio, \PDO::PARAM_STR);
         $fee = SqlHandler::setBindParameter(':FEE', $this->fee, \PDO::PARAM_STR);
-        $effectiveRate = SqlHandler::setBindParameter(':EFFECTIVE_RATE', $this->effectiveRate, \PDO::PARAM_STR);
         $isDefault = SqlHandler::setBindParameter(':IS_DEFAULT', $this->isDefault, \PDO::PARAM_INT);
 
         $arguments[ISqlHandler::QUERY_TEXT] =
@@ -268,9 +256,8 @@ class RateRecord extends Entity
             . self::IS_HIDDEN . ' = ' . $isHidden[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::SOURCE_CURRENCY . ' = ' . $sourceCurrencyId[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::TARGET_CURRENCY . ' = ' . $targetCurrencyId[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::EXCHANGE_RATE . ' = CAST(' . $exchangeRate[ISqlHandler::PLACEHOLDER] . ' AS DOUBLE PRECISION)'
+            . ' , ' . self::RATIO . ' = CAST(' . $exchangeRate[ISqlHandler::PLACEHOLDER] . ' AS DOUBLE PRECISION)'
             . ' , ' . self::FEE . ' = CAST(' . $fee[ISqlHandler::PLACEHOLDER] . ' AS DOUBLE PRECISION)'
-            . ' , ' . self::EFFECTIVE_RATE . ' = CAST(' . $effectiveRate[ISqlHandler::PLACEHOLDER] . ' AS DOUBLE PRECISION)'
             . ' , ' . self::IS_DEFAULT . ' = ' . $isDefault[ISqlHandler::PLACEHOLDER]
             . ' WHERE '
             . self::ID . ' = ' . $id[ISqlHandler::PLACEHOLDER]
@@ -279,7 +266,7 @@ class RateRecord extends Entity
             . ' , ' . self::IS_HIDDEN
             . ' , ' . self::SOURCE_CURRENCY
             . ' , ' . self::TARGET_CURRENCY
-            . ' , ' . self::EXCHANGE_RATE
+            . ' , ' . self::RATIO
             . ' , ' . self::FEE
             . ' , ' . self::EFFECTIVE_RATE
             . ' , ' . self::IS_DEFAULT
@@ -289,7 +276,6 @@ class RateRecord extends Entity
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $targetCurrencyId;
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $exchangeRate;
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $fee;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $effectiveRate;
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $isDefault;
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $isHidden;
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $id;

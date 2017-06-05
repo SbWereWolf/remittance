@@ -49,6 +49,9 @@ if ($isValid) :?>
         <dd><label for="deal-outcome">Получить</label>
             <output id="deal-outcome"></output>
         </dd>
+        <dd><label for="deal-ratio">Обмен по курсу</label>
+            <output id="deal-ratio"></output>
+        </dd>
         <?php foreach ($currencies as $currencyCandidate): ?>
             <?php
             $isObject = $currencyCandidate instanceof CurrencyRecord;
@@ -146,8 +149,11 @@ if ($isValid) :?>
             dataType: 'json',
             success: function (result) {
 
-                const value = result.result;
-                $("output[id='deal-outcome']").html(value);
+                const outcome = result.outcome;
+                const ratio = result.effective_ratio;
+
+                $("output[id='deal-outcome']").html(outcome);
+                $("output[id='deal-ratio']").html(ratio);
             }
         });
     }

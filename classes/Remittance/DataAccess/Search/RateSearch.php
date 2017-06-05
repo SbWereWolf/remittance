@@ -33,9 +33,8 @@ class RateSearch
             . ' ,' . RateRecord::IS_HIDDEN
             . ' ,' . RateRecord::SOURCE_CURRENCY
             . ' ,' . RateRecord::TARGET_CURRENCY
-            . ' ,' . RateRecord::EXCHANGE_RATE
+            . ' ,' . RateRecord::RATIO
             . ' ,' . RateRecord::FEE
-            . ' ,' . RateRecord::EFFECTIVE_RATE
             . ' ,' . RateRecord::IS_DEFAULT
             . ' FROM '
             . $this->tablename
@@ -64,9 +63,8 @@ class RateSearch
             . ' ,' . RateRecord::IS_HIDDEN
             . ' ,' . RateRecord::SOURCE_CURRENCY
             . ' ,' . RateRecord::TARGET_CURRENCY
-            . ' ,' . RateRecord::EXCHANGE_RATE
+            . ' ,' . RateRecord::RATIO
             . ' ,' . RateRecord::FEE
-            . ' ,' . RateRecord::EFFECTIVE_RATE
             . ' ,' . RateRecord::IS_DEFAULT
             . ' FROM '
             . $this->tablename
@@ -99,9 +97,8 @@ class RateSearch
             . ' , R.' . RateRecord::IS_HIDDEN
             . ' , R.' . RateRecord::SOURCE_CURRENCY
             . ' , R.' . RateRecord::TARGET_CURRENCY
-            . ' , R.' . RateRecord::EXCHANGE_RATE
+            . ' , R.' . RateRecord::RATIO
             . ' , R.' . RateRecord::FEE
-            . ' , R.' . RateRecord::EFFECTIVE_RATE
             . ' , R.' . RateRecord::IS_DEFAULT
             . ' FROM '
             . $this->tablename . ' AS R '

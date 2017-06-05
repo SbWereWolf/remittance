@@ -51,8 +51,8 @@ use Remittance\Web\OperatorPage as OperatorPage;
                 <th cell>Почта</th>
                 <th cell>ФИО отправителя</th>
                 <th cell>Счёт отправителя</th>
-                <th cell>ФИО промежуточное</th>
-                <th cell>Счёт промежуточный</th>
+                <th cell>ФИО посредника</th>
+                <th cell>Счёт посредника</th>
                 <th cell>Счёт поступления</th>
                 <th cell>Сумма Положить</th>
                 <th cell>ФИО получателя</th>

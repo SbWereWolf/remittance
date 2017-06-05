@@ -9,8 +9,6 @@ use Remittance\DataAccess\Entity\NamedEntity;
 use Remittance\DataAccess\Entity\RateRecord;
 use Remittance\DataAccess\Search\NamedEntitySearch;
 use Remittance\DataAccess\Search\RateSearch;
-use const false;
-use Remittance\Exchange\Compute;
 
 class Rate
 {
@@ -48,8 +46,7 @@ class Rate
         if ($isSuccess) {
 
             $record->isHidden = $this->isDisable;
-            $record->effectiveRate = (1 - $this->fee) * $this->rate;
-            $record->exchangeRate = $this->rate;
+            $record->ratio = $this->rate;
             $record->fee = $this->fee;
             $record->isDefault = $this->isDefault;
 
@@ -82,7 +79,7 @@ class Rate
         if ($isSuccess) {
 
             $this->isDisable = $record->isHidden;
-            $this->rate = $record->exchangeRate;
+            $this->rate = $record->ratio;
             $this->fee = $record->fee;
             $this->isDefault = $record->isDefault;
 
@@ -101,7 +98,7 @@ class Rate
             $this->sourceCurrency = $source->code;
             $this->targetCurrency = $target->code;
 
-            $result = "Добавлена ставка $record->exchangeRate ( $record->fee ) для обмена $this->sourceCurrency на $this->targetCurrency";
+            $result = "Добавлена ставка $record->ratio ( $record->fee ) для обмена $this->sourceCurrency на $this->targetCurrency";
         }
         if (!$isSuccess) {
             $result = "Ошибка добавления ставки";
@@ -123,7 +120,7 @@ class Rate
         $isSuccess = !empty($foundRecord->id);
         if ($isSuccess) {
             $this->isDisable = $foundRecord->isHidden;
-            $this->rate = $foundRecord->exchangeRate;
+            $this->rate = $foundRecord->ratio;
             $this->fee = $foundRecord->fee;
             $this->isDefault = $foundRecord->isDefault;
 
@@ -192,11 +189,8 @@ class Rate
         $isValid = $isSourceDefined && $isTargetDefined;
         if($isValid){
 
-            $computer = new Compute('','',1);
-            $record->effectiveRate = $computer->calculate($this->fee,$this->rate) ;
-
             $record->isHidden = $this->isDisable;
-            $record->exchangeRate = $this->rate;
+            $record->ratio = $this->rate;
             $record->fee = $this->fee;
             $record->isDefault = $this->isDefault;
         }
@@ -222,7 +216,7 @@ class Rate
             $this->targetCurrency = $target->code;
 
             $this->isDisable = $record->isHidden;
-            $this->rate = $record->exchangeRate;
+            $this->rate = $record->ratio;
             $this->fee = $record->fee;
             $this->isDefault = $record->isDefault;
         }

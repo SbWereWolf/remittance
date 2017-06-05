@@ -5,7 +5,7 @@ namespace Remittance\Customer;
 
 use Remittance\DataAccess\Entity\CurrencyRecord;
 use Remittance\DataAccess\Search\NamedEntitySearch;
-use Remittance\Exchange\Compute;
+use Remittance\Exchange\Deal;
 use Remittance\Operator\Transfer;
 
 class Order
@@ -25,9 +25,9 @@ class Order
      */
     public function validate(): bool
     {
-        $computer = new Compute($this->dealSource, $this->dealTarget, $this->dealIncome);
-        $outcome = $computer->precomputation();
-        $isValid = $outcome == $this->dealOutcome;
+        $computer = new Deal($this->dealSource, $this->dealTarget, $this->dealIncome);
+        $computer->precomputation();
+        $isValid = $computer->outcome == $this->dealOutcome;
 
         return $isValid;
     }

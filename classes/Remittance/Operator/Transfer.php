@@ -8,6 +8,7 @@ use Remittance\DataAccess\Entity\TransferStatusRecord;
 use Remittance\DataAccess\Search\NamedEntitySearch;
 use Remittance\DataAccess\Search\TransferSearch;
 use Remittance\DataAccess\Search\VolumeSearch;
+use Remittance\Exchange\Deal;
 use Remittance\Manager\Volume;
 
 
@@ -24,54 +25,81 @@ class Transfer
 
     public $dealIncome = 0;
     public $dealOutcome = 0;
-    public $dealEmail = '';
-    public $fioAwait = '';
+    public $fee = 0;
+    public $body = 0;
+
     public $accountAwait = '';
-    public $fioTransfer = '';
+    public $fioAwait = '';
+    public $accountProceed = '';
+    public $fioProceed = '';
+    public $incomeCurrency = '';
     public $accountTransfer = '';
-    public $fioReceive = '';
+    public $fioTransfer = '';
+    public $outcomeCurrency = '';
     public $accountReceive = '';
+    public $fioReceive = '';
 
     public $documentNumber = '';
     public $documentDate = '';
-    public $incomeCurrency = '';
-    public $outcomeCurrency = '';
+    public $dealEmail = '';
+
     public $statusCode = self::STATUS_RECEIVED;
     public $statusComment = '';
     public $statusTime = '';
 
     public function add(Order $orderDetail):bool
     {
+        $deal = new Deal($orderDetail->dealSource, $orderDetail->dealTarget, $orderDetail->dealIncome);
+        $isSuccess = $deal->precomputation();
 
-        $volumeSearcher = new VolumeSearch();
-        $volume = $volumeSearcher->searchByCurrency($orderDetail->dealSource);
+        $sourceVolume = new Volume();
+        $targetVolume = new Volume();
+        if ($isSuccess) {
+            $volumeSearcher = new VolumeSearch();
+            $sourceVolume = $volumeSearcher->searchByCurrency($orderDetail->dealSource);
+            $targetVolume = $volumeSearcher->searchByCurrency($orderDetail->dealTarget);
+
+            $isSuccess = !empty($sourceVolume->id) && !empty($targetVolume->id);
+        }
+
+        $statusId = null;
+        if ($isSuccess) {
+            $statusId = $this->getTransferStatusId();
+
+            $isSuccess = !empty($statusId);
+        }
 
         $record = new TransferRecord();
-        $isSuccess = !empty($volume->id);
         if ($isSuccess) {
             $isSuccess = $record->addEntity();
         }
 
         if ($isSuccess) {
+
             $record->isHidden = TransferRecord::DEFINE_AS_NOT_HIDDEN;
 
             $record->documentNumber = $record->id;
             $record->documentDate = date(self::FORMAT_DOCUMENT_DATE);
 
-            $statusId = $this->getTransferStatusId();
+
             $record->transferStatusId = $statusId;
 
             $record->statusComment = 'принята заявка с сайта';
             $record->statusTime = date(self::FORMAT_STATUS_TIME);
             $record->reportEmail = $orderDetail->dealEmail;
 
-            $record->incomeAccount = $orderDetail->dealSource;
+            $record->incomeCurrency = $orderDetail->dealSource;
             $record->incomeAmount = $orderDetail->dealIncome;
-            $record->outcomeAccount = $orderDetail->dealTarget;
-            $record->outcomeAmount = $orderDetail->dealOutcome;
+            $record->outcomeCurrency = $orderDetail->dealTarget;
 
-            $record->awaitAccount = $volume->accountNumber;
-            $record->awaitName = $volume->accountName;
+            $record->outcomeAmount = $deal->outcome;
+            $record->fee = $deal->feeAmount;
+            $record->body = $deal->body;
+
+            $record->awaitAccount = $sourceVolume->accountNumber;
+            $record->awaitName = $sourceVolume->accountName;
+            $record->proceedAccount = $targetVolume->accountNumber;
+            $record->proceedName = $targetVolume->accountName;
 
             $record->transferAccount = $orderDetail->accountTransfer;
             $record->transferName = $orderDetail->fioTransfer;
@@ -112,10 +140,14 @@ class Transfer
         $this->accountTransfer = $record->transferAccount;
         $this->fioReceive = $record->receiveName;
         $this->accountReceive = $record->receiveAccount;
-        $this->incomeCurrency = $record->incomeAccount;
+        $this->incomeCurrency = $record->incomeCurrency;
         $this->dealIncome = $record->incomeAmount;
-        $this->outcomeCurrency = $record->outcomeAccount;
+        $this->outcomeCurrency = $record->outcomeCurrency;
         $this->dealOutcome = $record->outcomeAmount;
+        $this->fee = $record->fee;
+        $this->body = $record->body;
+        $this->accountProceed = $record->proceedAccount;
+        $this->fioProceed = $record->proceedName;
 
         return true;
     }
@@ -185,10 +217,14 @@ class Transfer
         $record->transferAccount = $this->accountTransfer;
         $record->receiveName = $this->fioReceive;
         $record->receiveAccount = $this->accountReceive;
-        $record->incomeAccount = $this->incomeCurrency;
+        $record->incomeCurrency = $this->incomeCurrency;
         $record->incomeAmount = $this->dealIncome;
-        $record->outcomeAccount = $this->outcomeCurrency;
+        $record->outcomeCurrency = $this->outcomeCurrency;
         $record->outcomeAmount = $this->dealOutcome;
+        $record->fee = $this->fee;
+        $record->body = $this->body;
+        $record->proceedAccount = $this->accountProceed;
+        $record->proceedName = $this->fioProceed;
 
         return $record;
     }

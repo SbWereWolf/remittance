@@ -27,16 +27,20 @@ CREATE TABLE transfer
     REFERENCES transfer_status (id),
   status_comment     TEXT,
   status_time        TEXT,
-  await_name         TEXT,
-  await_account      TEXT,
-  income_account     TEXT,
-  income_amount      TEXT,
-  outcome_account    TEXT,
-  outcome_amount     TEXT,
-  transfer_name      TEXT,
+  income_currency    TEXT,
   transfer_account   TEXT,
-  receive_name       TEXT,
-  receive_account    TEXT
+  transfer_name      TEXT,
+  income_amount      TEXT,
+  await_account      TEXT,
+  await_name         TEXT,
+  body               DOUBLE PRECISION,
+  fee                DOUBLE PRECISION,
+  outcome_currency   TEXT,
+  proceed_account    TEXT,
+  proceed_name       TEXT,
+  outcome_amount     TEXT,
+  receive_account    TEXT,
+  receive_name       TEXT
 );
 
 CREATE INDEX ix_transfer_transfer_status_id

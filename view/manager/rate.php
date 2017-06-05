@@ -145,9 +145,9 @@ if ($isValid)
                     <tr>
                         <td cell><?= $source ?></td>
                         <td cell><?= $target ?></td>
-                        <td cell><?= $rate->exchangeRate ?></td>
+                        <td cell><?= $rate->ratio ?></td>
                         <td cell><?= $rate->fee ?></td>
-                        <td cell><?= $rate->effectiveRate ?></td>
+                        <td cell><?= $rate->effectiveRatio ?></td>
                         <td cell><input id="disable-<?= $rate->id ?>"
                                         type="checkbox" <?= $rate->isHidden ? 'checked' : '' ?>
                                         disabled>

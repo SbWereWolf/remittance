@@ -1,45 +1,42 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: SbWereWolf
+ * Date: 2017-06-05
+ * Time: 18:40
+ */
 
 namespace Remittance\Exchange;
 
 
-use Remittance\DataAccess\Search\RateSearch;
-
 class Compute
 {
-    private $source;
-    private $income;
-    private $target;
+    private $income = NAN ;
+    private $feeRatio = NAN ;
+    public $feeAmount = NAN ;
+    public $body = NAN ;
+    private $rate = NAN ;
+    public $effectiveRatio = NAN ;
+    public $outcome = NAN ;
 
-    public function __construct(string $source, string $target, float $income)
+
+    function __construct(float $income, float $feeRatio, float $rate)
     {
-        $this->source = $source;
         $this->income = $income;
-        $this->target = $target;
+        $this->feeRatio = $feeRatio;
+        $this->rate = $rate;
     }
 
-    public function precomputation():float
+    public function calculate():bool
     {
 
-        $searcher = new RateSearch();
-        $exchangeRate = $searcher->searchExchangeRate($this->source, $this->target);
+        $this->feeAmount = $this->income * $this->feeRatio;
+        $this->body = $this->income - $this->feeAmount;
+        $this->outcome = $this->body * $this->rate;
 
-        $result = NAN;
-        $isExists = !empty($exchangeRate->id);
-        if ($isExists) {
-            $outcome = $this->calculate($exchangeRate->fee,$exchangeRate->exchangeRate);
-            $result = round($outcome ,2);
-        }
+        $this->effectiveRatio = $this->outcome / $this->income;
 
-        return $result;
-    }
+        return true;
 
-    public function calculate(float $fee, float $rate):float
-    {
-
-        $outcome = $this->income * (1 - $fee) * $rate;
-        $result = round(floatval($outcome),2);
-
-        return $result;
     }
 }

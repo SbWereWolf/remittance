@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ktokt
- * Date: 05.04.2017
- * Time: 2:51
- */
 
 namespace Remittance\DataAccess\Search;
 
@@ -51,6 +45,10 @@ class TransferSearch
             . ' ,' . TransferRecord::STATUS_TIME
             . ' ,' . TransferRecord::AWAIT_NAME
             . ' ,' . TransferRecord::AWAIT_ACCOUNT
+            . ' ,' . TransferRecord::FEE
+            . ' ,' . TransferRecord::PROCEED_ACCOUNT
+            . ' ,' . TransferRecord::PROCEED_NAME
+            . ' ,' . TransferRecord::BODY
             . ' FROM '
             . $this->tablename
             . ' WHERE '
@@ -91,6 +89,10 @@ class TransferSearch
             . ' ,' . TransferRecord::STATUS_TIME
             . ' ,' . TransferRecord::AWAIT_NAME
             . ' ,' . TransferRecord::AWAIT_ACCOUNT
+            . ' ,' . TransferRecord::FEE
+            . ' ,' . TransferRecord::PROCEED_ACCOUNT
+            . ' ,' . TransferRecord::PROCEED_NAME
+            . ' ,' . TransferRecord::BODY
             . ' FROM '
             . $this->tablename
             . ' ORDER BY ' . TransferRecord::ID . ' DESC'

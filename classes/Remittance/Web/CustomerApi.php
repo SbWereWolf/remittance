@@ -4,7 +4,7 @@ namespace Remittance\Web;
 
 
 use Remittance\Customer\Order;
-use Remittance\Exchange\Compute;
+use Remittance\Exchange\Deal;
 use Remittance\UserInput\InputArray;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -71,7 +71,7 @@ class CustomerApi
         return $response;
     }
 
-    public function compute(Request $request, Response $response, array $arguments)
+    public function compute(Request $request, Response $response, array $arguments): Response
     {
 
         $parsedBody = $request->getParsedBody();
@@ -81,12 +81,55 @@ class CustomerApi
         $dealTarget = $inputArray->getSpecialCharsValue(self::DEAL_TARGET);
         $dealIncome = $inputArray->getFloatValue(self::DEAL_INCOME);
 
-        $computer = new Compute($dealSource, $dealTarget, $dealIncome);
-        $outcome = $computer->precomputation();
+        $deal = new Deal($dealSource, $dealTarget, $dealIncome);
+        $deal->precomputation();
 
-        $result = var_export($outcome, true);
+        $effectiveRatio = $deal->effectiveRatio;
+        $outcome = $deal->outcome;
+
+        $isValid = is_float($effectiveRatio);
+
+        $isNan = false;
+        if ($isValid) {
+            $isNan = is_nan($effectiveRatio);
+        }
+        if ($isNan) {
+            $effectiveRatio = 'NAN';
+        }
+
+        $isValid = is_float($effectiveRatio);
+
+        $isInfinite = false;
+        if ($isValid) {
+            $isInfinite = is_infinite($effectiveRatio);
+        }
+        if ($isInfinite) {
+            $effectiveRatio = 'INF';
+        }
+
+        $isValid = is_float($outcome);
+
+        $isNan = false;
+        if ($isValid) {
+            $isNan = is_nan($outcome);
+        }
+        if ($isNan) {
+            $outcome = 'NAN';
+        }
+
+        $isValid = is_float($outcome);
+
+        $isInfinite = false;
+        if ($isValid) {
+            $isInfinite = is_infinite($outcome);
+        }
+        if ($isInfinite) {
+            $outcome = 'INF';
+        }
+
         $response = $response->withJson(
-            array('result' => $result)
+            array('outcome' => $outcome,
+                'effective_ratio' => $effectiveRatio,)
         );
 
         return $response;
