@@ -36,13 +36,16 @@ class OperatorPage
     const ACCOUNT_RECEIVE = 'receive_account';
     const DOCUMENT_NUMBER = 'document_number';
     const DOCUMENT_DATE = 'document_date';
-    const INCOME_ACCOUNT = 'income_account';
-    const OUTCOME_ACCOUNT = 'outcome_account';
+    const INCOME_CURRENCY = 'income_account';
+    const OUTCOME_CURRENCY = 'outcome_account';
     const TRANSFER_STATUS = 'transfer_status_id';
     const STATUS_COMMENT = 'status_comment';
     const STATUS_TIME = 'status_time';
     const AWAIT_NAME = 'await_name';
     const AWAIT_ACCOUNT = 'await_account';
+    const PROCEED_ACCOUNT = 'proceed_account';
+    const PROCEED_NAME = 'proceed_name';
+
 
     private $router;
     private $viewer;
@@ -117,7 +120,6 @@ class OperatorPage
     /**
      * @param $transfers
      * @return array
-     * @internal param $rowView
      */
     private function setTransfersView($transfers): array
     {
@@ -146,16 +148,18 @@ class OperatorPage
                     $rowView[self::DEAL_EMAIL] = $transfer->dealEmail;
                     $rowView[self::FIO_TRANSFER] = $transfer->fioTransfer;
                     $rowView[self::ACCOUNT_TRANSFER] = $transfer->accountTransfer;
-                    $rowView[self::INCOME_ACCOUNT] = $transfer->incomeCurrency;
+                    $rowView[self::INCOME_CURRENCY] = $transfer->incomeCurrency;
                     $rowView[self::DEAL_INCOME] = $transfer->dealIncome;
                     $rowView[self::FIO_RECEIVE] = $transfer->fioReceive;
                     $rowView[self::ACCOUNT_RECEIVE] = $transfer->accountReceive;
-                    $rowView[self::OUTCOME_ACCOUNT] = $transfer->outcomeCurrency;
+                    $rowView[self::OUTCOME_CURRENCY] = $transfer->outcomeCurrency;
                     $rowView[self::DEAL_OUTCOME] = $transfer->dealOutcome;
                     $rowView[self::STATUS_COMMENT] = $transfer->statusComment;
                     $rowView[self::STATUS_TIME] = $transfer->statusTime;
                     $rowView[self::AWAIT_NAME] = $transfer->fioAwait;
                     $rowView[self::AWAIT_ACCOUNT] = $transfer->accountAwait;
+                    $rowView[self::PROCEED_ACCOUNT] = $transfer->accountProceed;
+                    $rowView[self::PROCEED_NAME] = $transfer->fioProceed;
 
                     $transferView[] = $rowView;
 

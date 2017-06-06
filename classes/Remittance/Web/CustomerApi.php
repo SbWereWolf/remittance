@@ -6,6 +6,7 @@ namespace Remittance\Web;
 use Remittance\Customer\Order;
 use Remittance\Exchange\Deal;
 use Remittance\UserInput\InputArray;
+use Remittance\UserOutput\JsonFloat;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -84,56 +85,36 @@ class CustomerApi
         $deal = new Deal($dealSource, $dealTarget, $dealIncome);
         $deal->precomputation();
 
-        $effectiveRatio = $deal->effectiveRatio;
-        $outcome = $deal->outcome;
+        $dealOutcome = $deal->outcome;
 
-        $isValid = is_float($effectiveRatio);
+        $effectiveRatio = $dealOutcome / $dealIncome;
+        $source = 1;
+        $target = $effectiveRatio;
 
-        $isNan = false;
-        if ($isValid) {
-            $isNan = is_nan($effectiveRatio);
-        }
-        if ($isNan) {
-            $effectiveRatio = 'NAN';
-        }
+        $isLess = $effectiveRatio < 1;
+        if ($isLess) {
+            $effectiveRatio = $dealIncome / $dealOutcome;
 
-        $isValid = is_float($effectiveRatio);
-
-        $isInfinite = false;
-        if ($isValid) {
-            $isInfinite = is_infinite($effectiveRatio);
-        }
-        if ($isInfinite) {
-            $effectiveRatio = 'INF';
+            $source = $effectiveRatio;
+            $target = 1;
         }
 
-        $isValid = is_float($outcome);
-
-        $isNan = false;
-        if ($isValid) {
-            $isNan = is_nan($outcome);
-        }
-        if ($isNan) {
-            $outcome = 'NAN';
-        }
-
-        $isValid = is_float($outcome);
-
-        $isInfinite = false;
-        if ($isValid) {
-            $isInfinite = is_infinite($outcome);
-        }
-        if ($isInfinite) {
-            $outcome = 'INF';
-        }
+        $sourceJson = new JsonFloat($source);
+        $sourceJson->prepare();
+        $targetJson = new JsonFloat($target);
+        $targetJson->prepare();
+        $outcome = new JsonFloat($dealOutcome);
+        $outcome->prepare();
 
         $response = $response->withJson(
-            array('outcome' => $outcome,
-                'effective_ratio' => $effectiveRatio,)
+            array('outcome' => $outcome->value,
+                'income_currency' => $dealSource,
+                'income_amount' => $sourceJson->value,
+                'outcome_currency' => $dealTarget,
+                'outcome_amount' => $targetJson->value,)
         );
 
         return $response;
     }
-
 
 }

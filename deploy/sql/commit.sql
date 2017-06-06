@@ -116,6 +116,6 @@ CREATE INDEX ix_volume_is_hidden_id
 INSERT INTO public.transfer_status (is_hidden, code, title, description)
 VALUES (0, 'RECEIVED', 'Принята', 'Принятая заявка на перевод');
 INSERT INTO public.transfer_status (is_hidden, code, title, description)
-VALUES (0, 'ACCOMPLISH', 'Выполненна', 'Выполненная успешно заявка');
+VALUES (0, 'ACCOMPLISH', 'Выполнена', 'Выполненная успешно заявка');
 INSERT INTO public.transfer_status (is_hidden, code, title, description)
 VALUES (0, 'ANNUL', 'Отменена', 'Отменённая ( Аннулированная ) заявка');

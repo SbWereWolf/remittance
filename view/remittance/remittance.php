@@ -150,10 +150,18 @@ if ($isValid) :?>
             success: function (result) {
 
                 const outcome = result.outcome;
-                const ratio = result.effective_ratio;
+                const income_currency = result.income_currency;
+                const income_amount = result.income_amount;
+                const outcome_currency = result.outcome_currency;
+                const outcome_amount = result.outcome_amount;
+
+                const ratio_text = income_amount
+                    + ' ' + income_currency
+                    + ' => ' + outcome_amount
+                    + ' ' + outcome_currency;
 
                 $("output[id='deal-outcome']").html(outcome);
-                $("output[id='deal-ratio']").html(ratio);
+                $("output[id='deal-ratio']").html(ratio_text);
             }
         });
     }

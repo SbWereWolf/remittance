@@ -148,6 +148,8 @@ class Transfer
         $this->body = $record->body;
         $this->accountProceed = $record->proceedAccount;
         $this->fioProceed = $record->proceedName;
+        $this->accountAwait = $record->awaitAccount;
+        $this->fioAwait = $record->awaitName;
 
         return true;
     }
@@ -225,6 +227,8 @@ class Transfer
         $record->body = $this->body;
         $record->proceedAccount = $this->accountProceed;
         $record->proceedName = $this->fioProceed;
+        $record->awaitAccount = $this->accountAwait;
+        $record->awaitName = $this->fioAwait;
 
         return $record;
     }

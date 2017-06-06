@@ -3,8 +3,10 @@
 namespace Remittance\DataAccess\Search;
 
 
+use Remittance\Core\Common;
 use Remittance\Core\ICommon;
 use Remittance\DataAccess\Entity\TransferRecord;
+use Remittance\DataAccess\Entity\TransferStatusRecord;
 use Remittance\DataAccess\Logic\ISqlHandler;
 use Remittance\DataAccess\Logic\SqlHandler;
 
@@ -107,6 +109,59 @@ class TransferSearch
                 $transfer = new TransferRecord();
                 $transfer->setByNamedValue($recordValues);
                 $result[] = $transfer;
+            }
+        }
+
+        return $result;
+    }
+
+    public function searchByStatus(string $status): array
+    {
+        $statusCode = SqlHandler::setBindParameter(':CODE', $status, \PDO::PARAM_STR);
+
+        $arguments[ISqlHandler::QUERY_TEXT] =
+            'SELECT '
+            . 'T.' . TransferRecord::ID
+            . ' , T.' . TransferRecord::IS_HIDDEN
+            . ' , T.' . TransferRecord::INCOME_AMOUNT
+            . ' , T.' . TransferRecord::OUTCOME_AMOUNT
+            . ' , T.' . TransferRecord::REPORT_EMAIL
+            . ' , T.' . TransferRecord::TRANSFER_NAME
+            . ' , T.' . TransferRecord::TRANSFER_ACCOUNT
+            . ' , T.' . TransferRecord::RECEIVE_NAME
+            . ' , T.' . TransferRecord::RECEIVE_ACCOUNT
+            . ' , T.' . TransferRecord::DOCUMENT_NUMBER
+            . ' , T.' . TransferRecord::DOCUMENT_DATE
+            . ' , T.' . TransferRecord::INCOME_ACCOUNT
+            . ' , T.' . TransferRecord::OUTCOME_ACCOUNT
+            . ' , T.' . TransferRecord::TRANSFER_STATUS_ID
+            . ' , T.' . TransferRecord::STATUS_COMMENT
+            . ' , T.' . TransferRecord::STATUS_TIME
+            . ' , T.' . TransferRecord::AWAIT_NAME
+            . ' , T.' . TransferRecord::AWAIT_ACCOUNT
+            . ' , T.' . TransferRecord::FEE
+            . ' , T.' . TransferRecord::PROCEED_ACCOUNT
+            . ' , T.' . TransferRecord::PROCEED_NAME
+            . ' , T.' . TransferRecord::BODY
+            . ' FROM '
+            . $this->tablename . ' AS T '
+            . ' JOIN ' . TransferStatusRecord::TABLE_NAME . ' AS S '
+            . ' ON T.' . TransferRecord::TRANSFER_STATUS_ID . ' = S.' . TransferStatusRecord::ID
+            . ' WHERE '
+            . ' S.' . TransferStatusRecord::CODE . ' = ' . $statusCode[ISqlHandler::PLACEHOLDER]
+            . ';';
+
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $statusCode;
+
+        $records = SqlHandler::readAllRecords($arguments);
+
+        $isContain = Common::isValidArray($records);
+        $result = ICommon::EMPTY_ARRAY;
+        if ($isContain) {
+            foreach ($records as $recordValues) {
+                $rateRecord = new TransferRecord();
+                $rateRecord->setByNamedValue($recordValues);
+                $result[] = $rateRecord;
             }
         }
 

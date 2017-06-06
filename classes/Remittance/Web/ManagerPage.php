@@ -7,10 +7,13 @@ use Remittance\Core\Common;
 use Remittance\Core\ICommon;
 use Remittance\DataAccess\Entity\CurrencyRecord;
 use Remittance\DataAccess\Entity\RateRecord;
+use Remittance\DataAccess\Entity\TransferRecord;
 use Remittance\DataAccess\Entity\VolumeRecord;
 use Remittance\DataAccess\Search\NamedEntitySearch;
 use Remittance\DataAccess\Search\RateSearch;
+use Remittance\DataAccess\Search\TransferSearch;
 use Remittance\DataAccess\Search\VolumeSearch;
+use Remittance\Operator\Transfer;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Router;
@@ -42,6 +45,8 @@ class ManagerPage implements IPage
     const ACTION_VOLUME_ENABLE = 'volume_enable';
     const ACTION_VOLUME_DISABLE = 'volume_disable';
 
+    const MODULE_FEE = 'fee';
+
     const CURRENCY_TITLE = 'currency_code';
 
     const MODULE_SETTING = 'setting';
@@ -54,6 +59,21 @@ class ManagerPage implements IPage
     const CURRENCY_REFERENCE = 'currency_reference';
     const VOLUME_REFERENCE = 'accounts_reference';
     const RATES_REFERENCE = 'rates_reference';
+    const FEE_REFERENCE = 'fee_reference';
+
+    const DEAL_INCOME = 'income_amount';
+    const DEAL_OUTCOME = 'outcome_amount';
+    const DOCUMENT_NUMBER = 'document_number';
+    const DOCUMENT_DATE = 'document_date';
+    const INCOME_CURRENCY = 'income_account';
+    const OUTCOME_CURRENCY = 'outcome_account';
+    const STATUS_TIME = 'status_time';
+    const AWAIT_NAME = 'await_name';
+    const AWAIT_ACCOUNT = 'await_account';
+    const PROCEED_ACCOUNT = 'proceed_account';
+    const PROCEED_NAME = 'proceed_name';
+    const FEE = 'fee';
+    const BODY = 'body';
 
     const ID = 'id';
 
@@ -299,11 +319,15 @@ class ManagerPage implements IPage
         $volumeLink = $this->router->pathFor(self::MODULE_VOLUME);
         $rateLink = $this->router->pathFor(self::MODULE_RATE);
         $settingLink = $this->router->pathFor(self::MODULE_SETTING);
+        $feeLink = $this->router->pathFor(self::MODULE_FEE);
+
+
         $menu = array(
             self::REFERENCES_LINKS => array(
                 self::CURRENCY_REFERENCE => $currencyLink,
                 self::VOLUME_REFERENCE => $volumeLink,
                 self::RATES_REFERENCE => $rateLink,
+                self::FEE_REFERENCE => $feeLink,
             ),
             self::SETTINGS_LINKS => array(
                 self::SETTINGS_COMMON => $settingLink,
@@ -312,6 +336,72 @@ class ManagerPage implements IPage
 
 
         return $menu;
+    }
+
+    public function fee($request, $response, $arguments)
+    {
+        $menu = $this->assembleManagerLinks();
+
+        $searcher = new TransferSearch();
+        $transfers = $searcher->searchByStatus(Transfer::STATUS_ACCOMPLISH);
+
+        $transferView = $this->setTransfersView($transfers);
+
+        $offset = 0;
+        $limit = 0;
+        $response = $this->viewer->render($response, "manager/fee.php", [
+            'transferView' => $transferView,
+            'offset' => $offset,
+            'limit' => $limit,
+            'menu' => $menu,
+        ]);
+
+        return $response;
+    }
+
+    /**
+     * @param $transfers
+     * @return array
+     */
+    private function setTransfersView($transfers): array
+    {
+        $isValid = Common::isValidArray($transfers);
+
+        $transferView = ICommon::EMPTY_ARRAY;
+        if ($isValid) {
+
+            foreach ($transfers as $transferCandidate) {
+                $isInstance = $transferCandidate instanceof TransferRecord;
+                if ($isInstance) {
+
+                    $transferRecord = TransferRecord::adopt($transferCandidate);
+
+                    $rowView[self::ID] = $transferRecord->id;
+
+                    $transfer = new Transfer();
+                    $transfer->assume($transferRecord);
+
+                    $rowView[self::DOCUMENT_NUMBER] = $transfer->documentNumber;
+                    $rowView[self::DOCUMENT_DATE] = $transfer->documentDate;
+                    $rowView[self::INCOME_CURRENCY] = $transfer->incomeCurrency;
+                    $rowView[self::DEAL_INCOME] = $transfer->dealIncome;
+                    $rowView[self::OUTCOME_CURRENCY] = $transfer->outcomeCurrency;
+                    $rowView[self::DEAL_OUTCOME] = $transfer->dealOutcome;
+                    $rowView[self::STATUS_TIME] = $transfer->statusTime;
+                    $rowView[self::AWAIT_NAME] = $transfer->fioAwait;
+                    $rowView[self::AWAIT_ACCOUNT] = $transfer->accountAwait;
+                    $rowView[self::PROCEED_ACCOUNT] = $transfer->accountProceed;
+                    $rowView[self::PROCEED_NAME] = $transfer->fioProceed;
+                    $rowView[self::FEE] = $transfer->fee;
+                    $rowView[self::BODY] = $transfer->body;
+
+                    $transferView[] = $rowView;
+
+                }
+            }
+
+        }
+        return $transferView;
     }
 
 }

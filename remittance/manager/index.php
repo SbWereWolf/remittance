@@ -173,7 +173,6 @@ $app->get($pathForVolumeModule, function (Request $request, Response $response, 
     return $response;
 })->setName(ManagerPage::MODULE_VOLUME);
 
-//*--*
 $pathForVolumeAdd = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
         array(ManagerPage::MODULE_VOLUME,
             ManagerPage::ACTION_VOLUME_ADD));
@@ -224,7 +223,17 @@ $app->post($pathForVolumeDisable, function (Request $request, Response $response
 
 })->setName(ManagerPage::ACTION_VOLUME_DISABLE);
 
-//*--*
+$pathForFeeModule = ManagerPage::ROOT . ManagerPage::MODULE_FEE;
+$app->get($pathForFeeModule, function (Request $request, Response $response, array $arguments) {
+
+    $router = $this->get(ROUTER_COMPONENT);
+    $viewer = $this->get(VIEWER_COMPONENT);
+    $page = new ManagerPage($viewer, $router);
+
+    $response = $page->fee($request, $response, $arguments);
+
+    return $response;
+})->setName(ManagerPage::MODULE_FEE);
 
 $pathForSettingModule = ManagerPage::ROOT . ManagerPage::MODULE_SETTING;
 $app->get($pathForSettingModule, function (Request $request, Response $response, array $arguments) {

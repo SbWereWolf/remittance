@@ -41,7 +41,6 @@ class Deal
         if ($result) {
             $this->feeAmount = $computer->feeAmount;
             $this->body = $computer->body;
-            $this->effectiveRatio = $computer->effectiveRatio;
             $this->outcome = $computer->outcome;
         }
 

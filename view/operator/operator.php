@@ -6,7 +6,8 @@
 
 use Remittance\Core\Common;
 use Remittance\Core\ICommon;
-use Remittance\Web\OperatorPage as OperatorPage;
+use Remittance\UserOutput\PlainText;
+use Remittance\Web\OperatorPage;
 
 ?>
 <!DOCTYPE html>
@@ -49,16 +50,18 @@ use Remittance\Web\OperatorPage as OperatorPage;
                 <th cell>Дата заявки</th>
                 <th cell>Статус заявки</th>
                 <th cell>Почта</th>
-                <th cell>ФИО отправителя</th>
-                <th cell>Счёт отправителя</th>
-                <th cell>ФИО посредника</th>
-                <th cell>Счёт посредника</th>
-                <th cell>Счёт поступления</th>
+                <th cell>Валюта поступления</th>
                 <th cell>Сумма Положить</th>
-                <th cell>ФИО получателя</th>
-                <th cell>Счёт получателя</th>
-                <th cell>Счёт списания</th>
+                <th cell>Счёт отправителя</th>
+                <th cell>ФИО отправителя</th>
+                <th cell>Счёт поступления</th>
+                <th cell>ФИО поступления</th>
+                <th cell>Валюта списания</th>
                 <th cell>Сумма Получить</th>
+                <th cell>Счёт списания</th>
+                <th cell>ФИО списания</th>
+                <th cell>Счёт получателя</th>
+                <th cell>ФИО получателя</th>
                 <th cell>Комментарий статуса</th>
                 <th cell>Время статуса</th>
                 <th cell>Выполнить</th>
@@ -68,7 +71,7 @@ use Remittance\Web\OperatorPage as OperatorPage;
             <tfoot>
             <tr>
                 <td><a id="previous-page" href="#" onclick="movePrevious();">PREVIOUS</a></td>
-                <td id="transfers-pages" colspan="16">&nbsp;&nbsp;</td>
+                <td id="transfers-pages" colspan="18">&nbsp;&nbsp;</td>
                 <td><a id="next-page" href="#" onclick="moveNext();">NEXT</a></td>
             </tr>
             </tfoot>
@@ -80,56 +83,28 @@ use Remittance\Web\OperatorPage as OperatorPage;
 
                     $id = Common::setIfExists(OperatorPage::ID, $viewRow, ICommon::EMPTY_VALUE);
                     $empty = ICommon::EMPTY_VALUE;
+
+                    $text = new PlainText();
                     ?>
                     <tr>
-                        <td cell><?= Common::setIfExists(OperatorPage::DOCUMENT_NUMBER,
-                                $viewRow,
-                                $empty) ?></td>
-                        <td cell><?= Common::setIfExists(OperatorPage::DOCUMENT_DATE,
-                                $viewRow,
-                                $empty) ?></td>
-                        <td cell><?= Common::setIfExists(OperatorPage::TRANSFER_STATUS,
-                                $viewRow,
-                                $empty) ?></td>
-                        <td cell><?= Common::setIfExists(OperatorPage::DEAL_EMAIL,
-                                $viewRow,
-                                $empty) ?></td>
-                        <td cell><?= Common::setIfExists(OperatorPage::FIO_TRANSFER,
-                                $viewRow,
-                                $empty) ?></td>
-                        <td cell><?= Common::setIfExists(OperatorPage::ACCOUNT_TRANSFER,
-                                $viewRow,
-                                $empty) ?></td>
-                        <td cell><?= Common::setIfExists(OperatorPage::AWAIT_NAME,
-                                $viewRow,
-                                $empty) ?></td>
-                        <td cell><?= Common::setIfExists(OperatorPage::AWAIT_ACCOUNT,
-                                $viewRow,
-                                $empty) ?></td>
-                        <td cell><?= Common::setIfExists(OperatorPage::INCOME_ACCOUNT,
-                                $viewRow,
-                                $empty) ?></td>
-                        <td cell><?= Common::setIfExists(OperatorPage::DEAL_INCOME,
-                                $viewRow,
-                                $empty) ?></td>
-                        <td cell><?= Common::setIfExists(OperatorPage::FIO_RECEIVE,
-                                $viewRow,
-                                $empty) ?></td>
-                        <td cell><?= Common::setIfExists(OperatorPage::ACCOUNT_RECEIVE,
-                                $viewRow,
-                                $empty) ?></td>
-                        <td cell><?= Common::setIfExists(OperatorPage::OUTCOME_ACCOUNT,
-                                $viewRow,
-                                $empty) ?></td>
-                        <td cell><?= Common::setIfExists(OperatorPage::DEAL_OUTCOME,
-                                $viewRow,
-                                $empty) ?></td>
-                        <td cell><?= Common::setIfExists(OperatorPage::STATUS_COMMENT,
-                                $viewRow,
-                                $empty) ?></td>
-                        <td cell><?= Common::setIfExists(OperatorPage::STATUS_TIME,
-                                $viewRow,
-                                $empty) ?></td>
+                        <td cell><?= $text->printElement($viewRow, OperatorPage::DOCUMENT_NUMBER) ?></td>
+                        <td cell><?= $text->printElement($viewRow, OperatorPage::DOCUMENT_DATE) ?></td>
+                        <td cell><?= $text->printElement($viewRow, OperatorPage::TRANSFER_STATUS) ?></td>
+                        <td cell><?= $text->printElement($viewRow, OperatorPage::DEAL_EMAIL) ?></td>
+                        <td cell><?= $text->printElement($viewRow, OperatorPage::INCOME_CURRENCY) ?></td>
+                        <td cell><?= $text->printElement($viewRow, OperatorPage::DEAL_INCOME) ?></td>
+                        <td cell><?= $text->printElement($viewRow, OperatorPage::ACCOUNT_TRANSFER) ?></td>
+                        <td cell><?= $text->printElement($viewRow, OperatorPage::FIO_TRANSFER) ?></td>
+                        <td cell><?= $text->printElement($viewRow, OperatorPage::AWAIT_ACCOUNT) ?></td>
+                        <td cell><?= $text->printElement($viewRow, OperatorPage::AWAIT_NAME) ?></td>
+                        <td cell><?= $text->printElement($viewRow, OperatorPage::OUTCOME_CURRENCY) ?></td>
+                        <td cell><?= $text->printElement($viewRow, OperatorPage::DEAL_OUTCOME) ?></td>
+                        <td cell><?= $text->printElement($viewRow, OperatorPage::PROCEED_ACCOUNT) ?></td>
+                        <td cell><?= $text->printElement($viewRow, OperatorPage::PROCEED_NAME) ?></td>
+                        <td cell><?= $text->printElement($viewRow, OperatorPage::ACCOUNT_RECEIVE) ?></td>
+                        <td cell><?= $text->printElement($viewRow, OperatorPage::FIO_RECEIVE) ?></td>
+                        <td cell><?= $text->printElement($viewRow, OperatorPage::STATUS_COMMENT) ?></td>
+                        <td cell><?= $text->printElement($viewRow, OperatorPage::STATUS_TIME) ?></td>
                         <td cell><a class="action" href="javascript:return false;"
                                     data-action="<?= $actionLinks[$id][OperatorPage::ACTION_ACCOMPLISH] ?>">Выполнить</a>
                         </td>

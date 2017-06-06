@@ -121,9 +121,9 @@ class TransferRecord extends Entity
         $statusTime = SqlHandler::setBindParameter(':STATUS_TIME', $this->statusTime, \PDO::PARAM_STR);
         $awaitName = SqlHandler::setBindParameter(':AWAIT_NAME', $this->awaitName, \PDO::PARAM_STR);
         $awaitAccount = SqlHandler::setBindParameter(':AWAIT_ACCOUNT', $this->awaitAccount, \PDO::PARAM_STR);
-        $fee = SqlHandler::setBindParameter(':FEE', $this->awaitAccount, \PDO::PARAM_STR);
-        $proceed_account = SqlHandler::setBindParameter(':PROCEED_ACCOUNT', $this->awaitAccount, \PDO::PARAM_STR);
-        $proceed_name = SqlHandler::setBindParameter(':PROCEED_NAME', $this->awaitAccount, \PDO::PARAM_STR);
+        $fee = SqlHandler::setBindParameter(':FEE', $this->fee, \PDO::PARAM_STR);
+        $proceedAccount = SqlHandler::setBindParameter(':PROCEED_ACCOUNT', $this->proceedAccount, \PDO::PARAM_STR);
+        $proceedName = SqlHandler::setBindParameter(':PROCEED_NAME', $this->proceedName, \PDO::PARAM_STR);
         $body = SqlHandler::setBindParameter(':BODY', $this->body, \PDO::PARAM_STR);
 
 
@@ -147,11 +147,11 @@ class TransferRecord extends Entity
             . ' , ' . self::TRANSFER_STATUS_ID . ' = ' . $status[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::STATUS_COMMENT . ' = ' . $statusComment[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::STATUS_TIME . ' = ' . $statusTime[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::AWAIT_NAME . ' = ' . $statusTime[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::AWAIT_ACCOUNT . ' = ' . $statusTime[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::AWAIT_NAME . ' = ' . $awaitName[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::AWAIT_ACCOUNT . ' = ' . $awaitAccount[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::FEE . ' = CAST(' . $fee[ISqlHandler::PLACEHOLDER] . ' AS DOUBLE PRECISION)'
-            . ' , ' . self::PROCEED_ACCOUNT . ' = ' . $proceed_account[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::PROCEED_NAME . ' = ' . $proceed_name[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::PROCEED_ACCOUNT . ' = ' . $proceedAccount[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::PROCEED_NAME . ' = ' . $proceedName[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::BODY . ' = CAST(' . $body[ISqlHandler::PLACEHOLDER] . ' AS DOUBLE PRECISION)'
 
             . ' WHERE '
@@ -200,8 +200,8 @@ class TransferRecord extends Entity
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $awaitName;
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $awaitAccount;
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $fee;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $proceed_account;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $proceed_name;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $proceedAccount;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $proceedName;
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $body;
 
         $record = SqlHandler::writeOneRecord($arguments);

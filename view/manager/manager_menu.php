@@ -41,6 +41,13 @@ if ($isValid):
                     ?>
                     <dd><a href="<?= $volume ?>">Объёмы</a></dd>
                 <?php endif; ?>
+                <?php
+                $fee = Common::setIfExists(ManagerPage::FEE_REFERENCE, $reference, $empty);
+                $isExists = !empty($fee);
+                if ($isExists):
+                    ?>
+                    <dd><a href="<?= $fee ?>">Комиссии</a></dd>
+                <?php endif; ?>
             </dl>
         <?php endif; ?>
         <?php

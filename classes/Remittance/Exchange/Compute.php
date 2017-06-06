@@ -16,7 +16,6 @@ class Compute
     public $feeAmount = NAN ;
     public $body = NAN ;
     private $rate = NAN ;
-    public $effectiveRatio = NAN ;
     public $outcome = NAN ;
 
 
@@ -33,8 +32,6 @@ class Compute
         $this->feeAmount = $this->income * $this->feeRatio;
         $this->body = $this->income - $this->feeAmount;
         $this->outcome = $this->body * $this->rate;
-
-        $this->effectiveRatio = $this->outcome / $this->income;
 
         return true;
 

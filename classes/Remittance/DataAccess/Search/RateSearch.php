@@ -3,6 +3,7 @@
 namespace Remittance\DataAccess\Search;
 
 
+use Remittance\Core\Common;
 use Remittance\Core\ICommon;
 use Remittance\DataAccess\Entity\CurrencyRecord;
 use Remittance\DataAccess\Entity\RateRecord;
@@ -73,7 +74,7 @@ class RateSearch
 
         $records = SqlHandler::readAllRecords($arguments);
 
-        $isContain = count($records);
+        $isContain = Common::isValidArray($records);
         $result = ICommon::EMPTY_ARRAY;
         if ($isContain) {
             foreach ($records as $recordValues) {
@@ -86,7 +87,7 @@ class RateSearch
         return $result;
     }
 
-    public function searchExchangeRate(string $source, string $target): RateRecord
+    public function searchExchangeRate(string $source, string $target): array
     {
         $sourceCurrency = SqlHandler::setBindParameter(':SOURCE', $source, \PDO::PARAM_STR);
         $targetCurrency = SqlHandler::setBindParameter(':TARGET', $target, \PDO::PARAM_STR);
@@ -114,11 +115,16 @@ class RateSearch
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $sourceCurrency;
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $targetCurrency;
 
-        $record = SqlHandler::readOneRecord($arguments);
+        $records = SqlHandler::readAllRecords($arguments);
 
-        $result = new RateRecord();
-        if ($record != ISqlHandler::EMPTY_ARRAY) {
-            $result->setByNamedValue($record);
+        $isContain = Common::isValidArray($records);
+        $result = ICommon::EMPTY_ARRAY;
+        if ($isContain) {
+            foreach ($records as $recordValues) {
+                $rateRecord = new RateRecord();
+                $rateRecord->setByNamedValue($recordValues);
+                $result[] = $rateRecord;
+            }
         }
 
         return $result;
