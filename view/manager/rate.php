@@ -106,7 +106,6 @@ if ($isValid)
                 <th cell>Валюта Получить</th>
                 <th cell>Ставка</th>
                 <th cell>Коммиссия</th>
-                <th cell>Действующая ставка</th>
                 <th cell>флаг Ставка отключена</th>
                 <th cell>флаг Обмен по умолчанию</th>
                 <th cell>По умолчанию</th>
@@ -147,7 +146,6 @@ if ($isValid)
                         <td cell><?= $target ?></td>
                         <td cell><?= $rate->ratio ?></td>
                         <td cell><?= $rate->fee ?></td>
-                        <td cell><?= $rate->effectiveRatio ?></td>
                         <td cell><input id="disable-<?= $rate->id ?>"
                                         type="checkbox" <?= $rate->isHidden ? 'checked' : '' ?>
                                         disabled>
