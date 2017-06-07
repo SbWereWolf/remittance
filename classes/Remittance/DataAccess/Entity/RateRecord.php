@@ -268,7 +268,6 @@ class RateRecord extends Entity
             . ' , ' . self::TARGET_CURRENCY
             . ' , ' . self::RATIO
             . ' , ' . self::FEE
-            . ' , ' . self::EFFECTIVE_RATE
             . ' , ' . self::IS_DEFAULT
             . ';';
 
