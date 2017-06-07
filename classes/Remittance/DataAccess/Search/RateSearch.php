@@ -115,16 +115,11 @@ class RateSearch
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $sourceCurrency;
         $arguments[ISqlHandler::QUERY_PARAMETER][] = $targetCurrency;
 
-        $records = SqlHandler::readAllRecords($arguments);
+        $record = SqlHandler::readOneRecord($arguments);
 
-        $isContain = Common::isValidArray($records);
-        $result = ICommon::EMPTY_ARRAY;
-        if ($isContain) {
-            foreach ($records as $recordValues) {
-                $rateRecord = new RateRecord();
-                $rateRecord->setByNamedValue($recordValues);
-                $result[] = $rateRecord;
-            }
+        $result = new RateRecord();
+        if ($record != ISqlHandler::EMPTY_ARRAY) {
+            $result->setByNamedValue($record);
         }
 
         return $result;
