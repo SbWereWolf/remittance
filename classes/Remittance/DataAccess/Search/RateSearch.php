@@ -87,7 +87,7 @@ class RateSearch
         return $result;
     }
 
-    public function searchExchangeRate(string $source, string $target): array
+    public function searchExchangeRate(string $source, string $target): RateRecord
     {
         $sourceCurrency = SqlHandler::setBindParameter(':SOURCE', $source, \PDO::PARAM_STR);
         $targetCurrency = SqlHandler::setBindParameter(':TARGET', $target, \PDO::PARAM_STR);

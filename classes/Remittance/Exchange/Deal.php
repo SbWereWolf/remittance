@@ -3,6 +3,7 @@
 namespace Remittance\Exchange;
 
 
+use const NAN;
 use Remittance\DataAccess\Search\RateSearch;
 
 class Deal
@@ -29,10 +30,11 @@ class Deal
         $searcher = new RateSearch();
         $exchangeRate = $searcher->searchExchangeRate($this->source, $this->target);
 
-        $computer = new Compute($this->income, $exchangeRate->fee, $exchangeRate->ratio);
+        $computer = new Compute(NAN, NAN, NAN);
         $isExists = !empty($exchangeRate->id);
         $result = false;
         if ($isExists) {
+            $computer = new Compute($this->income, $exchangeRate->fee, $exchangeRate->ratio);
             $computer->calculate();
 
             $result = true;
