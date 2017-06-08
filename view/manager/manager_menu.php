@@ -14,55 +14,55 @@ if ($isValid):
     ?>
     <div id="links">
         <?php
-        $reference = Common::setIfExists(ManagerPage::REFERENCES_LINKS, $menu, $empty);
-        $isExists = !empty($reference);
+        $menuReference = Common::setIfExists(ManagerPage::REFERENCES_LINKS, $menu, $empty);
+        $isExists = !empty($menuReference);
         if ($isExists):
             ?>
             <dl>
                 <dt>Справочники</dt>
                 <?php
-                $currency = Common::setIfExists(ManagerPage::CURRENCY_REFERENCE, $reference, $empty);
-                $isExists = !empty($currency);
+                $menuCurrency = Common::setIfExists(ManagerPage::CURRENCY_REFERENCE, $menuReference, $empty);
+                $isExists = !empty($menuCurrency);
                 if ($isExists):
                     ?>
-                    <dd><a href="<?= $currency ?>">Валюты</a></dd>
+                    <dd><a href="<?= $menuCurrency ?>">Валюты</a></dd>
                 <?php endif; ?>
                 <?php
-                $rate = Common::setIfExists(ManagerPage::RATES_REFERENCE, $reference, $empty);
-                $isExists = !empty($rate);
+                $menuRate = Common::setIfExists(ManagerPage::RATES_REFERENCE, $menuReference, $empty);
+                $isExists = !empty($menuRate);
                 if ($isExists):
                     ?>
-                    <dd><a href="<?= $rate ?>">Ставки</a></dd>
+                    <dd><a href="<?= $menuRate ?>">Ставки</a></dd>
                 <?php endif; ?>
                 <?php
-                $volume = Common::setIfExists(ManagerPage::VOLUME_REFERENCE, $reference, $empty);
-                $isExists = !empty($volume);
+                $menuVolume = Common::setIfExists(ManagerPage::VOLUME_REFERENCE, $menuReference, $empty);
+                $isExists = !empty($menuVolume);
                 if ($isExists):
                     ?>
-                    <dd><a href="<?= $volume ?>">Объёмы</a></dd>
+                    <dd><a href="<?= $menuVolume ?>">Объёмы</a></dd>
                 <?php endif; ?>
                 <?php
-                $fee = Common::setIfExists(ManagerPage::FEE_REFERENCE, $reference, $empty);
-                $isExists = !empty($fee);
+                $menuFee = Common::setIfExists(ManagerPage::FEE_REFERENCE, $menuReference, $empty);
+                $isExists = !empty($menuFee);
                 if ($isExists):
                     ?>
-                    <dd><a href="<?= $fee ?>">Комиссии</a></dd>
+                    <dd><a href="<?= $menuFee ?>">Комиссии</a></dd>
                 <?php endif; ?>
             </dl>
         <?php endif; ?>
         <?php
-        $settings = Common::setIfExists(ManagerPage::SETTINGS_LINKS, $menu, $empty);
-        $isExists = !empty($settings);
+        $menuSettings = Common::setIfExists(ManagerPage::SETTINGS_LINKS, $menu, $empty);
+        $isExists = !empty($menuSettings);
         if ($isExists):
             ?>
             <dl>
                 <dt>Настрокий</dt>
                 <?php
-                $common = Common::setIfExists(ManagerPage::SETTINGS_COMMON, $settings, $empty);
-                $isExists = !empty($common);
+                $menuCommon = Common::setIfExists(ManagerPage::SETTINGS_COMMON, $menuSettings, $empty);
+                $isExists = !empty($menuCommon);
                 if ($isExists):
                     ?>
-                    <dd><a href="<?= $common ?>">Общие</a></dd>
+                    <dd><a href="<?= $menuCommon ?>">Общие</a></dd>
                 <?php endif; ?>
             </dl>
         <?php endif; ?>

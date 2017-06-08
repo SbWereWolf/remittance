@@ -47,6 +47,32 @@ class ManagerApi implements IApi
         return $response;
     }
 
+    public function currencySave(Request $request, Response $response, array $arguments)
+    {
+        $inputArray = InputArray::getFormData($request);
+
+        $code = $inputArray->getSpecialCharsValue('code');
+        $title = $inputArray->getSpecialCharsValue('title');
+        $description = $inputArray->getSpecialCharsValue('description');
+        $disable = $inputArray->getBooleanValue('disable');
+
+        $currency = new Currency();
+
+        $currency->code = $code;
+        $currency->title = $title;
+        $currency->description = $description;
+        $currency->isDisable = $disable;
+
+        $message = $currency->store();
+
+        $response = $response->withJson(
+            array('result' => $message)
+        );
+
+        return $response;
+
+    }
+
     public function currencyDisable(Request $request, Response $response, array $arguments)
     {
         $inputArray = new InputArray($arguments);
@@ -113,7 +139,7 @@ class ManagerApi implements IApi
 
         $rate->sourceCurrency = $sourceCurrency;
         $rate->targetCurrency = $targetCurrency;
-        $rate->rate = $exchangeRate;
+        $rate->ratio = $exchangeRate;
         $rate->fee = $fee;
         $rate->isDefault = $default;
         $rate->isDisable = $disable;
@@ -130,13 +156,28 @@ class ManagerApi implements IApi
 
     public function rateSave(Request $request, Response $response, array $arguments)
     {
-        $parsedBody = $request->getParsedBody();
-        $inputArray = new InputArray($parsedBody);
+        $inputArray = InputArray::getFormData($request);
 
-        $id = $inputArray->getIntegerValue(self::ID);
+        $ratio = $inputArray->getFloatValue('ratio');
+        $fee = $inputArray->getFloatValue('fee');
+        $sourceCurrency = $inputArray->getSpecialCharsValue('source_currency');
+        $targetCurrency = $inputArray->getSpecialCharsValue('target_currency');
+        $disable = $inputArray->getBooleanValue('disable');
+        $default = $inputArray->getBooleanValue('default');
+
+        $rate = new Rate();
+
+        $rate->ratio = $ratio;
+        $rate->fee = $fee;
+        $rate->sourceCurrency = $sourceCurrency;
+        $rate->targetCurrency = $targetCurrency;
+        $rate->isDisable = $disable;
+        $rate->isDefault = $default;
+
+        $message = $rate->store();
 
         $response = $response->withJson(
-            array('message' => "success enable $id")
+            array('result' => $message)
         );
 
         return $response;
@@ -213,19 +254,10 @@ class ManagerApi implements IApi
 
     public function volumeAdd(Request $request, Response $response, array $arguments)
     {
-        $parsedBody = $request->getParsedBody();
-        $formData = Common::setIfExists(self::FORM_DATA, $parsedBody, ICommon::EMPTY_VALUE);
-
-        $isValid = !empty($formData);
-        $volumeData = ICommon::EMPTY_ARRAY;
-        if ($isValid) {
-            parse_str($formData, $volumeData);
-        }
-
-        $inputArray = new InputArray($volumeData);
+        $inputArray = InputArray::getFormData($request);
 
         $currency = $inputArray->getSpecialCharsValue('currency');
-        $amount = $inputArray->getFloatValue('volume');
+        $amount = $inputArray->getFloatValue('amount');
         $reserve = $inputArray->getFloatValue('reserve');
         $accountName = $inputArray->getSpecialCharsValue('account_name');
         $accountNumber = $inputArray->getSpecialCharsValue('account_number');
@@ -256,13 +288,32 @@ class ManagerApi implements IApi
 
     public function volumeSave(Request $request, Response $response, array $arguments)
     {
-        $parsedBody = $request->getParsedBody();
-        $inputArray = new InputArray($parsedBody);
+        $inputArray = InputArray::getFormData($request);
 
-        $id = $inputArray->getIntegerValue(self::ID);
+        $currency = $inputArray->getSpecialCharsValue('currency');
+        $amount = $inputArray->getFloatValue('amount');
+        $reserve = $inputArray->getFloatValue('reserve');
+        $accountName = $inputArray->getSpecialCharsValue('account_name');
+        $accountNumber = $inputArray->getSpecialCharsValue('account_number');
+        $limitation = $inputArray->getFloatValue('limitation');
+        $total = $inputArray->getFloatValue('total');
+        $disable = $inputArray->getBooleanValue('disable');
+
+        $volume = new Volume();
+
+        $volume->currency = $currency;
+        $volume->amount = $amount;
+        $volume->reserve = $reserve;
+        $volume->accountName = $accountName;
+        $volume->accountNumber = $accountNumber;
+        $volume->limitation = $limitation;
+        $volume->total = $total;
+        $volume->isDisable = $disable;
+
+        $message = $volume->store();
 
         $response = $response->withJson(
-            array('message' => "success enable $id")
+            array('result' => $message)
         );
 
         return $response;
@@ -313,6 +364,4 @@ class ManagerApi implements IApi
         return $response;
 
     }
-
-
 }

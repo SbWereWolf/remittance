@@ -27,7 +27,7 @@ class Rate
 
     public $sourceCurrency = '';
     public $targetCurrency = '';
-    public $rate = 0;
+    public $ratio = 0;
     public $fee = 0;
     public $isDefault = self::DEFINE_AS_NOT_DEFAULT;
     public $isDisable = self::DEFAULT_IS_DISABLE;
@@ -46,7 +46,7 @@ class Rate
         if ($isSuccess) {
 
             $record->isHidden = $this->isDisable;
-            $record->ratio = $this->rate;
+            $record->ratio = $this->ratio;
             $record->fee = $this->fee;
             $record->isDefault = $this->isDefault;
 
@@ -79,7 +79,7 @@ class Rate
         if ($isSuccess) {
 
             $this->isDisable = $record->isHidden;
-            $this->rate = $record->ratio;
+            $this->ratio = $record->ratio;
             $this->fee = $record->fee;
             $this->isDefault = $record->isDefault;
 
@@ -120,7 +120,7 @@ class Rate
         $isSuccess = !empty($foundRecord->id);
         if ($isSuccess) {
             $this->isDisable = $foundRecord->isHidden;
-            $this->rate = $foundRecord->ratio;
+            $this->ratio = $foundRecord->ratio;
             $this->fee = $foundRecord->fee;
             $this->isDefault = $foundRecord->isDefault;
 
@@ -190,7 +190,7 @@ class Rate
         if($isValid){
 
             $record->isHidden = $this->isDisable;
-            $record->ratio = $this->rate;
+            $record->ratio = $this->ratio;
             $record->fee = $this->fee;
             $record->isDefault = $this->isDefault;
         }
@@ -216,7 +216,7 @@ class Rate
             $this->targetCurrency = $target->code;
 
             $this->isDisable = $record->isHidden;
-            $this->rate = $record->ratio;
+            $this->ratio = $record->ratio;
             $this->fee = $record->fee;
             $this->isDefault = $record->isDefault;
         }
@@ -237,6 +237,15 @@ class Rate
     {
         $this->isDisable = self::DEFINE_AS_DISABLE;
         $result = $this->save();
+
+        return $result;
+    }
+
+    public function store(): string
+    {
+        $isSuccess = $this->save();
+
+        $result = $isSuccess ? 'Изменения сохранены' : 'Ошибка сохранения';
 
         return $result;
     }

@@ -62,17 +62,16 @@ class Volume
     public function add(): string
     {
 
-        $record = new VolumeRecord();
-        $isSuccess = $record->addEntity();
-
-        $currencyRecord = new NamedEntity();
-        if ($isSuccess) {
-
-            $currencyRecord = $this->getCurrencyRecord();
-        }
+        $currencyRecord = $this->getCurrencyRecord();
         $isCurrencyDefined = !empty($currencyRecord->id);
 
+        $record = new VolumeRecord();
+        $isSuccess = false;
         if ($isCurrencyDefined) {
+            $isSuccess = $record->addEntity();
+        }
+
+        if ($isSuccess) {
 
             $record->isHidden = $this->isDisable;
             $record->amount = $this->amount;
@@ -95,6 +94,7 @@ class Volume
 
         $result = ICommon::EMPTY_VALUE;
         $isSuccess = $isCurrencyFound;
+
         if ($isSuccess) {
 
             $this->isDisable = $record->isHidden;
@@ -220,6 +220,15 @@ class Volume
     {
         $this->isDisable = self::DEFINE_AS_DISABLE;
         $result = $this->save();
+
+        return $result;
+    }
+
+    public function store(): string
+    {
+        $isSuccess = $this->save();
+
+        $result = $isSuccess ? 'Изменения сохранены' : 'Ошибка сохранения';
 
         return $result;
     }

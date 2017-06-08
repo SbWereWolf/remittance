@@ -95,6 +95,15 @@ class Currency
         return $result;
     }
 
+    public function store(): string
+    {
+        $Success = $this->save();
+
+        $result = $Success ? 'Успешно сохранено' : 'Ошибка сохранения';
+
+        return $result;
+    }
+
     private function save():bool
     {
         $record = $this->assembleRecord();

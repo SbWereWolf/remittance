@@ -13,7 +13,10 @@ use Remittance\DataAccess\Search\NamedEntitySearch;
 use Remittance\DataAccess\Search\RateSearch;
 use Remittance\DataAccess\Search\TransferSearch;
 use Remittance\DataAccess\Search\VolumeSearch;
+use Remittance\Manager\Currency;
+use Remittance\Manager\Rate;
 use Remittance\Operator\Transfer;
+use Remittance\UserInput\InputArray;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Router;
@@ -25,13 +28,17 @@ class ManagerPage implements IPage
 
     const MODULE_CURRENCY = 'currency';
 
+    const ACTION_CURRENCY_EDIT = 'currency_edit';
+    const ACTION_CURRENCY_SAVE = 'currency_save';
     const ACTION_CURRENCY_ADD = 'currency_add';
     const ACTION_CURRENCY_ENABLE = 'currency_enable';
     const ACTION_CURRENCY_DISABLE = 'currency_disable';
 
     const MODULE_RATE = 'rate';
-    const ACTION_RATE_ADD = 'rate_add';
+
     const ACTION_RATE_EDIT = 'rate_edit';
+    const ACTION_RATE_SAVE = 'rate_save';
+    const ACTION_RATE_ADD = 'rate_add';
     const ACTION_RATE_DEFAULT = 'rate_default';
     const ACTION_RATE_ENABLE = 'rate_enable';
     const ACTION_RATE_DISABLE = 'rate_disable';
@@ -40,8 +47,9 @@ class ManagerPage implements IPage
     const RATE_TARGET_CURRENCY_TITLE = 'target_code';
 
     const MODULE_VOLUME = 'volume';
-    const ACTION_VOLUME_ADD = 'volume_add';
     const ACTION_VOLUME_EDIT = 'volume_edit';
+    const ACTION_VOLUME_ADD = 'volume_add';
+    const ACTION_VOLUME_SAVE = 'volume_save';
     const ACTION_VOLUME_ENABLE = 'volume_enable';
     const ACTION_VOLUME_DISABLE = 'volume_disable';
 
@@ -120,6 +128,31 @@ class ManagerPage implements IPage
         return $response;
     }
 
+    public function currencyEdit(Request $request, Response $response, array $arguments)
+    {
+
+        $getArray = new InputArray($arguments);
+        $id = $getArray->getIntegerValue(self::ID);
+
+        $searcher = new NamedEntitySearch(CurrencyRecord::TABLE_NAME);
+        $named = $searcher->searchById($id);
+
+        $currency = new Currency();
+        $isSuccess = $currency->assumeNamedEntity($named);
+
+        $actionLinks = $this->setEditCurrencyActions();
+
+        $menu = $this->assembleManagerLinks();
+
+        $response = $this->viewer->render($response, "manager/currency_edit.php", [
+            'currency' => $currency,
+            'menu' => $menu,
+            'actionLinks' => $actionLinks,
+        ]);
+
+        return $response;
+    }
+
     public function rate(Request $request, Response $response, array $arguments)
     {
         $menu = $this->assembleManagerLinks();
@@ -161,6 +194,32 @@ class ManagerPage implements IPage
             'actionLinks' => $actionLinks,
             'currencyTitles' => $currencyTitles,
             'menu' => $menu,
+        ]);
+
+        return $response;
+    }
+
+    public function rateEdit(Request $request, Response $response, array $arguments)
+    {
+
+        $getArray = new InputArray($arguments);
+        $id = $getArray->getIntegerValue(self::ID);
+
+        $rate = new Rate();
+        $isSuccess = $rate->assembleRate($id);
+
+        $actionLinks = $this->setEditRateActions();
+
+        $searcher = new NamedEntitySearch(CurrencyRecord::TABLE_NAME);
+        $currencies = $searcher->searchCurrency();
+
+        $menu = $this->assembleManagerLinks();
+
+        $response = $this->viewer->render($response, "manager/rate_edit.php", [
+            'rate' => $rate,
+            'currencies' => $currencies,
+            'menu' => $menu,
+            'actionLinks' => $actionLinks,
         ]);
 
         return $response;
@@ -208,6 +267,32 @@ class ManagerPage implements IPage
         return $response;
     }
 
+    public function volumeEdit(Request $request, Response $response, array $arguments)
+    {
+
+        $getArray = new InputArray($arguments);
+        $id = $getArray->getIntegerValue(self::ID);
+
+        $searcher = new VolumeSearch();
+        $volume = $searcher->searchById($id);
+
+        $actionLinks = $this->setEditVolumeActions();
+
+        $menu = $this->assembleManagerLinks();
+
+        $searcher = new NamedEntitySearch(CurrencyRecord::TABLE_NAME);
+        $currencies = $searcher->searchCurrency();
+
+        $response = $this->viewer->render($response, "manager/volume_edit.php", [
+            'volume' => $volume,
+            'currencies' => $currencies,
+            'menu' => $menu,
+            'actionLinks' => $actionLinks,
+        ]);
+
+        return $response;
+    }
+
     /**
      * @param $currencies
      * @return array
@@ -225,10 +310,55 @@ class ManagerPage implements IPage
             $enableLink = $this->router->pathFor(
                 self::ACTION_CURRENCY_ENABLE,
                 [self::ID => $id]);
+            $editLink = $this->router->pathFor(
+                self::ACTION_CURRENCY_EDIT,
+                [self::ID => $id]);
 
             $actionLinks[$id][self::ACTION_CURRENCY_DISABLE] = $disableLink;
             $actionLinks[$id][self::ACTION_CURRENCY_ENABLE] = $enableLink;
+            $actionLinks[$id][self::ACTION_CURRENCY_EDIT] = $editLink;
         }
+        return $actionLinks;
+    }
+
+    /**
+     * @param $rates
+     * @return array|mixed
+     * @internal param $actionLinks
+     */
+    private function setRateActions(array $rates): array
+    {
+        $addRateLink = $this->router->pathFor(
+            self::ACTION_RATE_ADD);
+
+        $actionLinks[self::ACTION_RATE_ADD] = $addRateLink;
+
+        $isValid = Common::isValidArray($rates);
+        if ($isValid) {
+            foreach ($rates as $rate) {
+
+                $id = $rate->id;
+
+                $defaultLink = $this->router->pathFor(
+                    self::ACTION_RATE_DEFAULT,
+                    [self::ID => $id]);
+                $enableLink = $this->router->pathFor(
+                    self::ACTION_RATE_ENABLE,
+                    [self::ID => $id]);
+                $disableLink = $this->router->pathFor(
+                    self::ACTION_RATE_DISABLE,
+                    [self::ID => $id]);
+                $editLink = $this->router->pathFor(
+                    self::ACTION_RATE_EDIT,
+                    [self::ID => $id]);
+
+                $actionLinks[$id][self::ACTION_RATE_DEFAULT] = $defaultLink;
+                $actionLinks[$id][self::ACTION_RATE_ENABLE] = $enableLink;
+                $actionLinks[$id][self::ACTION_RATE_DISABLE] = $disableLink;
+                $actionLinks[$id][self::ACTION_RATE_EDIT] = $editLink;
+            }
+        }
+
         return $actionLinks;
     }
 
@@ -262,9 +392,13 @@ class ManagerPage implements IPage
                     $disableLink = $this->router->pathFor(
                         self::ACTION_VOLUME_DISABLE,
                         [self::ID => $id]);
+                    $editLink = $this->router->pathFor(
+                        self::ACTION_VOLUME_EDIT,
+                        [self::ID => $id]);
 
                     $actionLinks[$id][self::ACTION_VOLUME_ENABLE] = $enableLink;
                     $actionLinks[$id][self::ACTION_VOLUME_DISABLE] = $disableLink;
+                    $actionLinks[$id][self::ACTION_VOLUME_EDIT] = $editLink;
                 }
 
             }
@@ -273,39 +407,47 @@ class ManagerPage implements IPage
         return $actionLinks;
     }
 
-    /**
-     * @param $rates
-     * @return array|mixed
-     * @internal param $actionLinks
-     */
-    private function setRateActions(array $rates): array
+    private function setEditVolumeActions(): array
     {
-        $addRateLink = $this->router->pathFor(
-            self::ACTION_RATE_ADD);
+        $actionLinks = ICommon::EMPTY_ARRAY;
 
-        $actionLinks[self::ACTION_RATE_ADD] = $addRateLink;
+        $saveElementLink = $this->router->pathFor(
+            self::ACTION_VOLUME_SAVE);
+        $viewListLink = $this->router->pathFor(self::MODULE_VOLUME);
 
-        $isValid = Common::isValidArray($rates);
-        if ($isValid) {
-            foreach ($rates as $rate) {
+        $actionLinks[self::ACTION_VOLUME_SAVE] = $saveElementLink;
+        $actionLinks[self::MODULE_VOLUME] = $viewListLink;
 
-                $id = $rate->id;
 
-                $defaultLink = $this->router->pathFor(
-                    self::ACTION_RATE_DEFAULT,
-                    [self::ID => $id]);
-                $enableLink = $this->router->pathFor(
-                    self::ACTION_RATE_ENABLE,
-                    [self::ID => $id]);
-                $disableLink = $this->router->pathFor(
-                    self::ACTION_RATE_DISABLE,
-                    [self::ID => $id]);
+        return $actionLinks;
+    }
 
-                $actionLinks[$id][self::ACTION_RATE_DEFAULT] = $defaultLink;
-                $actionLinks[$id][self::ACTION_RATE_ENABLE] = $enableLink;
-                $actionLinks[$id][self::ACTION_RATE_DISABLE] = $disableLink;
-            }
-        }
+    private function setEditCurrencyActions(): array
+    {
+        $actionLinks = ICommon::EMPTY_ARRAY;
+
+        $saveElementLink = $this->router->pathFor(
+            self::ACTION_CURRENCY_SAVE);
+        $viewListLink = $this->router->pathFor(self::MODULE_CURRENCY);
+
+        $actionLinks[self::ACTION_CURRENCY_SAVE] = $saveElementLink;
+        $actionLinks[self::MODULE_CURRENCY] = $viewListLink;
+
+
+        return $actionLinks;
+    }
+
+    private function setEditRateActions(): array
+    {
+        $actionLinks = ICommon::EMPTY_ARRAY;
+
+        $saveElementLink = $this->router->pathFor(
+            self::ACTION_RATE_SAVE);
+        $viewListLink = $this->router->pathFor(self::MODULE_RATE);
+
+        $actionLinks[self::ACTION_RATE_SAVE] = $saveElementLink;
+        $actionLinks[self::MODULE_RATE] = $viewListLink;
+
 
         return $actionLinks;
     }

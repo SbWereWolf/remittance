@@ -9,10 +9,13 @@
 namespace Remittance\UserInput;
 
 
+use Remittance\Core\Common;
 use Remittance\Core\ICommon;
+use Slim\Http\Request;
 
 class InputArray implements IInputArray
 {
+    const FORM_DATA = 'form_data';
 
     private $userArray = ICommon::EMPTY_ARRAY;
 
@@ -70,5 +73,24 @@ class InputArray implements IInputArray
         $result = floatval($value);
 
         return $result;
+    }
+
+    /**
+     * @param Request $request
+     * @return InputArray
+     */
+    public static function getFormData(Request $request): InputArray
+    {
+        $parsedBody = $request->getParsedBody();
+        $formData = Common::setIfExists(self::FORM_DATA, $parsedBody, ICommon::EMPTY_VALUE);
+
+        $isValid = !empty($formData);
+        $volumeData = ICommon::EMPTY_ARRAY;
+        if ($isValid) {
+            parse_str($formData, $volumeData);
+        }
+
+        $inputArray = new InputArray($volumeData);
+        return $inputArray;
     }
 }

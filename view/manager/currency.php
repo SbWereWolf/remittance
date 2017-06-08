@@ -6,6 +6,7 @@
 /* @var $menu array */
 
 use Remittance\Core\Common;
+use Remittance\Core\ICommon;
 use Remittance\DataAccess\Entity\CurrencyRecord;
 use Remittance\Web\ManagerPage;
 
@@ -30,6 +31,8 @@ use Remittance\Web\ManagerPage;
 </head>
 
 <body>
+
+<h1>Валюты для обмена</h1>
 
 <?php
 $isSet = isset($menu);
@@ -87,7 +90,33 @@ if ($isValid)
                     $asNamed = CurrencyRecord::adopt($currency);
                     $id = $asNamed->id ?>
                     <tr>
-                        <td cell><?= $asNamed->code ?></td>
+                        <td cell>
+
+                            <?php
+                            $isValid = Common::isValidArray($actionLinks);
+                            $idCollection = ICommon::EMPTY_ARRAY;
+                            if ($isValid) {
+                                $idCollection = Common::setIfExists($id, $actionLinks, ICommon::EMPTY_ARRAY);
+                            }
+
+                            $isValid = Common::isValidArray($idCollection);
+                            $isExist = false;
+                            if ($isValid) {
+                                $isExist = array_key_exists(ManagerPage::ACTION_CURRENCY_EDIT, $idCollection);
+                            }
+
+                            if ($isExist):
+
+                                $editLink = $idCollection[ManagerPage::ACTION_CURRENCY_EDIT];
+                                ?>
+                                <a href="<?= $editLink ?>"><?= $asNamed->code ?></a>
+                            <?php endif; ?>
+
+                            <?php if (!$isExist): ?>
+                                <?= $asNamed->code ?>
+                            <?php endif; ?>
+
+                        </td>
                         <td cell><?= $asNamed->title ?></td>
                         <td cell><input id="disable-<?= $asNamed->code ?>"
                                         type="checkbox" <?= $asNamed->isHidden ? 'checked' : '' ?>

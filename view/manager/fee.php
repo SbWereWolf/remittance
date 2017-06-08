@@ -33,6 +33,8 @@ use Remittance\Web\ManagerPage;
 
 <body>
 
+<h1>Список выполненных переводов</h1>
+
 <?php
 $isSet = isset($menu);
 $isValid = false;

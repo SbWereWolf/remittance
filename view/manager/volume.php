@@ -35,6 +35,8 @@ use Remittance\Web\ManagerPage;
 
 <body>
 
+<h1>Объёмы валют</h1>
+
 <?php
 $isSet = isset($menu);
 $isValid = false;
@@ -67,11 +69,11 @@ if ($isValid)
                 </select>
             <?php endif ?>
         </dd>
-        <dd><label for="volume">Объём</label><input type="number" step="0.0001" id="volume" name="volume"></dd>
+        <dd><label for="volume">Объём</label><input type="number" step="0.0001" id="volume" name="amount"></dd>
         <dd><label for="reserve">Резерв</label><input type="number" step="0.0001" id="reserve" name="reserve"></dd>
-        <dd><label for="account-name">ФИО</label><input type="text" id="account-name" name="account_name"></dd>
         <dd><label for="account-number">Номер счёта</label><input type="text" id="account-number" name="account_number">
         </dd>
+        <dd><label for="account-name">ФИО</label><input type="text" id="account-name" name="account_name"></dd>
         <dd><label for="limitation">Лимит</label><input type="number" step="0.0001" id="limitation" name="limitation">
         </dd>
         <dd><label for="total">Использовано лимита</label><input type="number" step="0.0001" id="total" name="total">
@@ -135,7 +137,31 @@ if ($isValid)
                     }
                     ?>
                     <tr>
-                        <td cell><?= $currencyTitle ?></td>
+                        <td cell>
+                            <?php
+                            $isValid = Common::isValidArray($actionLinks);
+                            $idCollection = ICommon::EMPTY_ARRAY;
+                            if ($isValid) {
+                                $idCollection = Common::setIfExists($id, $actionLinks, ICommon::EMPTY_ARRAY);
+                            }
+
+                            $isValid = Common::isValidArray($idCollection);
+                            $isExist = false;
+                            if ($isValid) {
+                                $isExist = array_key_exists(ManagerPage::ACTION_VOLUME_EDIT, $idCollection);
+                            }
+
+                            if ($isExist):
+
+                                $editLink = $idCollection[ManagerPage::ACTION_VOLUME_EDIT];
+                                ?>
+                                <a href="<?= $editLink ?>"><?= $currencyTitle ?></a>
+                            <?php endif; ?>
+
+                            <?php if (!$isExist): ?>
+                                <?= $currencyTitle ?>
+                            <?php endif; ?>
+                        </td>
                         <td cell><?= $volume->amount ?></td>
                         <td cell><?= $volume->reserve ?></td>
                         <td cell><?= $volume->accountName ?></td>

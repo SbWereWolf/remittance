@@ -31,6 +31,9 @@ use Remittance\Web\OperatorPage;
 </head>
 
 <body>
+
+<h1>Список переводов</h1>
+
 <div id="message"></div>
 <div id="transfers-pager" data-offset="<?= $offset ?>" data-limit="<?= $limit ?>"></div>
 <div id="transfers">

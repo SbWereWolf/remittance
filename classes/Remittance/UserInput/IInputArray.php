@@ -10,6 +10,7 @@ namespace Remittance\UserInput;
 
 
 use Remittance\Core\ICommon;
+use Slim\Http\Request;
 
 interface IInputArray
 {
@@ -23,4 +24,10 @@ interface IInputArray
     public function getIntegerValue(string $key, array $options = array()):int;
 
     public function getFloatValue(string $key, array $options = array()):float;
+
+    /** Получить данные html-формы, сформированные с помощью jQuery.serialize
+     * @param Request $request запрос к серверу
+     * @return InputArray массив ключ - значение
+     */
+    public static function getFormData(Request $request): InputArray;
 }

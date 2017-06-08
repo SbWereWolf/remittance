@@ -15,6 +15,9 @@ use Remittance\Web\CustomerPage;
 </head>
 
 <body>
+
+<h1>Обменник</h1>
+
 <?php
 $isSet = isset($currencies);
 $isArray = false;

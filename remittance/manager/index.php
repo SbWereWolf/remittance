@@ -86,6 +86,34 @@ $app->post($pathForCurrencyEnable, function (Request $request, Response $respons
 
 })->setName(ManagerPage::ACTION_CURRENCY_ENABLE);
 
+$pathForCurrencyEdit = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
+        array(ManagerPage::MODULE_CURRENCY,
+            ManagerPage::ACTION_CURRENCY_EDIT,
+            '{' . ManagerPage::ID . '}'));
+$app->get($pathForCurrencyEdit, function (Request $request, Response $response, array $arguments) {
+
+    $router = $this->get(ROUTER_COMPONENT);
+    $viewer = $this->get(VIEWER_COMPONENT);
+    $page = new ManagerPage($viewer, $router);
+
+    $response = $page->currencyEdit($request, $response, $arguments);
+
+    return $response;
+
+})->setName(ManagerPage::ACTION_CURRENCY_EDIT);
+
+$pathForCurrencySave = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
+        array(ManagerPage::MODULE_CURRENCY,
+            ManagerPage::ACTION_CURRENCY_SAVE,));
+$app->post($pathForCurrencySave, function (Request $request, Response $response, array $arguments) {
+
+    $api = new \Remittance\Web\ManagerApi();
+    $response = $api->currencySave($request, $response, $arguments);
+
+    return $response;
+
+})->setName(ManagerPage::ACTION_CURRENCY_SAVE);
+
 $pathForRateModule = ManagerPage::ROOT . ManagerPage::MODULE_RATE;
 $app->get($pathForRateModule, function (Request $request, Response $response, array $arguments) {
 
@@ -110,9 +138,25 @@ $app->post($pathForRateAdd, function (Request $request, Response $response, arra
 
 })->setName(ManagerPage::ACTION_RATE_ADD);
 
+$pathForRateEdit = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
+        array(ManagerPage::MODULE_RATE,
+            ManagerPage::ACTION_RATE_EDIT,
+            '{' . ManagerPage::ID . '}'));
+$app->get($pathForRateEdit, function (Request $request, Response $response, array $arguments) {
+
+    $router = $this->get(ROUTER_COMPONENT);
+    $viewer = $this->get(VIEWER_COMPONENT);
+    $page = new ManagerPage($viewer, $router);
+
+    $response = $page->rateEdit($request, $response, $arguments);
+
+    return $response;
+
+})->setName(ManagerPage::ACTION_RATE_EDIT);
+
 $pathForRateSave = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
         array(ManagerPage::MODULE_RATE,
-            ManagerPage::ACTION_RATE_EDIT));
+            ManagerPage::ACTION_RATE_SAVE));
 $app->post($pathForRateSave, function (Request $request, Response $response, array $arguments) {
 
     $api = new \Remittance\Web\ManagerApi();
@@ -120,7 +164,7 @@ $app->post($pathForRateSave, function (Request $request, Response $response, arr
 
     return $response;
 
-})->setName(ManagerPage::ACTION_RATE_EDIT);
+})->setName(ManagerPage::ACTION_RATE_SAVE);
 
 $pathForRateDefault = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
         array(ManagerPage::MODULE_RATE,
@@ -185,9 +229,25 @@ $app->post($pathForVolumeAdd, function (Request $request, Response $response, ar
 
 })->setName(ManagerPage::ACTION_VOLUME_ADD);
 
+$pathForVolumeEdit = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
+        array(ManagerPage::MODULE_VOLUME,
+            ManagerPage::ACTION_VOLUME_EDIT,
+            '{' . ManagerPage::ID . '}'));
+$app->get($pathForVolumeEdit, function (Request $request, Response $response, array $arguments) {
+
+    $router = $this->get(ROUTER_COMPONENT);
+    $viewer = $this->get(VIEWER_COMPONENT);
+    $page = new ManagerPage($viewer, $router);
+
+    $response = $page->volumeEdit($request, $response, $arguments);
+
+    return $response;
+
+})->setName(ManagerPage::ACTION_VOLUME_EDIT);
+
 $pathForVolumeSave = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
         array(ManagerPage::MODULE_VOLUME,
-            ManagerPage::ACTION_VOLUME_EDIT));
+            ManagerPage::ACTION_VOLUME_SAVE,));
 $app->post($pathForVolumeSave, function (Request $request, Response $response, array $arguments) {
 
     $api = new \Remittance\Web\ManagerApi();
@@ -195,7 +255,7 @@ $app->post($pathForVolumeSave, function (Request $request, Response $response, a
 
     return $response;
 
-})->setName(ManagerPage::ACTION_VOLUME_EDIT);
+})->setName(ManagerPage::ACTION_VOLUME_SAVE);
 
 $pathForVolumeEnable = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
         array(ManagerPage::MODULE_VOLUME,

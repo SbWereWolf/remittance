@@ -35,14 +35,16 @@ use Remittance\Web\ManagerPage;
 
 <body>
 
+<h1>Ставки обмена</h1>
+
 <?php
 $isSet = isset($menu);
-$isValid = false;
+$isActionLinksValid = false;
 if ($isSet) {
-    $isValid = Common::isValidArray($menu);
+    $isActionLinksValid = Common::isValidArray($menu);
 }
 
-if ($isValid)
+if ($isActionLinksValid)
     include('manager_menu.php');
 ?>
 
@@ -51,8 +53,8 @@ if ($isValid)
         <dt>Добавить Ставку</dt>
         <dd><label for="source-currency">Валюта Положить</label>
             <?php
-            $isValid = Common::isValidArray($currencies);
-            if ($isValid) :?>
+            $isActionLinksValid = Common::isValidArray($currencies);
+            if ($isActionLinksValid) :?>
                 <select id="source-currency" name="source_currency">
                     <?php
                     foreach ($currencies as $currencyCandidate):
@@ -65,8 +67,8 @@ if ($isValid)
         </dd>
         <dd><label for="target-currency">Валюта Получить</label>
             <?php
-            $isValid = Common::isValidArray($currencies);
-            if ($isValid) :?>
+            $isActionLinksValid = Common::isValidArray($currencies);
+            if ($isActionLinksValid) :?>
                 <select id="target-currency" name="target_currency">
                     <?php
                     foreach ($currencies as $currencyCandidate):
@@ -94,11 +96,11 @@ if ($isValid)
     <?php
 
     $isSet = isset($rates);
-    $isValid = false;
+    $isActionLinksValid = false;
     if ($isSet) {
-        $isValid = Common::isValidArray($rates);
+        $isActionLinksValid = Common::isValidArray($rates);
     }
-    if ($isValid) :?>
+    if ($isActionLinksValid) :?>
         <table id="rates-list" class="rates-list">
             <thead>
             <tr>
@@ -129,10 +131,10 @@ if ($isValid)
                     $id = $rate->id;
 
                     $titles = Common::setIfExists($id, $currencyTitles, ICommon::EMPTY_ARRAY);
-                    $isExists = !empty($titles);
+                    $isIdCollectionExists = !empty($titles);
                     $source = ICommon::EMPTY_VALUE;
                     $target = ICommon::EMPTY_VALUE;
-                    if ($isExists) {
+                    if ($isIdCollectionExists) {
                         $source = Common::setIfExists(ManagerPage::RATE_SOURCE_CURRENCY_TITLE,
                             $titles,
                             ICommon::EMPTY_VALUE);
@@ -142,8 +144,41 @@ if ($isValid)
                     }
                     ?>
                     <tr>
-                        <td cell><?= $source ?></td>
-                        <td cell><?= $target ?></td>
+                        <?php
+                        $isActionLinksValid = Common::isValidArray($actionLinks);
+
+                        $isIdCollectionExists = false;
+                        $idCollection = ICommon::EMPTY_ARRAY;
+                        if ($isActionLinksValid) {
+
+                            $idCollection = Common::setIfExists($id, $actionLinks, ICommon::EMPTY_ARRAY);
+                            $isIdCollectionExists = !empty($idCollection);
+                        }
+
+                        if ($isIdCollectionExists) {
+                            $link = Common::setIfExists(ManagerPage::ACTION_RATE_EDIT, $idCollection, ICommon::EMPTY_ARRAY);
+                        }
+
+                        $isEmpty = empty($link);
+                        ?>
+                        <td cell>
+                            <?php if ($isEmpty): ?>
+                                <?= $source ?>
+                            <?php endif; ?>
+                            <?php if (!$isEmpty):
+                                ?>
+                                <a href="<?= $link ?>"><?= $source ?></a>
+                            <?php endif; ?>
+                        </td>
+                        <td cell>
+                            <?php if ($isEmpty): ?>
+                                <?= $target ?>
+                            <?php endif; ?>
+                            <?php if (!$isEmpty):
+                                ?>
+                                <a href="<?= $link ?>"><?= $target ?></a>
+                            <?php endif; ?>
+                        </td>
                         <td cell><?= $rate->ratio ?></td>
                         <td cell><?= $rate->fee ?></td>
                         <td cell><input id="disable-<?= $rate->id ?>"
@@ -155,22 +190,14 @@ if ($isValid)
                                         disabled>
                         </td>
                         <?php
-                        $isValid = Common::isValidArray($actionLinks);
 
-                        if (!$isValid):
+                        if (!$isActionLinksValid):
                             ?>
                             <td cell colspan="4">&nbsp;&nbsp;</td>
                         <?php endif; ?>
                         <?php
-                        $isExists = false;
-                        $idCollection = ICommon::EMPTY_ARRAY;
-                        if ($isValid) {
 
-                            $idCollection = Common::setIfExists($id, $actionLinks, ICommon::EMPTY_ARRAY);
-                            $isExists = !empty($idCollection);
-                        }
-
-                        if ($isExists):
+                        if ($isIdCollectionExists):
                             ?>
                             <td cell>
                                 <?php
