@@ -1,10 +1,10 @@
 <?php
-/* @var $currency \Remittance\Manager\Currency */
+/* @var $currency \Remittance\BusinessLogic\Manager\Currency */
 /* @var $actionLinks array */
 /* @var $menu array */
 
 use Remittance\Core\Common;
-use Remittance\Web\ManagerPage;
+use Remittance\Presentation\Web\ManagerPage;
 
 ?>
 <html>
@@ -37,7 +37,7 @@ if ($isValid)
         <dd><label for="description">Описание</label><input type="text" id="description" name="description"
                                                             value="<?= $currency->description ?>"></dd>
         <dd><label for="disable">Флаг валюта отключена</label><input type="checkbox" id="disable" name="disable"
-                                                                     value="<?= $currency->isDisable ?>"></dd>
+                                                                     <?= $currency->isDisable ? 'checked' : '' ?>></dd>
         <dd><input type="submit" value="Сохранить" onclick="doSaveCurrency();"></dd>
     </dl>
 

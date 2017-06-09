@@ -76,8 +76,8 @@ CREATE TABLE rate
     REFERENCES currency (id),
   exchange_rate      DOUBLE PRECISION,
   fee                DOUBLE PRECISION,
-  effective_rate     DOUBLE PRECISION,
-  is_default         INTEGER                  DEFAULT 0
+  is_default         INTEGER                  DEFAULT 0,
+  description        TEXT
 );
 
 CREATE UNIQUE INDEX ux_rate_source_currency_id_target_currency_id

@@ -11,7 +11,7 @@ use Remittance\Core\Common;
 use Remittance\Core\ICommon;
 use Remittance\DataAccess\Entity\CurrencyRecord;
 use Remittance\DataAccess\Entity\VolumeRecord;
-use Remittance\Web\ManagerPage;
+use Remittance\Presentation\Web\ManagerPage;
 
 ?>
 <html>
@@ -108,15 +108,12 @@ if ($isValid)
                 <th cell>Лимит</th>
                 <th cell>Использовано</th>
                 <th cell>Флаг объём отключен</th>
-                <th cell>Включить</th>
-                <th cell>Отключить</th>
-                <th cell>Изменить</th>
             </tr>
             </thead>
             <tfoot>
             <tr>
                 <td><a id="previous-page" href="#" onclick="movePrevious();">PREVIOUS</a></td>
-                <td id="navigation-spacer" colspan="9">&nbsp;&nbsp;</td>
+                <td id="navigation-spacer" colspan="6">&nbsp;&nbsp;</td>
                 <td><a id="next-page" href="#" onclick="moveNext();">NEXT</a></td>
             </tr>
             </tfoot>
@@ -168,66 +165,9 @@ if ($isValid)
                         <td cell><?= $volume->accountNumber ?></td>
                         <td cell><?= $volume->limitation ?></td>
                         <td cell><?= $volume->total ?></td>
-                        <td cell><input id="disable-<?= $volume->id ?>"
-                                        type="checkbox" <?= $volume->isHidden ? 'checked' : '' ?>
-                                        disabled>
+                        <td cell><input id="disable"
+                                        type="checkbox" <?= $volume->isHidden ? 'checked' : '' ?> disabled>
                         </td>
-                        <?php
-                        $isValid = Common::isValidArray($actionLinks);
-
-                        if (!$isValid):
-                            ?>
-                            <td cell colspan="3">&nbsp;&nbsp;</td>
-                        <?php endif; ?>
-                        <?php
-                        $isExists = false;
-                        $idCollection = ICommon::EMPTY_ARRAY;
-                        if ($isValid) {
-
-                            $idCollection = Common::setIfExists($id, $actionLinks, ICommon::EMPTY_ARRAY);
-                            $isExists = !empty($idCollection);
-                        }
-
-                        if ($isExists):
-                            ?>
-                            <td cell>
-                                <?php
-                                $isExist = array_key_exists(ManagerPage::ACTION_VOLUME_ENABLE, $idCollection);
-                                if ($isExist):
-                                    ?><a class="action" href="javascript:return false;"
-                                         data-action="<?= $idCollection[ManagerPage::ACTION_VOLUME_ENABLE] ?>">
-                                        Включить</a>
-                                <?php endif; ?>
-                                <?php if (!$isExist): ?>
-                                    &nbsp;&nbsp;
-                                <?php endif; ?>
-                            </td>
-                            <td cell>
-                                <?php
-                                $isExist = array_key_exists(ManagerPage::ACTION_VOLUME_DISABLE, $idCollection);
-                                if ($isExist):
-                                    ?><a class="action" href="javascript:return false;"
-                                         data-action="<?= $idCollection[ManagerPage::ACTION_VOLUME_DISABLE] ?>">
-                                        Отключить</a>
-                                <?php endif; ?>
-                                <?php if (!$isExist): ?>
-                                    &nbsp;&nbsp;
-                                <?php endif; ?>
-                            </td>
-                            <td cell>
-                                <?php
-                                $isExist = array_key_exists(ManagerPage::ACTION_VOLUME_EDIT, $idCollection);
-                                if ($isExist):
-                                    ?><a class="action" href="javascript:return false;"
-                                         data-action="<?= $idCollection[ManagerPage::ACTION_VOLUME_EDIT] ?>">
-                                        Изменить</a>
-                                <?php endif; ?>
-                                <?php if (!$isExist): ?>
-                                    &nbsp;&nbsp;
-                                <?php endif; ?>
-                            </td>
-                        <?php endif; ?>
-
                     </tr>
                 <?php endif ?>
             <?php endforeach; ?>

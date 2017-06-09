@@ -1,5 +1,5 @@
 <?php
-/* @var $rate \Remittance\Manager\Rate */
+/* @var $rate \Remittance\BusinessLogic\Manager\Rate */
 /* @var $currencies array */
 /* @var $actionLinks array */
 /* @var $currencyTitles array */
@@ -7,26 +7,13 @@
 
 use Remittance\Core\Common;
 use Remittance\DataAccess\Entity\CurrencyRecord;
-use Remittance\Web\ManagerPage;
+use Remittance\Presentation\Web\ManagerPage;
 
 ?>
 <html>
 <head>
     <meta charset="utf-8">
     <title>Ставки обмена</title>
-
-    <style>
-        table.rates-list {
-            border: 1px solid black;
-            border-collapse: collapse;
-        }
-
-        [cell] {
-            border: 1px solid black;
-            border-collapse: collapse;
-        }
-
-    </style>
 </head>
 
 <body>
@@ -75,15 +62,24 @@ if ($isValid)
                 </select>
             <?php endif ?>
         </dd>
-        <dd><label for="rate">Ставка</label><input type="number" step="0.0001" id="ratio" name="ratio"
+        <dd><label for="ratio">Ставка</label>
+            <input type="number" step="0.0001" id="ratio" name="ratio"
                                                    value="<?= $rate->ratio ?>"></dd>
-        <dd><label for="fee">Коммиссия</label><input type="number" step="0.0001" id="fee" name="fee"
+        <dd><label for="fee">Коммиссия</label>
+            <input type="number" step="0.0001" id="fee" name="fee"
                                                      value="<?= $rate->fee ?>"></dd>
-        <dd><label for="disable">Флаг ставка отключена</label><input type="checkbox" id="disable" name="disable"
-                                                                     value="<?= $rate->isDisable ?>"></dd>
-        <dd><label for="default">Флаг ставка по умолчанию</label><input type="checkbox" id="default" name="default"
-                                                                        readonly value="<?= $rate->isDefault ?>">
+        <dd><label for="disable">Флаг ставка отключена</label>
+            <input type="checkbox" id="disable" name="disable"
+                <?= $rate->isDisable ? 'checked' : '' ?>>
         </dd>
+        <dd><label for="default">Флаг ставка по умолчанию</label>
+            <input type="checkbox" id="default" name="default"
+                   disabled
+                <?= $rate->isDefault ? 'checked' : '' ?>>
+        </dd>
+
+        <dd><label for="description">Примечание</label>
+            <input type="text" id="description" name="description" value="<?= $rate->description ?>"></dd>
         <dd><input type="submit" value="Сохранить" onclick="doSaveRate();"></dd>
     </dl>
 

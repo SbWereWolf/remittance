@@ -11,7 +11,7 @@ use Remittance\Core\Common;
 use Remittance\Core\ICommon;
 use Remittance\DataAccess\Entity\CurrencyRecord;
 use Remittance\DataAccess\Entity\RateRecord;
-use Remittance\Web\ManagerPage;
+use Remittance\Presentation\Web\ManagerPage;
 
 ?>
 <html>
@@ -82,8 +82,7 @@ if ($isActionLinksValid)
         <dd><label for="rate">Ставка</label><input type="number" step="0.0001" id="rate" name="rate"></dd>
         <dd><label for="fee">Коммиссия</label><input type="number" step="0.0001" id="fee" name="fee"></dd>
         <dd><label for="disable">Флаг ставка отключена</label><input type="checkbox" id="disable" name="disable"></dd>
-        <dd><label for="default">Флаг ставка по умолчанию</label><input type="checkbox" id="default" name="default">
-        </dd>
+        <dd><label for="description">Примечание</label><input type="text" id="description" name="description"></dd>
         <dd><input type="submit" value="Добавить" onclick="doAddRate();"></dd>
     </dl>
 
@@ -110,16 +109,14 @@ if ($isActionLinksValid)
                 <th cell>Коммиссия</th>
                 <th cell>флаг Ставка отключена</th>
                 <th cell>флаг Обмен по умолчанию</th>
+                <th cell>Примечание</th>
                 <th cell>По умолчанию</th>
-                <th cell>Включить</th>
-                <th cell>Отключить</th>
-                <th cell>Изменить</th>
             </tr>
             </thead>
             <tfoot>
             <tr>
                 <td><a id="previous-page" href="#" onclick="movePrevious();">PREVIOUS</a></td>
-                <td id="navigation-spacer" colspan="9">&nbsp;&nbsp;</td>
+                <td id="navigation-spacer" colspan="6">&nbsp;&nbsp;</td>
                 <td><a id="next-page" href="#" onclick="moveNext();">NEXT</a></td>
             </tr>
             </tfoot>
@@ -189,11 +186,12 @@ if ($isActionLinksValid)
                                         type="checkbox" <?= $rate->isDefault ? 'checked' : '' ?>
                                         disabled>
                         </td>
+                        <td cell><?= $rate->description ?></td>
                         <?php
 
                         if (!$isActionLinksValid):
                             ?>
-                            <td cell colspan="4">&nbsp;&nbsp;</td>
+                            <td cell >&nbsp;&nbsp;</td>
                         <?php endif; ?>
                         <?php
 
@@ -207,41 +205,6 @@ if ($isActionLinksValid)
                                     ?><a class="action" href="javascript:return false;"
                                          data-action="<?= $idCollection[ManagerPage::ACTION_RATE_DEFAULT] ?>">По
                                 умолчанию</a>
-                                <?php endif; ?>
-                                <?php if (!$isExist): ?>
-                                    &nbsp;&nbsp;
-                                <?php endif; ?>
-                            </td>
-                            <td cell>
-                                <?php
-                                $isExist = array_key_exists(ManagerPage::ACTION_RATE_ENABLE, $idCollection);
-                                if ($isExist):
-                                    ?><a class="action" href="javascript:return false;"
-                                         data-action="<?= $idCollection[ManagerPage::ACTION_RATE_ENABLE] ?>">
-                                        Включить</a>
-                                <?php endif; ?>
-                                <?php if (!$isExist): ?>
-                                    &nbsp;&nbsp;
-                                <?php endif; ?>
-                            </td>
-                            <td cell>
-                                <?php
-                                $isExist = array_key_exists(ManagerPage::ACTION_RATE_DISABLE, $idCollection);
-                                if ($isExist):
-                                    ?><a class="action" href="javascript:return false;"
-                                         data-action="<?= $idCollection[ManagerPage::ACTION_RATE_DISABLE] ?>">
-                                        Отключить</a>
-                                <?php endif; ?>
-                                <?php if (!$isExist): ?>
-                                    &nbsp;&nbsp;
-                                <?php endif; ?>
-                            </td>
-                            <td cell>
-                                <?php
-                                $isExist = array_key_exists(ManagerPage::ACTION_RATE_EDIT, $idCollection);
-                                if ($isExist):
-                                    ?><a class="action" href="javascript:return false;"
-                                         data-action="<?= $idCollection[ManagerPage::ACTION_RATE_EDIT] ?>">Изменить</a>
                                 <?php endif; ?>
                                 <?php if (!$isExist): ?>
                                     &nbsp;&nbsp;

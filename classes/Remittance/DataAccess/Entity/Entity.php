@@ -9,13 +9,14 @@
 namespace Remittance\DataAccess\Entity {
 
     use Remittance\Core\ICommon;
+    use Remittance\DataAccess\Column\IHidden;
     use Remittance\DataAccess\Logic\ISqlHandler;
     use Remittance\DataAccess\Logic\SqlHandler;
 
     /**
      * реализация интерфейса для работы с именнуемыми сущностями
      */
-    class Entity extends PrimitiveData implements IEntity
+    class Entity extends PrimitiveData implements IEntity, IHidden
     {
         /** @var null константа значение не задано для ссылочных типов */
         const EMPTY_OBJECT = ICommon::EMPTY_OBJECT;
@@ -26,7 +27,7 @@ namespace Remittance\DataAccess\Entity {
         const TABLE_NAME = 'entity';
 
         /** @var string флаг "является скрытым" */
-        public $isHidden = self::EMPTY_VALUE;
+        public $isHidden = self::DEFINE_AS_NOT_HIDDEN;
         /** @var string имя таблицы БД для хранения сущности */
         protected $tablename = self::TABLE_NAME;
 

@@ -8,7 +8,7 @@
 use Remittance\Core\Common;
 use Remittance\Core\ICommon;
 use Remittance\DataAccess\Entity\CurrencyRecord;
-use Remittance\Web\ManagerPage;
+use Remittance\Presentation\Web\ManagerPage;
 
 ?>
 <html>
@@ -45,13 +45,13 @@ if ($isValid)
     include('manager_menu.php');
 ?>
 
-<form onsubmit="return false;" method="post">
+<form onsubmit="return false;" method="post" id="add-currency">
     <dl>
         <dt>Добавить Валюту</dt>
-        <dd><label for="code">Код</label><input type="text" id="code"></dd>
-        <dd><label for="title">Название</label><input type="text" id="title"></dd>
-        <dd><label for="description">Описание</label><input type="text" id="description"></dd>
-        <dd><label for="disable">Флаг валюта отключена</label><input type="checkbox" id="disable"></dd>
+        <dd><label for="code">Код</label><input type="text" id="code" name="code"></dd>
+        <dd><label for="title">Название</label><input type="text" id="title" name="title"></dd>
+        <dd><label for="description">Описание</label><input type="text" id="description" name="description"></dd>
+        <dd><label for="disable">Флаг валюта отключена</label><input type="checkbox" id="disable" name="disable"></dd>
         <dd><input type="submit" value="Добавить" onclick="doAddCurrency();"></dd>
     </dl>
 
@@ -71,14 +71,12 @@ if ($isValid)
                 <th cell>Название</th>
                 <th cell>Флаг валюта отключена</th>
                 <th cell>Описание</th>
-                <th cell>Включить</th>
-                <th cell>Отключить</th>
             </tr>
             </thead>
             <tfoot>
             <tr>
                 <td><a id="previous-page" href="#" onclick="movePrevious();">PREVIOUS</a></td>
-                <td id="currencies-pages" colspan="4">&nbsp;&nbsp;</td>
+                <td id="currencies-pages" colspan="2">&nbsp;&nbsp;</td>
                 <td><a id="next-page" href="#" onclick="moveNext();">NEXT</a></td>
             </tr>
             </tfoot>
@@ -123,12 +121,6 @@ if ($isValid)
                                         disabled>
                         </td>
                         <td cell><?= $asNamed->description ?></td>
-                        <td cell><a class="action" href="javascript:return false;"
-                                    data-action="<?= $actionLinks[$id][ManagerPage::ACTION_CURRENCY_ENABLE] ?>">Включить</a>
-                        </td>
-                        <td cell><a class="action" href="javascript:return false;"
-                                    data-action="<?= $actionLinks[$id][ManagerPage::ACTION_CURRENCY_DISABLE] ?>">Отключить</a>
-                        </td>
                     </tr>
                 <?php endif ?>
             <?php endforeach; ?>
@@ -142,20 +134,21 @@ if ($isValid)
 <script type="text/javascript">
     function doAddCurrency() {
 
-        const code = $("input[id='code']").val();
-        const title = $("input[id='title']").val();
-        const description = $("input[id='description']").val();
-        const checkbox_disable = $("input[id='disable']:checked");
-        const disable = (typeof(checkbox_disable) === 'undefined');
+        var form_data = $("#add-currency").serialize();
 
         $.ajax({
             type: 'POST',
-            url: '<?= $actionLinks[ManagerPage::ACTION_CURRENCY_ADD] ?>',
+            <?php
+            $isExist = array_key_exists(ManagerPage::ACTION_CURRENCY_ADD, $actionLinks);
+
+            $link = '';
+            if ($isExist) {
+                $link = $actionLinks[ManagerPage::ACTION_CURRENCY_ADD];
+            }
+            ?>
+            url: '<?= $link ?>',
             data: {
-                code: code,
-                title: title,
-                description: description,
-                disable: disable
+                form_data: form_data
             },
             dataType: 'json',
             success: function (result) {

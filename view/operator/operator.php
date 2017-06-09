@@ -6,8 +6,8 @@
 
 use Remittance\Core\Common;
 use Remittance\Core\ICommon;
-use Remittance\UserOutput\PlainText;
-use Remittance\Web\OperatorPage;
+use Remittance\Presentation\UserOutput\PlainText;
+use Remittance\Presentation\Web\OperatorPage;
 
 ?>
 <!DOCTYPE html>

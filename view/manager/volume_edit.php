@@ -6,7 +6,7 @@
 
 use Remittance\Core\Common;
 use Remittance\DataAccess\Entity\CurrencyRecord;
-use Remittance\Web\ManagerPage;
+use Remittance\Presentation\Web\ManagerPage;
 
 ?>
 <html>

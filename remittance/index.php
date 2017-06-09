@@ -5,8 +5,8 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 */
 
-use Remittance\Web\CustomerApi;
-use Remittance\Web\CustomerPage;
+use Remittance\Presentation\Web\CustomerApi;
+use Remittance\Presentation\Web\CustomerPage;
 use Slim\Http\Request;
 use Slim\Http\Response;
 

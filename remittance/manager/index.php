@@ -1,7 +1,8 @@
 <?php
 
-use Remittance\Web\IPage;
-use Remittance\Web\ManagerPage;
+use Remittance\Presentation\Web\IPage;
+use Remittance\Presentation\Web\ManagerApi;
+use Remittance\Presentation\Web\ManagerPage;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -53,7 +54,7 @@ $pathForCurrencyAdd = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
             ManagerPage::ACTION_CURRENCY_ADD));
 $app->post($pathForCurrencyAdd, function (Request $request, Response $response, array $arguments) {
 
-    $api = new \Remittance\Web\ManagerApi();
+    $api = new ManagerApi();
     $response = $api->currencyAdd($request, $response, $arguments);
 
     return $response;
@@ -66,7 +67,7 @@ $pathForCurrencyDisable = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
             '{' . ManagerPage::ID . '}'));
 $app->post($pathForCurrencyDisable, function (Request $request, Response $response, array $arguments) {
 
-    $api = new \Remittance\Web\ManagerApi();
+    $api = new ManagerApi();
     $response = $api->currencyDisable($request, $response, $arguments);
 
     return $response;
@@ -79,7 +80,7 @@ $pathForCurrencyEnable = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
             '{' . ManagerPage::ID . '}'));
 $app->post($pathForCurrencyEnable, function (Request $request, Response $response, array $arguments) {
 
-    $api = new \Remittance\Web\ManagerApi();
+    $api = new ManagerApi();
     $response = $api->currencyEnable($request, $response, $arguments);
 
     return $response;
@@ -107,7 +108,7 @@ $pathForCurrencySave = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
             ManagerPage::ACTION_CURRENCY_SAVE,));
 $app->post($pathForCurrencySave, function (Request $request, Response $response, array $arguments) {
 
-    $api = new \Remittance\Web\ManagerApi();
+    $api = new ManagerApi();
     $response = $api->currencySave($request, $response, $arguments);
 
     return $response;
@@ -131,7 +132,7 @@ $pathForRateAdd = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
             ManagerPage::ACTION_RATE_ADD));
 $app->post($pathForRateAdd, function (Request $request, Response $response, array $arguments) {
 
-    $api = new \Remittance\Web\ManagerApi();
+    $api = new ManagerApi();
     $response = $api->rateAdd($request, $response, $arguments);
 
     return $response;
@@ -159,7 +160,7 @@ $pathForRateSave = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
             ManagerPage::ACTION_RATE_SAVE));
 $app->post($pathForRateSave, function (Request $request, Response $response, array $arguments) {
 
-    $api = new \Remittance\Web\ManagerApi();
+    $api = new ManagerApi();
     $response = $api->rateSave($request, $response, $arguments);
 
     return $response;
@@ -172,7 +173,7 @@ $pathForRateDefault = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
             '{' . ManagerPage::ID . '}'));
 $app->post($pathForRateDefault, function (Request $request, Response $response, array $arguments) {
 
-    $api = new \Remittance\Web\ManagerApi();
+    $api = new ManagerApi();
     $response = $api->rateDefault($request, $response, $arguments);
 
     return $response;
@@ -185,7 +186,7 @@ $pathForRateEnable = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
             '{' . ManagerPage::ID . '}'));
 $app->post($pathForRateEnable, function (Request $request, Response $response, array $arguments) {
 
-    $api = new \Remittance\Web\ManagerApi();
+    $api = new ManagerApi();
     $response = $api->rateEnable($request, $response, $arguments);
 
     return $response;
@@ -198,7 +199,7 @@ $pathForRateDisable = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
             '{' . ManagerPage::ID . '}'));
 $app->post($pathForRateDisable, function (Request $request, Response $response, array $arguments) {
 
-    $api = new \Remittance\Web\ManagerApi();
+    $api = new ManagerApi();
     $response = $api->rateDisable($request, $response, $arguments);
 
     return $response;
@@ -222,7 +223,7 @@ $pathForVolumeAdd = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
             ManagerPage::ACTION_VOLUME_ADD));
 $app->post($pathForVolumeAdd, function (Request $request, Response $response, array $arguments) {
 
-    $api = new \Remittance\Web\ManagerApi();
+    $api = new ManagerApi();
     $response = $api->volumeAdd($request, $response, $arguments);
 
     return $response;
@@ -250,7 +251,7 @@ $pathForVolumeSave = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
             ManagerPage::ACTION_VOLUME_SAVE,));
 $app->post($pathForVolumeSave, function (Request $request, Response $response, array $arguments) {
 
-    $api = new \Remittance\Web\ManagerApi();
+    $api = new ManagerApi();
     $response = $api->volumeSave($request, $response, $arguments);
 
     return $response;
@@ -263,7 +264,7 @@ $pathForVolumeEnable = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
             '{' . ManagerPage::ID . '}'));
 $app->post($pathForVolumeEnable, function (Request $request, Response $response, array $arguments) {
 
-    $api = new \Remittance\Web\ManagerApi();
+    $api = new ManagerApi();
     $response = $api->volumeEnable($request, $response, $arguments);
 
     return $response;
@@ -276,7 +277,7 @@ $pathForVolumeDisable = ManagerPage::ROOT . implode(IPage::PATH_SYMBOL,
             '{' . ManagerPage::ID . '}'));
 $app->post($pathForVolumeDisable, function (Request $request, Response $response, array $arguments) {
 
-    $api = new \Remittance\Web\ManagerApi();
+    $api = new ManagerApi();
     $response = $api->volumeDisable($request, $response, $arguments);
 
     return $response;

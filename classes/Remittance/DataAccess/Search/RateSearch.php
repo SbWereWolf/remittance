@@ -37,6 +37,7 @@ class RateSearch
             . ' ,' . RateRecord::RATIO
             . ' ,' . RateRecord::FEE
             . ' ,' . RateRecord::IS_DEFAULT
+            . ' , ' . RateRecord::DESCRIPTION
             . ' FROM '
             . $this->tablename
             . ' WHERE '
@@ -67,6 +68,7 @@ class RateSearch
             . ' ,' . RateRecord::RATIO
             . ' ,' . RateRecord::FEE
             . ' ,' . RateRecord::IS_DEFAULT
+            . ' , ' . RateRecord::DESCRIPTION
             . ' FROM '
             . $this->tablename
             . ' ORDER BY ' . RateRecord::ID . ' DESC'
@@ -101,6 +103,7 @@ class RateSearch
             . ' , R.' . RateRecord::RATIO
             . ' , R.' . RateRecord::FEE
             . ' , R.' . RateRecord::IS_DEFAULT
+            . ' , R.' . RateRecord::DESCRIPTION
             . ' FROM '
             . $this->tablename . ' AS R '
             . ' JOIN ' . CurrencyRecord::TABLE_NAME . ' AS CS '

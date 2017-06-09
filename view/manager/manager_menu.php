@@ -1,7 +1,7 @@
 <?php
 /* @var $menu array */
 use Remittance\Core\Common;
-use Remittance\Web\ManagerPage;
+use Remittance\Presentation\Web\ManagerPage;
 
 $isSet = isset($menu);
 $isValid = false;

@@ -4,6 +4,8 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 */
 
+use Remittance\Presentation\Web\OperatorApi;
+use Remittance\Presentation\Web\OperatorPage;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -31,7 +33,7 @@ $app->get('/', function (Request $request, Response $response, array $arguments)
 
     $router = $this->get(ROUTER_COMPONENT);
     $viewer = $this->get(VIEWER_COMPONENT);
-    $page = new \Remittance\Web\OperatorPage($viewer, $router);
+    $page = new OperatorPage($viewer, $router);
     $response = $page->root($request, $response, $arguments);
 
     return $response;
@@ -39,20 +41,20 @@ $app->get('/', function (Request $request, Response $response, array $arguments)
 
 $app->post('/transfer/accomplish/{id}', function (Request $request, Response $response, array $arguments) {
 
-    $api = new \Remittance\Web\OperatorApi();
+    $api = new OperatorApi();
     $response = $api->accomplish($request, $response, $arguments);
 
     return $response;
 
-})->setName(\Remittance\Web\OperatorPage::ACTION_ACCOMPLISH);
+})->setName(OperatorPage::ACTION_ACCOMPLISH);
 
 $app->post('/transfer/annul/{id}', function (Request $request, Response $response, array $arguments) {
 
-    $api = new \Remittance\Web\OperatorApi();
+    $api = new OperatorApi();
     $response = $api->annul($request, $response, $arguments);
 
     return $response;
 
-})->setName(\Remittance\Web\OperatorPage::ACTION_ANNUL);
+})->setName(OperatorPage::ACTION_ANNUL);
 
 $app->run();
