@@ -3,11 +3,11 @@
 namespace Remittance\BusinessLogic\Customer;
 
 
+use Remittance\BusinessLogic\Exchange\Deal;
 use Remittance\BusinessLogic\Manager\Volume;
+use Remittance\BusinessLogic\Operator\Transfer;
 use Remittance\DataAccess\Entity\CurrencyRecord;
 use Remittance\DataAccess\Search\NamedEntitySearch;
-use Remittance\BusinessLogic\Exchange\Deal;
-use Remittance\BusinessLogic\Operator\Transfer;
 
 class Order
 {
@@ -30,9 +30,9 @@ class Order
         $computer->precomputation();
         $isValid = $computer->outcome == $this->dealOutcome;
 
-        if($isValid){
+        if ($isValid) {
             $target = new Volume();
-            $isValid = $target->testOutcome($this->dealTarget,$this->dealOutcome);
+            $isValid = $target->testOutcome($this->dealTarget, $this->dealOutcome);
         }
 
         return $isValid;
