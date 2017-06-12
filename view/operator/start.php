@@ -6,12 +6,12 @@ use Remittance\Core\Common;
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Меню менеджера</title>
+    <title>Меню Оператора</title>
 </head>
 
 <body>
 
-<h1>Меню менеджера</h1>
+<h1>Меню Оператора</h1>
 <?php
 $isSet = isset($menu);
 $isValid = false;
@@ -20,7 +20,7 @@ if($isSet){
 }
 
 if ($isValid)
-    include('manager_menu.php');
+    include('operator_menu.php');
 ?>
 
 </body>

@@ -3,6 +3,7 @@
 /* @var $offset int */
 /* @var $limit int */
 /* @var $actionLinks array */
+/* @var $menu array */
 
 use Remittance\Core\Common;
 use Remittance\Core\ICommon;
@@ -32,6 +33,17 @@ use Remittance\Presentation\Web\OperatorPage;
 
 <body>
 
+<?php
+$isSet = isset($menu);
+$isValid = false;
+if ($isSet) {
+    $isValid = Common::isValidArray($menu);
+}
+
+if ($isValid)
+    include('operator_menu.php');
+?>
+
 <h1>Список переводов</h1>
 
 <div id="message"></div>
@@ -59,22 +71,13 @@ use Remittance\Presentation\Web\OperatorPage;
                 <th cell>ФИО отправителя</th>
                 <th cell>Счёт поступления</th>
                 <th cell>ФИО поступления</th>
-                <th cell>Валюта списания</th>
-                <th cell>Сумма Получить</th>
-                <th cell>Счёт списания</th>
-                <th cell>ФИО списания</th>
-                <th cell>Счёт получателя</th>
-                <th cell>ФИО получателя</th>
-                <th cell>Комментарий статуса</th>
                 <th cell>Время статуса</th>
-                <th cell>Выполнить</th>
-                <th cell>Отменить</th>
             </tr>
             </thead>
             <tfoot>
             <tr>
                 <td><a id="previous-page" href="#" onclick="movePrevious();">PREVIOUS</a></td>
-                <td id="transfers-pages" colspan="18">&nbsp;&nbsp;</td>
+                <td id="transfers-pages" colspan="9">&nbsp;&nbsp;</td>
                 <td><a id="next-page" href="#" onclick="moveNext();">NEXT</a></td>
             </tr>
             </tfoot>
@@ -88,31 +91,45 @@ use Remittance\Presentation\Web\OperatorPage;
                     $empty = ICommon::EMPTY_VALUE;
 
                     $text = new PlainText();
+
+                    $documentNumber = $text->printElement($viewRow, OperatorPage::DOCUMENT_NUMBER);
                     ?>
                     <tr>
-                        <td cell><?= $text->printElement($viewRow, OperatorPage::DOCUMENT_NUMBER) ?></td>
+                        <td cell>
+
+                            <?php
+                            $isValid = Common::isValidArray($actionLinks);
+                            $idCollection = ICommon::EMPTY_ARRAY;
+                            if ($isValid) {
+                                $idCollection = Common::setIfExists($id, $actionLinks, ICommon::EMPTY_ARRAY);
+                            }
+
+                            $isValid = Common::isValidArray($idCollection);
+                            $isExist = false;
+                            if ($isValid) {
+                                $isExist = array_key_exists(OperatorPage::ACTION_TRANSFER_EDIT, $idCollection);
+                            }
+
+                            if ($isExist):
+
+                                $editLink = $idCollection[OperatorPage::ACTION_TRANSFER_EDIT];
+                                ?>
+                                <a href="<?= $editLink ?>"><?= $documentNumber ?></a>
+                            <?php endif; ?>
+                            <?php if (!$isExist): ?>
+                                <?= $documentNumber ?>
+                            <?php endif; ?>
+                        </td>
                         <td cell><?= $text->printElement($viewRow, OperatorPage::DOCUMENT_DATE) ?></td>
                         <td cell><?= $text->printElement($viewRow, OperatorPage::TRANSFER_STATUS) ?></td>
                         <td cell><?= $text->printElement($viewRow, OperatorPage::DEAL_EMAIL) ?></td>
                         <td cell><?= $text->printElement($viewRow, OperatorPage::INCOME_CURRENCY) ?></td>
                         <td cell><?= $text->printElement($viewRow, OperatorPage::DEAL_INCOME) ?></td>
                         <td cell><?= $text->printElement($viewRow, OperatorPage::ACCOUNT_TRANSFER) ?></td>
-                        <td cell><?= $text->printElement($viewRow, OperatorPage::FIO_TRANSFER) ?></td>
+                        <td cell><?= $text->printElement($viewRow, OperatorPage::NAME_TRANSFER) ?></td>
                         <td cell><?= $text->printElement($viewRow, OperatorPage::AWAIT_ACCOUNT) ?></td>
                         <td cell><?= $text->printElement($viewRow, OperatorPage::AWAIT_NAME) ?></td>
-                        <td cell><?= $text->printElement($viewRow, OperatorPage::OUTCOME_CURRENCY) ?></td>
-                        <td cell><?= $text->printElement($viewRow, OperatorPage::DEAL_OUTCOME) ?></td>
-                        <td cell><?= $text->printElement($viewRow, OperatorPage::PROCEED_ACCOUNT) ?></td>
-                        <td cell><?= $text->printElement($viewRow, OperatorPage::PROCEED_NAME) ?></td>
-                        <td cell><?= $text->printElement($viewRow, OperatorPage::ACCOUNT_RECEIVE) ?></td>
-                        <td cell><?= $text->printElement($viewRow, OperatorPage::FIO_RECEIVE) ?></td>
-                        <td cell><?= $text->printElement($viewRow, OperatorPage::STATUS_COMMENT) ?></td>
                         <td cell><?= $text->printElement($viewRow, OperatorPage::STATUS_TIME) ?></td>
-                        <td cell><a class="action" href="javascript:return false;"
-                                    data-action="<?= $actionLinks[$id][OperatorPage::ACTION_ACCOMPLISH] ?>">Выполнить</a>
-                        </td>
-                        <td cell><a class="action" href="javascript:return false;"
-                                    data-action="<?= $actionLinks[$id][OperatorPage::ACTION_ANNUL] ?>">Отменить</a></td>
                     </tr>
                 <?php endif ?>
             <?php endforeach; ?>
@@ -121,25 +138,4 @@ use Remittance\Presentation\Web\OperatorPage;
 </div>
 </body>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
-<script type="text/javascript">
-    $('.action').click(function () {
-
-        const link = $(this).data('action');
-
-        $.ajax({
-            type: 'POST',
-            url: link,
-            data: {},
-            dataType: 'json',
-            success: function (result) {
-
-                const value = result.message;
-                $("#message").html(value);
-            }
-        });
-
-    });
-
-</script>
 </html>

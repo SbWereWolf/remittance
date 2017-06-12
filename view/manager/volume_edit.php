@@ -17,8 +17,6 @@ use Remittance\Presentation\Web\ManagerPage;
 
 <body>
 
-<h1>Объём валюты</h1>
-
 <?php
 $isSet = isset($menu);
 $isValid = false;
@@ -29,6 +27,8 @@ if ($isSet) {
 if ($isValid)
     include('manager_menu.php');
 ?>
+
+<h1>Объём валюты</h1>
 
 <form id="save-volume" onsubmit="return false;">
     <dl>

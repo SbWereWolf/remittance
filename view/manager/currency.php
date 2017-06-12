@@ -32,8 +32,6 @@ use Remittance\Presentation\Web\ManagerPage;
 
 <body>
 
-<h1>Валюты для обмена</h1>
-
 <?php
 $isSet = isset($menu);
 $isValid = false;
@@ -44,6 +42,8 @@ if($isSet){
 if ($isValid)
     include('manager_menu.php');
 ?>
+
+<h1>Валюты для обмена</h1>
 
 <form onsubmit="return false;" method="post" id="add-currency">
     <dl>

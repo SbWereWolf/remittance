@@ -28,7 +28,7 @@ if ($isValid):
                     <dd><a href="<?= $menuCurrency ?>">Валюты</a></dd>
                 <?php endif; ?>
                 <?php
-                $menuRate = Common::setIfExists(ManagerPage::RATES_REFERENCE, $menuReference, $empty);
+                $menuRate = Common::setIfExists(ManagerPage::RATE_REFERENCE, $menuReference, $empty);
                 $isExists = !empty($menuRate);
                 if ($isExists):
                     ?>

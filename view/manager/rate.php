@@ -35,8 +35,6 @@ use Remittance\Presentation\Web\ManagerPage;
 
 <body>
 
-<h1>Ставки обмена</h1>
-
 <?php
 $isSet = isset($menu);
 $isActionLinksValid = false;
@@ -47,6 +45,8 @@ if ($isSet) {
 if ($isActionLinksValid)
     include('manager_menu.php');
 ?>
+
+<h1>Ставки обмена</h1>
 
 <form id="add-rate" onsubmit="return false;">
     <dl>

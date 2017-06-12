@@ -15,8 +15,6 @@ use Remittance\Presentation\Web\ManagerPage;
 
 <body>
 
-<h1>Валюта</h1>
-
 <?php
 $isSet = isset($menu);
 $isValid = false;
@@ -27,6 +25,8 @@ if ($isSet) {
 if ($isValid)
     include('manager_menu.php');
 ?>
+
+<h1>Валюта</h1>
 
 <form onsubmit="return false;" id="save-currency">
     <dl>

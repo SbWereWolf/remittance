@@ -18,8 +18,6 @@ use Remittance\Presentation\Web\ManagerPage;
 
 <body>
 
-<h1>Ставка обмена</h1>
-
 <?php
 $isSet = isset($menu);
 $isValid = false;
@@ -30,6 +28,8 @@ if ($isSet) {
 if ($isValid)
     include('manager_menu.php');
 ?>
+
+<h1>Ставка обмена</h1>
 
 <form id="save-rate" onsubmit="return false;">
     <dl>

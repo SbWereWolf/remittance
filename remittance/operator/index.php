@@ -4,6 +4,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 */
 
+use Remittance\Presentation\Web\IPage;
 use Remittance\Presentation\Web\OperatorApi;
 use Remittance\Presentation\Web\OperatorPage;
 use Slim\Http\Request;
@@ -29,7 +30,7 @@ $container[VIEWER_COMPONENT] = new \Slim\Views\PhpRenderer(APPLICATION_ROOT . DI
 
 $app = new \Slim\App($container);
 
-$app->get('/', function (Request $request, Response $response, array $arguments) {
+$app->get(OperatorPage::ROOT, function (Request $request, Response $response, array $arguments) {
 
     $router = $this->get(ROUTER_COMPONENT);
     $viewer = $this->get(VIEWER_COMPONENT);
@@ -39,22 +40,55 @@ $app->get('/', function (Request $request, Response $response, array $arguments)
     return $response;
 });
 
-$app->post('/transfer/accomplish/{id}', function (Request $request, Response $response, array $arguments) {
+$pathForTransferModule = OperatorPage::ROOT . OperatorPage::MODULE_TRANSFER;
+$app->get($pathForTransferModule, function (Request $request, Response $response, array $arguments) {
+
+    $router = $this->get(ROUTER_COMPONENT);
+    $viewer = $this->get(VIEWER_COMPONENT);
+    $page = new OperatorPage($viewer, $router);
+    $response = $page->transfer($request, $response, $arguments);
+
+    return $response;
+})->setName(OperatorPage::MODULE_TRANSFER);
+
+$pathForTransferEdit = OperatorPage::ROOT . implode(IPage::PATH_SYMBOL,
+        array(OperatorPage::MODULE_TRANSFER,
+            OperatorPage::ACTION_TRANSFER_EDIT,
+            '{' . OperatorPage::ID . '}'));
+$app->get($pathForTransferEdit, function (Request $request, Response $response, array $arguments) {
+
+    $router = $this->get(ROUTER_COMPONENT);
+    $viewer = $this->get(VIEWER_COMPONENT);
+    $page = new OperatorPage($viewer, $router);
+    $response = $page->transferEdit($request, $response, $arguments);
+
+    return $response;
+})->setName(OperatorPage::ACTION_TRANSFER_EDIT);
+
+$pathForTransferAccomplish = OperatorPage::ROOT . implode(IPage::PATH_SYMBOL,
+        array(OperatorPage::MODULE_TRANSFER,
+            OperatorPage::ACTION_TRANSFER_ACCOMPLISH,
+            '{' . OperatorPage::ID . '}'));
+$app->post($pathForTransferAccomplish, function (Request $request, Response $response, array $arguments) {
 
     $api = new OperatorApi();
     $response = $api->accomplish($request, $response, $arguments);
 
     return $response;
 
-})->setName(OperatorPage::ACTION_ACCOMPLISH);
+})->setName(OperatorPage::ACTION_TRANSFER_ACCOMPLISH);
 
-$app->post('/transfer/annul/{id}', function (Request $request, Response $response, array $arguments) {
+$pathForTransferAnnul = OperatorPage::ROOT . implode(IPage::PATH_SYMBOL,
+        array(OperatorPage::MODULE_TRANSFER,
+            OperatorPage::ACTION_TRANSFER_ANNUL,
+            '{' . OperatorPage::ID . '}'));
+$app->post($pathForTransferAnnul, function (Request $request, Response $response, array $arguments) {
 
     $api = new OperatorApi();
     $response = $api->annul($request, $response, $arguments);
 
     return $response;
 
-})->setName(OperatorPage::ACTION_ANNUL);
+})->setName(OperatorPage::ACTION_TRANSFER_ANNUL);
 
 $app->run();

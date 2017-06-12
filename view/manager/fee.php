@@ -33,8 +33,6 @@ use Remittance\Presentation\Web\ManagerPage;
 
 <body>
 
-<h1>Список выполненных переводов</h1>
-
 <?php
 $isSet = isset($menu);
 $isValid = false;
@@ -45,6 +43,8 @@ if($isSet){
 if ($isValid)
     include('manager_menu.php');
 ?>
+
+<h1>Список выполненных переводов</h1>
 
 <div id="message"></div>
 <div id="transfers-pager" data-offset="<?= $offset ?>" data-limit="<?= $limit ?>"></div>

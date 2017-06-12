@@ -47,6 +47,7 @@ class ManagerPage implements IPage
     const RATE_TARGET_CURRENCY_TITLE = 'target_code';
 
     const MODULE_VOLUME = 'volume';
+
     const ACTION_VOLUME_EDIT = 'volume_edit';
     const ACTION_VOLUME_ADD = 'volume_add';
     const ACTION_VOLUME_SAVE = 'volume_save';
@@ -59,14 +60,12 @@ class ManagerPage implements IPage
 
     const MODULE_SETTING = 'setting';
 
-    const NAVIGATION_MENU = 'navigation_menu';
-
     const REFERENCES_LINKS = 'references_links';
     const SETTINGS_LINKS = 'settings_links';
-    const SETTINGS_COMMON = 'settings_common';
+    const SETTINGS_COMMON = 'setting_common';
     const CURRENCY_REFERENCE = 'currency_reference';
-    const VOLUME_REFERENCE = 'accounts_reference';
-    const RATES_REFERENCE = 'rates_reference';
+    const VOLUME_REFERENCE = 'account_reference';
+    const RATE_REFERENCE = 'rate_reference';
     const FEE_REFERENCE = 'fee_reference';
 
     const DEAL_INCOME = 'income_amount';
@@ -468,7 +467,7 @@ class ManagerPage implements IPage
             self::REFERENCES_LINKS => array(
                 self::CURRENCY_REFERENCE => $currencyLink,
                 self::VOLUME_REFERENCE => $volumeLink,
-                self::RATES_REFERENCE => $rateLink,
+                self::RATE_REFERENCE => $rateLink,
                 self::FEE_REFERENCE => $feeLink,
             ),
             self::SETTINGS_LINKS => array(
