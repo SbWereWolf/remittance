@@ -239,7 +239,7 @@ class Volume implements IDisable
         return $currencyRecord;
     }
 
-    public function income($income): bool
+    public function income(float $income): bool
     {
         $searcher = new VolumeSearch();
         $record = $searcher->searchByCurrency($this->currency);
@@ -253,7 +253,7 @@ class Volume implements IDisable
         return $isSuccess;
     }
 
-    public function outcome($outcome): bool
+    public function outcome(float $outcome): bool
     {
         $searcher = new VolumeSearch();
         $record = $searcher->searchByCurrency($this->currency);
@@ -263,6 +263,28 @@ class Volume implements IDisable
         if ($isSuccess) {
             $isSuccess = $this->assumeRecord($record);
         }
+
+        return $isSuccess;
+    }
+
+    /**
+     * @param $currency
+     * @param $amount
+     * @return bool
+     */
+    public function testOutcome(string $currency, float $amount): bool
+    {
+        $isSuccess = $this->assembleByCurrency($currency);
+
+        if ($isSuccess) {
+            $isSuccess = $this->validateOutcome($amount);
+        }
+        return $isSuccess;
+    }
+
+    private function validateOutcome(float $outcome): bool
+    {
+        $isSuccess = ($this->amount + $this->reserve) > $outcome;
 
         return $isSuccess;
     }

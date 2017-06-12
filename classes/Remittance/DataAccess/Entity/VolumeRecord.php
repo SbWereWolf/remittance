@@ -96,7 +96,7 @@ class VolumeRecord extends Entity
         return $result;
     }
 
-    public function income($income)
+    public function income(float $income)
     {
 
         $id = SqlHandler::setBindParameter(':ID', $this->id, \PDO::PARAM_INT);
@@ -135,7 +135,7 @@ class VolumeRecord extends Entity
 
     }
 
-    public function outcome($outcome)
+    public function outcome(float $outcome)
     {
         $id = SqlHandler::setBindParameter(':ID', $this->id, \PDO::PARAM_INT);
         $outcomeParameter = SqlHandler::setBindParameter(':INCOME', $outcome, \PDO::PARAM_STR);
