@@ -6,3 +6,4 @@ remittance/operator/.htaccess
 remittance/operator/.htpasswd
 remittance/manager/.htaccess
 remittance/manager/.htpasswd
+remittance\promotion/*

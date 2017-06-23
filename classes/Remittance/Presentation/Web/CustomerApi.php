@@ -60,7 +60,7 @@ class CustomerApi
 
         if ($isValid) {
 
-            $placementMessage = $order->place();
+            $placementMessage = $order->placement();
 
             $result = var_export($placementMessage, true);
         }

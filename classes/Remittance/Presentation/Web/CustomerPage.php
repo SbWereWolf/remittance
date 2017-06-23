@@ -14,7 +14,7 @@ use Slim\Router;
 use Slim\Views\PhpRenderer;
 
 
-class CustomerPage implements IPage
+class CustomerPage implements IRoute
 {
     const MODULE_ORDER = 'order';
     const ACTION_ORDER_ADD = 'order_add';

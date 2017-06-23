@@ -3,7 +3,7 @@
 namespace Remittance\Presentation\Web;
 
 
-interface IPage
+interface IRoute
 {
     const ROOT = '/';
     const PATH_SYMBOL = '/';

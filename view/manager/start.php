@@ -1,6 +1,7 @@
 <?php
-/* @var $menu array */
-use Remittance\Core\Common;
+/* @var $menu ManagerMenu */
+
+use Remittance\Presentation\Web\Page\ManagerMenu;
 
 ?>
 <html>
@@ -15,8 +16,8 @@ use Remittance\Core\Common;
 <?php
 $isSet = isset($menu);
 $isValid = false;
-if($isSet){
-    $isValid = Common::isValidArray($menu);
+if ($isSet) {
+    $isValid = $menu instanceof ManagerMenu;
 }
 
 if ($isValid)

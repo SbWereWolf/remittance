@@ -17,13 +17,14 @@ use Remittance\BusinessLogic\Manager\Currency;
 use Remittance\BusinessLogic\Manager\Rate;
 use Remittance\BusinessLogic\Operator\Transfer;
 use Remittance\Presentation\UserInput\InputArray;
+use Remittance\Presentation\Web\Page\ManagerMenu;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Router;
 use Slim\Views\PhpRenderer;
 
 
-class ManagerPage implements IPage
+class ManagerPage implements IRoute
 {
 
     const MODULE_CURRENCY = 'currency';
@@ -116,7 +117,7 @@ class ManagerPage implements IPage
 
         $offset = 0;
         $limit = 0;
-        $response = $this->viewer->render($response, "manager/currency.php", [
+        $response = $this->viewer->render($response, "manager/currency_list.php", [
             'currencies' => $currencies,
             'offset' => $offset,
             'limit' => $limit,
@@ -185,7 +186,7 @@ class ManagerPage implements IPage
 
         $offset = 0;
         $limit = 0;
-        $response = $this->viewer->render($response, "manager/rate.php", [
+        $response = $this->viewer->render($response, "manager/rate_list.php", [
             'rates' => $rates,
             'currencies' => $currencies,
             'offset' => $offset,
@@ -253,7 +254,7 @@ class ManagerPage implements IPage
 
         $offset = 0;
         $limit = 0;
-        $response = $this->viewer->render($response, "manager/volume.php", [
+        $response = $this->viewer->render($response, "manager/volume_list.php", [
             'volumes' => $volumes,
             'currencies' => $currencies,
             'offset' => $offset,
@@ -452,9 +453,9 @@ class ManagerPage implements IPage
     }
 
     /**
-     * @return array
+     * @return ManagerMenu
      */
-    private function assembleManagerLinks(): array
+    private function assembleManagerLinks(): ManagerMenu
     {
         $currencyLink = $this->router->pathFor(self::MODULE_CURRENCY);
         $volumeLink = $this->router->pathFor(self::MODULE_VOLUME);
@@ -462,18 +463,13 @@ class ManagerPage implements IPage
         $settingLink = $this->router->pathFor(self::MODULE_SETTING);
         $feeLink = $this->router->pathFor(self::MODULE_FEE);
 
+        $menu = new ManagerMenu();
 
-        $menu = array(
-            self::REFERENCES_LINKS => array(
-                self::CURRENCY_REFERENCE => $currencyLink,
-                self::VOLUME_REFERENCE => $volumeLink,
-                self::RATE_REFERENCE => $rateLink,
-                self::FEE_REFERENCE => $feeLink,
-            ),
-            self::SETTINGS_LINKS => array(
-                self::SETTINGS_COMMON => $settingLink,
-            ),
-        );
+        $menu->currencyLink=$currencyLink;
+        $menu->feeLink=$feeLink;
+        $menu->rateLink=$rateLink;
+        $menu->settingLink=$settingLink;
+        $menu->volumeLink=$volumeLink;
 
 
         return $menu;
@@ -490,7 +486,7 @@ class ManagerPage implements IPage
 
         $offset = 0;
         $limit = 0;
-        $response = $this->viewer->render($response, "manager/fee.php", [
+        $response = $this->viewer->render($response, "manager/fee_list.php", [
             'transferView' => $transferView,
             'offset' => $offset,
             'limit' => $limit,

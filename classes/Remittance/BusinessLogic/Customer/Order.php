@@ -38,7 +38,7 @@ class Order
         return $isValid;
     }
 
-    public function place():string
+    public function placement():string
     {
 
         $transfer = new Transfer();

@@ -16,47 +16,51 @@ class TransferRecord extends Entity
     /** @var string колонка для внешнего ключа ссылки на эту таблицу */
     const EXTERNAL_ID = 'transfer_id';
 
-    const INCOME_AMOUNT = 'income_amount';
-    const OUTCOME_AMOUNT = 'outcome_amount';
-    const REPORT_EMAIL = 'report_email';
-    const TRANSFER_NAME = 'transfer_name';
-    const TRANSFER_ACCOUNT = 'transfer_account';
-    const RECEIVE_NAME = 'receive_name';
-    const RECEIVE_ACCOUNT = 'receive_account';
+    const PLACEMENT_DATE = 'placement_date';
     const DOCUMENT_NUMBER = 'document_number';
     const DOCUMENT_DATE = 'document_date';
-    const INCOME_ACCOUNT = 'income_currency';
-    const OUTCOME_ACCOUNT = 'outcome_currency';
-    const TRANSFER_STATUS_ID = 'transfer_status_id';
+    const REPORT_EMAIL = 'report_email';
+    const TRANSFER_STATUS = 'transfer_status_id';
     const STATUS_COMMENT = 'status_comment';
     const STATUS_TIME = 'status_time';
-    const AWAIT_NAME = 'await_name';
+    const INCOME_CURRENCY = 'income_currency';
+    const TRANSFER_ACCOUNT = 'transfer_account';
+    const TRANSFER_NAME = 'transfer_name';
+    const INCOME_AMOUNT = 'income_amount';
     const AWAIT_ACCOUNT = 'await_account';
+    const AWAIT_NAME = 'await_name';
     const FEE = 'fee';
+    const BODY = 'body';
+    const OUTCOME_CURRENCY = 'outcome_currency';
     const PROCEED_ACCOUNT = 'proceed_account';
     const PROCEED_NAME = 'proceed_name';
-    const BODY = 'body';
+    const OUTCOME_AMOUNT = 'outcome_amount';
+    const COST = 'cost';
+    const RECEIVE_ACCOUNT = 'receive_account';
+    const RECEIVE_NAME = 'receive_name';
 
-    public $incomeAmount = 0;
-    public $outcomeAmount = 0;
-    public $reportEmail = '';
-    public $transferName = '';
-    public $transferAccount = '';
-    public $receiveName = '';
-    public $receiveAccount = '';
+    public $placement_date = null;
     public $documentNumber = '';
-    public $documentDate = '';
-    public $incomeCurrency = '';
-    public $outcomeCurrency = '';
-    public $transferStatusId = 0;
+    public $documentDate = null;
+    public $reportEmail = '';
+    public $transferStatus = 0;
     public $statusComment = '';
-    public $statusTime = '';
-    public $awaitName = '';
+    public $statusTime = null;
+    public $incomeCurrency = '';
+    public $transferAccount = '';
+    public $transferName = '';
+    public $incomeAmount = 0;
     public $awaitAccount = '';
+    public $awaitName = '';
     public $fee = 0;
+    public $body = 0;
+    public $outcomeCurrency = '';
     public $proceedAccount = '';
     public $proceedName = '';
-    public $body = 0;
+    public $outcomeAmount = 0;
+    public $cost = 0;
+    public $receiveAccount = '';
+    public $receiveName = '';
 
     /** @var string имя таблицы для хранения сущности */
     protected $tablename = self::TABLE_NAME;
@@ -86,9 +90,9 @@ class TransferRecord extends Entity
         $result [self::RECEIVE_ACCOUNT] = $this->receiveAccount;
         $result [self::DOCUMENT_NUMBER] = $this->documentNumber;
         $result [self::DOCUMENT_DATE] = $this->documentDate;
-        $result [self::INCOME_ACCOUNT] = $this->incomeCurrency;
-        $result [self::OUTCOME_ACCOUNT] = $this->outcomeCurrency;
-        $result [self::TRANSFER_STATUS_ID] = intval($this->transferStatusId);
+        $result [self::INCOME_CURRENCY] = $this->incomeCurrency;
+        $result [self::OUTCOME_CURRENCY] = $this->outcomeCurrency;
+        $result [self::TRANSFER_STATUS] = intval($this->transferStatus);
         $result [self::STATUS_COMMENT] = $this->statusComment;
         $result [self::STATUS_TIME] = $this->statusTime;
         $result [self::AWAIT_NAME] = $this->awaitName;
@@ -116,7 +120,7 @@ class TransferRecord extends Entity
         $documentDate = SqlHandler::setBindParameter(':DOCUMENT_DATE', $this->documentDate, \PDO::PARAM_STR);
         $incomeAccount = SqlHandler::setBindParameter(':INCOME_ACCOUNT', $this->incomeCurrency, \PDO::PARAM_STR);
         $outcomeAccount = SqlHandler::setBindParameter(':OUTCOME_ACCOUNT', $this->outcomeCurrency, \PDO::PARAM_STR);
-        $status = SqlHandler::setBindParameter(':STATUS_ID', $this->transferStatusId, \PDO::PARAM_INT);
+        $status = SqlHandler::setBindParameter(':STATUS_ID', $this->transferStatus, \PDO::PARAM_INT);
         $statusComment = SqlHandler::setBindParameter(':STATUS_COMMENT', $this->statusComment, \PDO::PARAM_STR);
         $statusTime = SqlHandler::setBindParameter(':STATUS_TIME', $this->statusTime, \PDO::PARAM_STR);
         $awaitName = SqlHandler::setBindParameter(':AWAIT_NAME', $this->awaitName, \PDO::PARAM_STR);
@@ -142,9 +146,9 @@ class TransferRecord extends Entity
             . ' , ' . self::RECEIVE_ACCOUNT . ' = ' . $receiveAccount[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::DOCUMENT_NUMBER . ' = ' . $documentNumber[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::DOCUMENT_DATE . ' = ' . $documentDate[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::INCOME_ACCOUNT . ' = ' . $incomeAccount[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::OUTCOME_ACCOUNT . ' = ' . $outcomeAccount[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::TRANSFER_STATUS_ID . ' = ' . $status[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::INCOME_CURRENCY . ' = ' . $incomeAccount[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::OUTCOME_CURRENCY . ' = ' . $outcomeAccount[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::TRANSFER_STATUS . ' = ' . $status[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::STATUS_COMMENT . ' = ' . $statusComment[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::STATUS_TIME . ' = ' . $statusTime[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::AWAIT_NAME . ' = ' . $awaitName[ISqlHandler::PLACEHOLDER]
@@ -170,9 +174,9 @@ class TransferRecord extends Entity
             . ' , ' . self::RECEIVE_ACCOUNT
             . ' , ' . self::DOCUMENT_NUMBER
             . ' , ' . self::DOCUMENT_DATE
-            . ' , ' . self::INCOME_ACCOUNT
-            . ' , ' . self::OUTCOME_ACCOUNT
-            . ' , ' . self::TRANSFER_STATUS_ID
+            . ' , ' . self::INCOME_CURRENCY
+            . ' , ' . self::OUTCOME_CURRENCY
+            . ' , ' . self::TRANSFER_STATUS
             . ' , ' . self::STATUS_COMMENT
             . ' , ' . self::STATUS_TIME
             . ' , ' . self::AWAIT_NAME
@@ -235,9 +239,9 @@ class TransferRecord extends Entity
             . ' , ' . self::RECEIVE_ACCOUNT
             . ' , ' . self::DOCUMENT_NUMBER
             . ' , ' . self::DOCUMENT_DATE
-            . ' , ' . self::INCOME_ACCOUNT
-            . ' , ' . self::OUTCOME_ACCOUNT
-            . ' , ' . self::TRANSFER_STATUS_ID
+            . ' , ' . self::INCOME_CURRENCY
+            . ' , ' . self::OUTCOME_CURRENCY
+            . ' , ' . self::TRANSFER_STATUS
             . ' , ' . self::STATUS_COMMENT
             . ' , ' . self::STATUS_TIME
             . ' , ' . self::AWAIT_NAME
@@ -282,9 +286,9 @@ class TransferRecord extends Entity
         $this->receiveAccount = SqlHandler::setIfExists(self::RECEIVE_ACCOUNT, $namedValue);
         $this->documentNumber = SqlHandler::setIfExists(self::DOCUMENT_NUMBER, $namedValue);
         $this->documentDate = SqlHandler::setIfExists(self::DOCUMENT_DATE, $namedValue);
-        $this->incomeCurrency = SqlHandler::setIfExists(self::INCOME_ACCOUNT, $namedValue);
-        $this->outcomeCurrency = SqlHandler::setIfExists(self::OUTCOME_ACCOUNT, $namedValue);
-        $this->transferStatusId = intval(SqlHandler::setIfExists(self::TRANSFER_STATUS_ID, $namedValue));
+        $this->incomeCurrency = SqlHandler::setIfExists(self::INCOME_CURRENCY, $namedValue);
+        $this->outcomeCurrency = SqlHandler::setIfExists(self::OUTCOME_CURRENCY, $namedValue);
+        $this->transferStatus = intval(SqlHandler::setIfExists(self::TRANSFER_STATUS, $namedValue));
         $this->statusComment = SqlHandler::setIfExists(self::STATUS_COMMENT, $namedValue);
         $this->statusTime = SqlHandler::setIfExists(self::STATUS_TIME, $namedValue);
         $this->awaitName = SqlHandler::setIfExists(self::AWAIT_NAME, $namedValue);
@@ -317,7 +321,7 @@ class TransferRecord extends Entity
         $documentDate = SqlHandler::setBindParameter(':DOCUMENT_DATE', $this->documentDate, \PDO::PARAM_STR);
         $incomeAccount = SqlHandler::setBindParameter(':INCOME_ACCOUNT', $this->incomeCurrency, \PDO::PARAM_STR);
         $outcomeAccount = SqlHandler::setBindParameter(':OUTCOME_ACCOUNT', $this->outcomeCurrency, \PDO::PARAM_STR);
-        $status = SqlHandler::setBindParameter(':STATUS_ID', $this->transferStatusId, \PDO::PARAM_INT);
+        $status = SqlHandler::setBindParameter(':STATUS_ID', $this->transferStatus, \PDO::PARAM_INT);
         $statusComment = SqlHandler::setBindParameter(':STATUS_COMMENT', $this->statusComment, \PDO::PARAM_STR);
         $statusTime = SqlHandler::setBindParameter(':STATUS_TIME', $this->statusTime, \PDO::PARAM_STR);
         $awaitName = SqlHandler::setBindParameter(':AWAIT_NAME', $this->awaitName, \PDO::PARAM_STR);
@@ -341,9 +345,9 @@ class TransferRecord extends Entity
             . ' , ' . self::RECEIVE_ACCOUNT . ' = ' . $receiveAccount[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::DOCUMENT_NUMBER . ' = ' . $documentNumber[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::DOCUMENT_DATE . ' = ' . $documentDate[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::INCOME_ACCOUNT . ' = ' . $incomeAccount[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::OUTCOME_ACCOUNT . ' = ' . $outcomeAccount[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::TRANSFER_STATUS_ID . ' = ' . $status[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::INCOME_CURRENCY . ' = ' . $incomeAccount[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::OUTCOME_CURRENCY . ' = ' . $outcomeAccount[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::TRANSFER_STATUS . ' = ' . $status[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::STATUS_COMMENT . ' = ' . $statusComment[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::STATUS_TIME . ' = ' . $statusTime[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::IS_HIDDEN . ' = ' . $isHidden[ISqlHandler::PLACEHOLDER]
@@ -367,9 +371,9 @@ class TransferRecord extends Entity
             . ' , ' . self::RECEIVE_ACCOUNT
             . ' , ' . self::DOCUMENT_NUMBER
             . ' , ' . self::DOCUMENT_DATE
-            . ' , ' . self::INCOME_ACCOUNT
-            . ' , ' . self::OUTCOME_ACCOUNT
-            . ' , ' . self::TRANSFER_STATUS_ID
+            . ' , ' . self::INCOME_CURRENCY
+            . ' , ' . self::OUTCOME_CURRENCY
+            . ' , ' . self::TRANSFER_STATUS
             . ' , ' . self::STATUS_COMMENT
             . ' , ' . self::STATUS_TIME
             . ' , ' . self::AWAIT_NAME

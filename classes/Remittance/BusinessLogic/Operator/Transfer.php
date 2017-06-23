@@ -27,6 +27,7 @@ class Transfer
     public $dealOutcome = 0;
     public $fee = 0;
     public $body = 0;
+    public $cost = 0;
 
     public $accountAwait = '';
     public $fioAwait = '';
@@ -82,7 +83,7 @@ class Transfer
             $record->documentDate = date(self::FORMAT_DOCUMENT_DATE);
 
 
-            $record->transferStatusId = $statusId;
+            $record->transferStatus = $statusId;
 
             $record->statusComment = 'принята заявка с сайта';
             $record->statusTime = date(self::FORMAT_STATUS_TIME);
@@ -210,7 +211,7 @@ class Transfer
         $record->documentDate = $this->documentDate;
 
         $statusId = $this->getTransferStatusId();
-        $record->transferStatusId = $statusId;
+        $record->transferStatus = $statusId;
 
         $record->statusComment = $this->statusComment;
         $record->statusTime = $this->statusTime;
@@ -265,7 +266,7 @@ class Transfer
     private function getTransferStatusCode(TransferRecord $record): string
     {
         $searcher = new NamedEntitySearch(TransferStatusRecord::TABLE_NAME);
-        $transferStatus = $searcher->searchById($record->transferStatusId);
+        $transferStatus = $searcher->searchById($record->transferStatus);
         $code = $transferStatus->code;
 
         return $code;

@@ -3,7 +3,9 @@
 /* @var $offset int */
 /* @var $limit int */
 /* @var $actionLinks array */
-/* @var $menu array */
+/* @var $menu ManagerMenu */
+
+use Remittance\Presentation\Web\Page\ManagerMenu;
 
 use Remittance\Core\Common;
 use Remittance\Core\ICommon;
@@ -35,8 +37,8 @@ use Remittance\Presentation\Web\ManagerPage;
 <?php
 $isSet = isset($menu);
 $isValid = false;
-if($isSet){
-    $isValid = Common::isValidArray($menu);
+if ($isSet) {
+    $isValid = $menu instanceof ManagerMenu;
 }
 
 if ($isValid)

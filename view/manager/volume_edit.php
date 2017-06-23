@@ -1,8 +1,10 @@
 <?php
 /* @var $volume Remittance\DataAccess\Entity\VolumeRecord */
 /* @var $currencies array */
-/* @var $menu array */
 /* @var $actionLinks array */
+/* @var $menu ManagerMenu */
+
+use Remittance\Presentation\Web\Page\ManagerMenu;
 
 use Remittance\Core\Common;
 use Remittance\DataAccess\Entity\CurrencyRecord;
@@ -21,7 +23,7 @@ use Remittance\Presentation\Web\ManagerPage;
 $isSet = isset($menu);
 $isValid = false;
 if ($isSet) {
-    $isValid = Common::isValidArray($menu);
+    $isValid = $menu instanceof ManagerMenu;
 }
 
 if ($isValid)

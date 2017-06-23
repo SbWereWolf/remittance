@@ -1,33 +1,26 @@
 <?php
-/* @var $menu array */
-use Remittance\Core\Common;
-use Remittance\Presentation\Web\OperatorPage;
+/* @var $menu OperatorMenu */
+
+use Remittance\Presentation\Web\Page\OperatorMenu;
 
 $isSet = isset($menu);
 $isValid = false;
 if ($isSet) {
-    $isValid = Common::isValidArray($menu);
+    $isValid = $menu instanceof OperatorMenu;
 }
 
 if ($isValid):
-    $empty = null;
     ?>
     <div id="links">
-        <?php
-        $menuDocument = Common::setIfExists(OperatorPage::DOCUMENTS_LINKS, $menu, $empty);
-        $isExists = !empty($menuDocument);
-        if ($isExists):
-            ?>
-            <dl>
-                <dt>Документы</dt>
-                <?php
-                $menuTransfer = Common::setIfExists(OperatorPage::TRANSFER_DOCUMENTS, $menuDocument, $empty);
-                $isExists = !empty($menuTransfer);
-                if ($isExists):
-                    ?>
-                    <dd><a href="<?= $menuTransfer ?>">Переводы</a></dd>
-                <?php endif; ?>
-            </dl>
-        <?php endif; ?>
+        <dl>
+            <dt>Документы</dt>
+            <?php
+            $transferLink = $menu->transferLink;
+            $isExists = !empty($transferLink);
+            if ($isExists):
+                ?>
+                <dd><a href="<?= $transferLink ?>">Переводы</a></dd>
+            <?php endif; ?>
+        </dl>
     </div>
 <?php endif; ?>

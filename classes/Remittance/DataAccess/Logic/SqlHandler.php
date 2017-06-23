@@ -321,4 +321,18 @@ class SqlHandler implements ISqlHandler
 
         return $some;
     }
+
+    public function castFloat (string $placeholder):string{
+
+        $cast = 'CAST(' . $placeholder . ' AS DOUBLE PRECISION)';
+
+        return $cast;
+    }
+
+    public function castTimestamp (string $placeholder):string{
+
+        $cast = 'CAST(' . $placeholder . ' AS TIMESTAMP WITH TIME ZONE)';
+
+        return $cast;
+    }
 }

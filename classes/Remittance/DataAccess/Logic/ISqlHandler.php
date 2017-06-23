@@ -20,15 +20,15 @@ interface ISqlHandler
     /** @var array константа значение не задано для массивов */
     const EMPTY_ARRAY = ICommon::EMPTY_ARRAY;
 
-    /** @var array индекс для текста запроса */
+    /** @var string индекс для текста запроса */
     const QUERY_TEXT = 'QUERY_TEXT';
-    /** @var array индекс для параметра запроса */
+    /** @var string индекс для параметра запроса */
     const QUERY_PARAMETER = 'QUERY_PARAMETER';
-    /** @var array индекс для место заменителя параметра */
+    /** @var string индекс для место заменителя параметра */
     const PLACEHOLDER = 'PARAMETER_PLACEHOLDER';
-    /** @var array индекс для значения параметра */
+    /** @var string индекс для значения параметра */
     const VALUE = 'PARAMETER_VALUE';
-    /** @var array индекс для типа данных параметра */
+    /** @var string индекс для типа данных параметра */
     const DATA_TYPE = 'PARAMETER_DATA_TYPE';
 
     /** @var string индекс для массива с данными выборки в ответе СУБД */
@@ -36,23 +36,23 @@ interface ISqlHandler
     /** @var string индекс для массива с ошибкой выборки в ответе СУБД */
     const ERROR_INFO = 'errorInfo';
 
-    /** @var array код ошибки PostrgesSql для успешно выполнения запроса */
+    /** @var string код ошибки PDO PostrgesSql для успешно выполнения запроса */
     const EXEC_WITH_SUCCESS_CODE = '00000';
-    /** @var array сообщение PostrgesSql для успешно выполнения запроса */
+    /** @var null сообщение PDO PostrgesSql для успешно выполнения запроса */
     const EXEC_WITH_SUCCESS_MESSAGE = null;
-    /** @var array номер ошибки PostrgesSql для успешно выполнения запроса */
+    /** @var null номер ошибки PDO PostrgesSql для успешно выполнения запроса */
     const EXEC_WITH_SUCCESS_NUMBER = null;
 
-    /** @var array индекс кода ошибки в отчёте о результате выполнения запроса */
+    /** @var int индекс кода ошибки в отчёте о результате выполнения запроса */
     const EXEC_ERROR_CODE_INDEX = 0;
-    /** @var array индекс сообщения ошибки в отчёте о результате выполнения запроса */
+    /** @var int индекс сообщения ошибки в отчёте о результате выполнения запроса */
     const EXEC_ERROR_NUMBER_INDEX = 1;
-    /** @var array индекс номера ошибки в отчёте о результате выполнения запроса */
+    /** @var int индекс номера ошибки в отчёте о результате выполнения запроса */
     const EXEC_ERROR_MESSAGE_INDEX = 2;
 
-    /** @var array режим чтения данных */
+    /** @var int режим чтения данных */
     const DATA_READER = 1;
-    /** @var array режим записи данных */
+    /** @var int режим записи данных */
     const DATA_WRITER = 2;
 
     /** Задать параметры связывания для параметризированного запроса

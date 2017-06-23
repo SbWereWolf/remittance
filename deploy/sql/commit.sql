@@ -19,26 +19,28 @@ CREATE TABLE transfer
   id                 SERIAL PRIMARY KEY,
   insert_date        TIMESTAMP WITH TIME ZONE DEFAULT now(),
   is_hidden          INTEGER                  DEFAULT 0,
+  placement_date     TIMESTAMP WITH TIME ZONE,
   document_number    TEXT,
-  document_date      TEXT,
+  document_date      TIMESTAMP WITH TIME ZONE,
   report_email       TEXT,
   transfer_status_id INTEGER
     CONSTRAINT fk_transfer_transfer_status_id
     REFERENCES transfer_status (id),
   status_comment     TEXT,
-  status_time        TEXT,
+  status_time        TIMESTAMP WITH TIME ZONE,
   income_currency    TEXT,
   transfer_account   TEXT,
   transfer_name      TEXT,
-  income_amount      TEXT,
+  income_amount      DOUBLE PRECISION,
   await_account      TEXT,
   await_name         TEXT,
-  body               DOUBLE PRECISION,
   fee                DOUBLE PRECISION,
+  body               DOUBLE PRECISION,
   outcome_currency   TEXT,
   proceed_account    TEXT,
   proceed_name       TEXT,
-  outcome_amount     TEXT,
+  outcome_amount     DOUBLE PRECISION,
+  cost               DOUBLE PRECISION,
   receive_account    TEXT,
   receive_name       TEXT
 );
@@ -47,6 +49,8 @@ CREATE INDEX ix_transfer_transfer_status_id
   ON transfer (transfer_status_id);
 CREATE INDEX ix_transfer_is_hidden_id
   ON transfer (is_hidden, id);
+CREATE UNIQUE INDEX ux_transfer_document_date_document_number
+  ON public.transfer (document_date, document_number);
 
 
 CREATE TABLE public.currency

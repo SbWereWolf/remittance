@@ -15,13 +15,14 @@ use Remittance\DataAccess\Entity\TransferRecord;
 use Remittance\DataAccess\Search\TransferSearch;
 use Remittance\BusinessLogic\Operator\Transfer;
 use Remittance\Presentation\UserInput\InputArray;
+use Remittance\Presentation\Web\Page\OperatorMenu;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Router;
 use Slim\Views\PhpRenderer;
 
 
-class OperatorPage implements IPage
+class OperatorPage implements IRoute
 {
     const DOCUMENTS_LINKS = 'documents_links';
 
@@ -163,18 +164,15 @@ class OperatorPage implements IPage
     }
 
     /**
-     * @return array
+     * @return OperatorMenu
      */
-    private function assembleOperatorLinks(): array
+    private function assembleOperatorLinks(): OperatorMenu
     {
         $transferLink = $this->router->pathFor(self::MODULE_TRANSFER);
 
+        $menu = new OperatorMenu();
 
-        $menu = array(
-            self::DOCUMENTS_LINKS => array(
-                self::TRANSFER_DOCUMENTS => $transferLink,
-            ),
-        );
+        $menu->transferLink=$transferLink;
 
 
         return $menu;

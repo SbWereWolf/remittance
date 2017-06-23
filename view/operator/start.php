@@ -1,6 +1,7 @@
 <?php
-/* @var $menu array */
-use Remittance\Core\Common;
+/* @var $menu OperatorMenu */
+
+use Remittance\Presentation\Web\Page\OperatorMenu;
 
 ?>
 <html>
@@ -16,7 +17,7 @@ use Remittance\Core\Common;
 $isSet = isset($menu);
 $isValid = false;
 if($isSet){
-    $isValid = Common::isValidArray($menu);
+    $isValid = $menu instanceof OperatorMenu;
 }
 
 if ($isValid)

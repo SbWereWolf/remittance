@@ -40,9 +40,9 @@ class TransferSearch
             . ' ,' . TransferRecord::RECEIVE_ACCOUNT
             . ' ,' . TransferRecord::DOCUMENT_NUMBER
             . ' ,' . TransferRecord::DOCUMENT_DATE
-            . ' ,' . TransferRecord::INCOME_ACCOUNT
-            . ' ,' . TransferRecord::OUTCOME_ACCOUNT
-            . ' ,' . TransferRecord::TRANSFER_STATUS_ID
+            . ' ,' . TransferRecord::INCOME_CURRENCY
+            . ' ,' . TransferRecord::OUTCOME_CURRENCY
+            . ' ,' . TransferRecord::TRANSFER_STATUS
             . ' ,' . TransferRecord::STATUS_COMMENT
             . ' ,' . TransferRecord::STATUS_TIME
             . ' ,' . TransferRecord::AWAIT_NAME
@@ -84,9 +84,9 @@ class TransferSearch
             . ' ,' . TransferRecord::RECEIVE_ACCOUNT
             . ' ,' . TransferRecord::DOCUMENT_NUMBER
             . ' ,' . TransferRecord::DOCUMENT_DATE
-            . ' ,' . TransferRecord::INCOME_ACCOUNT
-            . ' ,' . TransferRecord::OUTCOME_ACCOUNT
-            . ' ,' . TransferRecord::TRANSFER_STATUS_ID
+            . ' ,' . TransferRecord::INCOME_CURRENCY
+            . ' ,' . TransferRecord::OUTCOME_CURRENCY
+            . ' ,' . TransferRecord::TRANSFER_STATUS
             . ' ,' . TransferRecord::STATUS_COMMENT
             . ' ,' . TransferRecord::STATUS_TIME
             . ' ,' . TransferRecord::AWAIT_NAME
@@ -132,9 +132,9 @@ class TransferSearch
             . ' , T.' . TransferRecord::RECEIVE_ACCOUNT
             . ' , T.' . TransferRecord::DOCUMENT_NUMBER
             . ' , T.' . TransferRecord::DOCUMENT_DATE
-            . ' , T.' . TransferRecord::INCOME_ACCOUNT
-            . ' , T.' . TransferRecord::OUTCOME_ACCOUNT
-            . ' , T.' . TransferRecord::TRANSFER_STATUS_ID
+            . ' , T.' . TransferRecord::INCOME_CURRENCY
+            . ' , T.' . TransferRecord::OUTCOME_CURRENCY
+            . ' , T.' . TransferRecord::TRANSFER_STATUS
             . ' , T.' . TransferRecord::STATUS_COMMENT
             . ' , T.' . TransferRecord::STATUS_TIME
             . ' , T.' . TransferRecord::AWAIT_NAME
@@ -146,7 +146,7 @@ class TransferSearch
             . ' FROM '
             . $this->tablename . ' AS T '
             . ' JOIN ' . TransferStatusRecord::TABLE_NAME . ' AS S '
-            . ' ON T.' . TransferRecord::TRANSFER_STATUS_ID . ' = S.' . TransferStatusRecord::ID
+            . ' ON T.' . TransferRecord::TRANSFER_STATUS . ' = S.' . TransferStatusRecord::ID
             . ' WHERE '
             . ' S.' . TransferStatusRecord::CODE . ' = ' . $statusCode[ISqlHandler::PLACEHOLDER]
             . ';';

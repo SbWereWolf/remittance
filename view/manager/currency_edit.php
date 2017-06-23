@@ -1,7 +1,9 @@
 <?php
 /* @var $currency \Remittance\BusinessLogic\Manager\Currency */
 /* @var $actionLinks array */
-/* @var $menu array */
+/* @var $menu ManagerMenu */
+
+use Remittance\Presentation\Web\Page\ManagerMenu;
 
 use Remittance\Core\Common;
 use Remittance\Presentation\Web\ManagerPage;
@@ -19,7 +21,7 @@ use Remittance\Presentation\Web\ManagerPage;
 $isSet = isset($menu);
 $isValid = false;
 if ($isSet) {
-    $isValid = Common::isValidArray($menu);
+    $isValid = $menu instanceof ManagerMenu;
 }
 
 if ($isValid)

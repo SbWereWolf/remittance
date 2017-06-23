@@ -4,7 +4,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 */
 
-use Remittance\Presentation\Web\IPage;
+use Remittance\Presentation\Web\IRoute;
 use Remittance\Presentation\Web\OperatorApi;
 use Remittance\Presentation\Web\OperatorPage;
 use Slim\Http\Request;
@@ -51,7 +51,7 @@ $app->get($pathForTransferModule, function (Request $request, Response $response
     return $response;
 })->setName(OperatorPage::MODULE_TRANSFER);
 
-$pathForTransferEdit = OperatorPage::ROOT . implode(IPage::PATH_SYMBOL,
+$pathForTransferEdit = OperatorPage::ROOT . implode(IRoute::PATH_SYMBOL,
         array(OperatorPage::MODULE_TRANSFER,
             OperatorPage::ACTION_TRANSFER_EDIT,
             '{' . OperatorPage::ID . '}'));
@@ -65,7 +65,7 @@ $app->get($pathForTransferEdit, function (Request $request, Response $response, 
     return $response;
 })->setName(OperatorPage::ACTION_TRANSFER_EDIT);
 
-$pathForTransferAccomplish = OperatorPage::ROOT . implode(IPage::PATH_SYMBOL,
+$pathForTransferAccomplish = OperatorPage::ROOT . implode(IRoute::PATH_SYMBOL,
         array(OperatorPage::MODULE_TRANSFER,
             OperatorPage::ACTION_TRANSFER_ACCOMPLISH,
             '{' . OperatorPage::ID . '}'));
@@ -78,7 +78,7 @@ $app->post($pathForTransferAccomplish, function (Request $request, Response $res
 
 })->setName(OperatorPage::ACTION_TRANSFER_ACCOMPLISH);
 
-$pathForTransferAnnul = OperatorPage::ROOT . implode(IPage::PATH_SYMBOL,
+$pathForTransferAnnul = OperatorPage::ROOT . implode(IRoute::PATH_SYMBOL,
         array(OperatorPage::MODULE_TRANSFER,
             OperatorPage::ACTION_TRANSFER_ANNUL,
             '{' . OperatorPage::ID . '}'));

@@ -5,7 +5,9 @@
 /* @var $limit int */
 /* @var $actionLinks array */
 /* @var $currencyTitles array */
-/* @var $menu array */
+/* @var $menu ManagerMenu */
+
+use Remittance\Presentation\Web\Page\ManagerMenu;
 
 use Remittance\Core\Common;
 use Remittance\Core\ICommon;
@@ -37,12 +39,12 @@ use Remittance\Presentation\Web\ManagerPage;
 
 <?php
 $isSet = isset($menu);
-$isActionLinksValid = false;
+$isValid = false;
 if ($isSet) {
-    $isActionLinksValid = Common::isValidArray($menu);
+    $isValid = $menu instanceof ManagerMenu;
 }
 
-if ($isActionLinksValid)
+if ($isValid)
     include('manager_menu.php');
 ?>
 
