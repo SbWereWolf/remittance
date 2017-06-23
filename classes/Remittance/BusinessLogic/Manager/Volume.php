@@ -284,7 +284,7 @@ class Volume implements IDisable
 
     private function validateOutcome(float $outcome): bool
     {
-        $isSuccess = (($this->amount + $this->reserve) > $outcome)&& ($this->amount+$this->total < $this->limitation);
+        $isSuccess = (($this->amount - $this->reserve) > $outcome)&& ($this->total+$outcome < $this->limitation);
 
 
         return $isSuccess;
