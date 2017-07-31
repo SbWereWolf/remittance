@@ -95,12 +95,12 @@ class PredefinedEntity extends PrimitiveData implements IPredefinedEntity
         return $result;
     }
 
-    public function setByNamedValue(array $namedValue):bool
+    public function setByNamedValue(array $namedValues): bool
     {
 
-        $result = parent::setByNamedValue($namedValue);
+        $result = parent::setByNamedValue($namedValues);
 
-        $linkToParent = Common::setIfExists($this->childColumn, $namedValue, self::EMPTY_VALUE);
+        $linkToParent = Common::setIfExists($this->childColumn, $namedValues, self::EMPTY_VALUE);
         if (is_null($linkToParent)) {
             $linkToParent = self::EMPTY_VALUE;
         }

@@ -78,20 +78,20 @@ namespace Remittance\DataAccess\Entity {
 
         }
 
-        public function setByNamedValue(array $namedValue): bool
+        public function setByNamedValue(array $namedValues): bool
         {
 
-            $result = parent::setByNamedValue($namedValue);
+            $result = parent::setByNamedValue($namedValues);
 
-            $code = SqlHandler::setIfExists(self::CODE, $namedValue);
+            $code = SqlHandler::setIfExists(self::CODE, $namedValues);
             if ($code !== ISqlHandler::EMPTY_VALUE) {
                 $this->code = $code;
             }
-            $title = SqlHandler::setIfExists(self::TITLE, $namedValue);
+            $title = SqlHandler::setIfExists(self::TITLE, $namedValues);
             if ($title !== ISqlHandler::EMPTY_VALUE) {
                 $this->title = $title;
             }
-            $description = SqlHandler::setIfExists(self::DESCRIPTION, $namedValue);
+            $description = SqlHandler::setIfExists(self::DESCRIPTION, $namedValues);
             if ($description !== ISqlHandler::EMPTY_VALUE) {
                 $this->description = $description;
             }

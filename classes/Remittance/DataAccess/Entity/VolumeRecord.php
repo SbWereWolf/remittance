@@ -212,21 +212,21 @@ class VolumeRecord extends Entity
     }
 
     /** Установить свойства экземпляра в соответствии со значениями
-     * @param array $namedValue массив значений
+     * @param array $namedValues массив значений
      * @return bool успех выполнения
      */
-    public function setByNamedValue(array $namedValue): bool
+    public function setByNamedValue(array $namedValues): bool
     {
 
-        $result = parent::setByNamedValue($namedValue);
+        $result = parent::setByNamedValue($namedValues);
 
-        $this->currencyId = intval(SqlHandler::setIfExists(self::CURRENCY_ID, $namedValue));
-        $this->amount = floatval(SqlHandler::setIfExists(self::AMOUNT, $namedValue));
-        $this->reserve = floatval(SqlHandler::setIfExists(self::RESERVE, $namedValue));
-        $this->accountName = strval(SqlHandler::setIfExists(self::ACCOUNT_NAME, $namedValue));
-        $this->accountNumber = strval(SqlHandler::setIfExists(self::ACCOUNT_NUMBER, $namedValue));
-        $this->limitation = floatval(SqlHandler::setIfExists(self::LIMITATION, $namedValue));
-        $this->total = floatval(SqlHandler::setIfExists(self::TOTAL, $namedValue));
+        $this->currencyId = intval(SqlHandler::setIfExists(self::CURRENCY_ID, $namedValues));
+        $this->amount = floatval(SqlHandler::setIfExists(self::AMOUNT, $namedValues));
+        $this->reserve = floatval(SqlHandler::setIfExists(self::RESERVE, $namedValues));
+        $this->accountName = strval(SqlHandler::setIfExists(self::ACCOUNT_NAME, $namedValues));
+        $this->accountNumber = strval(SqlHandler::setIfExists(self::ACCOUNT_NUMBER, $namedValues));
+        $this->limitation = floatval(SqlHandler::setIfExists(self::LIMITATION, $namedValues));
+        $this->total = floatval(SqlHandler::setIfExists(self::TOTAL, $namedValues));
 
         return $result;
     }

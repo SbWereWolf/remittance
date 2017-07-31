@@ -18,8 +18,8 @@ interface IPrimitiveData
     public function mutateEntity():bool;
 
     /** Установить свойства экземпляра в соответствии со значениями
-     * @param array $namedValue массив значений
+     * @param array $namedValues массив значений
      * @return bool успех выполнения
      */
-    public function setByNamedValue(array $namedValue):bool;
+    public function setByNamedValue(array $namedValues): bool;
 }

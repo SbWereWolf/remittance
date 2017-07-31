@@ -6,19 +6,14 @@ namespace Remittance\Core {
      */
     class Common implements ICommon
     {
-        public static function setIfExists($key, &$array, $valueIfNotIsset = ICommon::EMPTY_VALUE)
+        public static function setIfExists($key, array &$array, $valueIfNotIsset = ICommon::EMPTY_VALUE)
         {
 
-            $isArray = is_array($array);
-
-            $maySet = false;
-            if ($isArray) {
-                $maySet = array_key_exists($key, $array);
-            }
+            $maySet = array_key_exists($key, $array);
 
             $value = $valueIfNotIsset;
             if ($maySet) {
-                $value = self::isSetEx($array[$key], $valueIfNotIsset);
+                $value = $array[$key];
             }
 
             return $value;

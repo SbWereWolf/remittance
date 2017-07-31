@@ -43,17 +43,14 @@ namespace Remittance\DataAccess\Entity {
         }
 
         /** Установить свойства экземпляра в соответствии со значениями
-         * @param array $namedValue массив значений
+         * @param array $namedValues массив значений
          * @return bool успех выполнения
          */
-        public function setByNamedValue(array $namedValue): bool
+        public function setByNamedValue(array $namedValues): bool
         {
-            $result = parent::setByNamedValue($namedValue);
+            $result = parent::setByNamedValue($namedValues);
 
-            $isHidden = SqlHandler::setIfExists(self::IS_HIDDEN, $namedValue);
-            if ($isHidden !== SqlHandler::EMPTY_VALUE) {
-                $this->isHidden = boolval($isHidden);
-            }
+            $this->isHidden = SqlHandler::getIntegerValue(self::IS_HIDDEN, $namedValues);
 
             return $result;
         }

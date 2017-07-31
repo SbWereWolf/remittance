@@ -7,7 +7,9 @@ use Remittance\Core\Common;
 use Remittance\Core\ICommon;
 use Remittance\DataAccess\Entity\TransferRecord;
 use Remittance\DataAccess\Entity\TransferStatusRecord;
+use Remittance\DataAccess\Logic\IDbFormatter;
 use Remittance\DataAccess\Logic\ISqlHandler;
+use Remittance\DataAccess\Logic\OutputFormatter;
 use Remittance\DataAccess\Logic\SqlHandler;
 
 
@@ -28,6 +30,8 @@ class TransferSearch
     {
         $oneParameter = SqlHandler::setBindParameter(':ID', $id, \PDO::PARAM_INT);
 
+        $output = new OutputFormatter(IDbFormatter::POSTGRES);
+
         $arguments[ISqlHandler::QUERY_TEXT] =
             'SELECT '
             . TransferRecord::ID
@@ -39,18 +43,20 @@ class TransferSearch
             . ' ,' . TransferRecord::RECEIVE_NAME
             . ' ,' . TransferRecord::RECEIVE_ACCOUNT
             . ' ,' . TransferRecord::DOCUMENT_NUMBER
-            . ' ,' . TransferRecord::DOCUMENT_DATE
-            . ' ,' . TransferRecord::INCOME_CURRENCY
-            . ' ,' . TransferRecord::OUTCOME_CURRENCY
-            . ' ,' . TransferRecord::TRANSFER_STATUS
+            . ' ,' . $output->castTimestampToString(TransferRecord::DOCUMENT_DATE) . ' AS ' . TransferRecord::DOCUMENT_DATE
+            . ' ,' . TransferRecord::INCOME_CURRENCY_ID
+            . ' ,' . TransferRecord::OUTCOME_CURRENCY_ID
+            . ' ,' . TransferRecord::TRANSFER_STATUS_ID
             . ' ,' . TransferRecord::STATUS_COMMENT
-            . ' ,' . TransferRecord::STATUS_TIME
+            . ' ,' . $output->castTimestampToString(TransferRecord::STATUS_TIME) . ' AS ' . TransferRecord::STATUS_TIME
             . ' ,' . TransferRecord::AWAIT_NAME
             . ' ,' . TransferRecord::AWAIT_ACCOUNT
             . ' ,' . TransferRecord::FEE
             . ' ,' . TransferRecord::PROCEED_ACCOUNT
             . ' ,' . TransferRecord::PROCEED_NAME
             . ' ,' . TransferRecord::BODY
+            . ' ,' . $output->castTimestampToString(TransferRecord::PLACEMENT_DATE) . ' AS ' . TransferRecord::PLACEMENT_DATE
+            . ' ,' . TransferRecord::COST
             . ' FROM '
             . $this->tablename
             . ' WHERE '
@@ -72,6 +78,8 @@ class TransferSearch
     public function search(array $filterProperties = array(), int $start = 0, int $paging = 0):array
     {
 
+        $output = new OutputFormatter(IDbFormatter::POSTGRES);
+
         $arguments[ISqlHandler::QUERY_TEXT] =
             'SELECT '
             . TransferRecord::ID
@@ -83,18 +91,20 @@ class TransferSearch
             . ' ,' . TransferRecord::RECEIVE_NAME
             . ' ,' . TransferRecord::RECEIVE_ACCOUNT
             . ' ,' . TransferRecord::DOCUMENT_NUMBER
-            . ' ,' . TransferRecord::DOCUMENT_DATE
-            . ' ,' . TransferRecord::INCOME_CURRENCY
-            . ' ,' . TransferRecord::OUTCOME_CURRENCY
-            . ' ,' . TransferRecord::TRANSFER_STATUS
+            . ' ,' . $output->castTimestampToString(TransferRecord::DOCUMENT_DATE) . ' AS ' . TransferRecord::DOCUMENT_DATE
+            . ' ,' . TransferRecord::INCOME_CURRENCY_ID
+            . ' ,' . TransferRecord::OUTCOME_CURRENCY_ID
+            . ' ,' . TransferRecord::TRANSFER_STATUS_ID
             . ' ,' . TransferRecord::STATUS_COMMENT
-            . ' ,' . TransferRecord::STATUS_TIME
+            . ' ,' . $output->castTimestampToString(TransferRecord::STATUS_TIME) . ' AS ' . TransferRecord::STATUS_TIME
             . ' ,' . TransferRecord::AWAIT_NAME
             . ' ,' . TransferRecord::AWAIT_ACCOUNT
             . ' ,' . TransferRecord::FEE
             . ' ,' . TransferRecord::PROCEED_ACCOUNT
             . ' ,' . TransferRecord::PROCEED_NAME
             . ' ,' . TransferRecord::BODY
+            . ' ,' . $output->castTimestampToString(TransferRecord::PLACEMENT_DATE) . ' AS ' . TransferRecord::PLACEMENT_DATE
+            . ' ,' . TransferRecord::COST
             . ' FROM '
             . $this->tablename
             . ' ORDER BY ' . TransferRecord::ID . ' DESC'
@@ -119,6 +129,8 @@ class TransferSearch
     {
         $statusCode = SqlHandler::setBindParameter(':CODE', $status, \PDO::PARAM_STR);
 
+        $output = new OutputFormatter(IDbFormatter::POSTGRES);
+
         $arguments[ISqlHandler::QUERY_TEXT] =
             'SELECT '
             . 'T.' . TransferRecord::ID
@@ -131,22 +143,24 @@ class TransferSearch
             . ' , T.' . TransferRecord::RECEIVE_NAME
             . ' , T.' . TransferRecord::RECEIVE_ACCOUNT
             . ' , T.' . TransferRecord::DOCUMENT_NUMBER
-            . ' , T.' . TransferRecord::DOCUMENT_DATE
-            . ' , T.' . TransferRecord::INCOME_CURRENCY
-            . ' , T.' . TransferRecord::OUTCOME_CURRENCY
-            . ' , T.' . TransferRecord::TRANSFER_STATUS
+            . ' , T.' . $output->castTimestampToString(TransferRecord::DOCUMENT_DATE) . ' AS ' . TransferRecord::DOCUMENT_DATE
+            . ' , T.' . TransferRecord::INCOME_CURRENCY_ID
+            . ' , T.' . TransferRecord::OUTCOME_CURRENCY_ID
+            . ' , T.' . TransferRecord::TRANSFER_STATUS_ID
             . ' , T.' . TransferRecord::STATUS_COMMENT
-            . ' , T.' . TransferRecord::STATUS_TIME
+            . ' , T.' . $output->castTimestampToString(TransferRecord::STATUS_TIME) . ' AS ' . TransferRecord::STATUS_TIME
             . ' , T.' . TransferRecord::AWAIT_NAME
             . ' , T.' . TransferRecord::AWAIT_ACCOUNT
             . ' , T.' . TransferRecord::FEE
             . ' , T.' . TransferRecord::PROCEED_ACCOUNT
             . ' , T.' . TransferRecord::PROCEED_NAME
             . ' , T.' . TransferRecord::BODY
+            . ' , T.' . $output->castTimestampToString(TransferRecord::PLACEMENT_DATE) . ' AS ' . TransferRecord::PLACEMENT_DATE
+            . ' , T.' . TransferRecord::COST
             . ' FROM '
             . $this->tablename . ' AS T '
             . ' JOIN ' . TransferStatusRecord::TABLE_NAME . ' AS S '
-            . ' ON T.' . TransferRecord::TRANSFER_STATUS . ' = S.' . TransferStatusRecord::ID
+            . ' ON T.' . TransferRecord::TRANSFER_STATUS_ID . ' = S.' . TransferStatusRecord::ID
             . ' WHERE '
             . ' S.' . TransferStatusRecord::CODE . ' = ' . $statusCode[ISqlHandler::PLACEHOLDER]
             . ';';

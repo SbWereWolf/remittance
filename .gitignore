@@ -7,3 +7,4 @@ remittance/operator/.htpasswd
 remittance/manager/.htaccess
 remittance/manager/.htpasswd
 remittance\promotion/*
+/remittance/cli.php

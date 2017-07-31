@@ -31,7 +31,7 @@ namespace Remittance\Core {
          * @param $valueIfNotIsset mixed значение по умолчанию
          * @return mixed
          */
-        public static function setIfExists($key, &$array, $valueIfNotIsset);
+        public static function setIfExists($key, array &$array, $valueIfNotIsset);
 
         /** Проверяет что один массив полностью содержит элементы второго
          * @param $oneArray array первый массив

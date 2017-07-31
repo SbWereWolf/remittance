@@ -3,7 +3,10 @@
 namespace Remittance\DataAccess\Entity;
 
 
+use Remittance\DataAccess\Logic\IDbFormatter;
+use Remittance\DataAccess\Logic\InputFormatter;
 use Remittance\DataAccess\Logic\ISqlHandler;
+use Remittance\DataAccess\Logic\OutputFormatter;
 use Remittance\DataAccess\Logic\SqlHandler;
 
 
@@ -20,10 +23,10 @@ class TransferRecord extends Entity
     const DOCUMENT_NUMBER = 'document_number';
     const DOCUMENT_DATE = 'document_date';
     const REPORT_EMAIL = 'report_email';
-    const TRANSFER_STATUS = 'transfer_status_id';
+    const TRANSFER_STATUS_ID = 'transfer_status_id';
     const STATUS_COMMENT = 'status_comment';
     const STATUS_TIME = 'status_time';
-    const INCOME_CURRENCY = 'income_currency';
+    const INCOME_CURRENCY_ID = 'income_currency_id';
     const TRANSFER_ACCOUNT = 'transfer_account';
     const TRANSFER_NAME = 'transfer_name';
     const INCOME_AMOUNT = 'income_amount';
@@ -31,7 +34,7 @@ class TransferRecord extends Entity
     const AWAIT_NAME = 'await_name';
     const FEE = 'fee';
     const BODY = 'body';
-    const OUTCOME_CURRENCY = 'outcome_currency';
+    const OUTCOME_CURRENCY_ID = 'outcome_currency_id';
     const PROCEED_ACCOUNT = 'proceed_account';
     const PROCEED_NAME = 'proceed_name';
     const OUTCOME_AMOUNT = 'outcome_amount';
@@ -39,26 +42,26 @@ class TransferRecord extends Entity
     const RECEIVE_ACCOUNT = 'receive_account';
     const RECEIVE_NAME = 'receive_name';
 
-    public $placement_date = null;
+    public $placementDate = null;
     public $documentNumber = '';
     public $documentDate = null;
     public $reportEmail = '';
-    public $transferStatus = 0;
+    public $transferStatus = null;
     public $statusComment = '';
     public $statusTime = null;
-    public $incomeCurrency = '';
+    public $incomeCurrency = null;
     public $transferAccount = '';
     public $transferName = '';
-    public $incomeAmount = 0;
+    public $incomeAmount = null;
     public $awaitAccount = '';
     public $awaitName = '';
-    public $fee = 0;
-    public $body = 0;
-    public $outcomeCurrency = '';
+    public $fee = null;
+    public $body = null;
+    public $outcomeCurrency = null;
     public $proceedAccount = '';
     public $proceedName = '';
-    public $outcomeAmount = 0;
-    public $cost = 0;
+    public $outcomeAmount = null;
+    public $cost = null;
     public $receiveAccount = '';
     public $receiveName = '';
 
@@ -79,7 +82,7 @@ class TransferRecord extends Entity
      */
     public function toEntity(): array
     {
-        parent::toEntity();
+        $result = parent::toEntity();
 
         $result [self::INCOME_AMOUNT] = $this->incomeAmount;
         $result [self::OUTCOME_AMOUNT] = $this->outcomeAmount;
@@ -90,17 +93,21 @@ class TransferRecord extends Entity
         $result [self::RECEIVE_ACCOUNT] = $this->receiveAccount;
         $result [self::DOCUMENT_NUMBER] = $this->documentNumber;
         $result [self::DOCUMENT_DATE] = $this->documentDate;
-        $result [self::INCOME_CURRENCY] = $this->incomeCurrency;
-        $result [self::OUTCOME_CURRENCY] = $this->outcomeCurrency;
-        $result [self::TRANSFER_STATUS] = intval($this->transferStatus);
+
+        $result [self::INCOME_CURRENCY_ID] = $this->incomeCurrency;
+        $result [self::OUTCOME_CURRENCY_ID] = $this->outcomeCurrency;
+        $result [self::TRANSFER_STATUS_ID] = $this->transferStatus;
+
         $result [self::STATUS_COMMENT] = $this->statusComment;
         $result [self::STATUS_TIME] = $this->statusTime;
         $result [self::AWAIT_NAME] = $this->awaitName;
         $result [self::AWAIT_ACCOUNT] = $this->awaitAccount;
-        $result [self::FEE] = floatval($this->fee);
+        $result [self::FEE] = $this->fee;
         $result [self::PROCEED_ACCOUNT] = $this->proceedAccount;
         $result [self::PROCEED_NAME] = $this->proceedName;
-        $result [self::BODY] = floatval($this->body);
+        $result [self::BODY] = $this->body;
+        $result [self::PLACEMENT_DATE] = $this->placementDate;
+        $result [self::COST] = $this->cost;
 
 
         return $result;
@@ -108,60 +115,128 @@ class TransferRecord extends Entity
 
     public function save(): bool
     {
+        $input = new InputFormatter(IDbFormatter::POSTGRES);
 
-        $incomeAmount = SqlHandler::setBindParameter(':INCOME_AMOUNT', $this->incomeAmount, \PDO::PARAM_STR);
-        $outcomeAmount = SqlHandler::setBindParameter(':OUTCOME_AMOUNT', $this->outcomeAmount, \PDO::PARAM_STR);
+        $incomeAmountString = is_null($this->incomeAmount)
+            ? null
+            : $input->toDoublePrecision(floatval($this->incomeAmount));
+
+        $outcomeAmountString = is_null($this->outcomeAmount)
+            ? null
+            : $input->toDoublePrecision(floatval($this->outcomeAmount));
+
+        $feeString = is_null($this->fee)
+            ? null
+            : $input->toDoublePrecision(floatval($this->fee));
+
+        $bodyString = is_null($this->body)
+            ? null
+            : $input->toDoublePrecision(floatval($this->body));
+
+        $costString = is_null($this->cost)
+            ? null
+            : $input->toDoublePrecision(floatval($this->cost));
+
+        $documentDateString = is_null($this->documentDate)
+            ? null
+            : $input->toTimestampWithTimeZone($this->documentDate);
+
+        $statusTimeString = is_null($this->statusTime)
+            ? null
+            : $input->toTimestampWithTimeZone($this->statusTime);
+
+        $placementDateString = is_null($this->placementDate)
+            ? null
+            : $input->toTimestampWithTimeZone($this->placementDate);
+
+        $id = SqlHandler::setBindParameter(':ID', $this->id, \PDO::PARAM_STR);
+        $isHidden = SqlHandler::setBindParameter(':IS_HIDDEN', $this->isHidden, \PDO::PARAM_INT);
+
+        $incomeAmount = SqlHandler::setBindParameter(':INCOME_AMOUNT', $incomeAmountString, \PDO::PARAM_STR);
+        $outcomeAmount = SqlHandler::setBindParameter(':OUTCOME_AMOUNT', $outcomeAmountString, \PDO::PARAM_STR);
         $reportEmail = SqlHandler::setBindParameter(':REPORT_EMAIL', $this->reportEmail, \PDO::PARAM_STR);
         $transferName = SqlHandler::setBindParameter(':TRANSFER_NAME', $this->transferName, \PDO::PARAM_STR);
         $transferAccount = SqlHandler::setBindParameter(':TRANSFER_ACCOUNT', $this->transferAccount, \PDO::PARAM_STR);
         $receiveName = SqlHandler::setBindParameter(':RECEIVE_NAME', $this->receiveName, \PDO::PARAM_STR);
         $receiveAccount = SqlHandler::setBindParameter(':RECEIVE_ACCOUNT', $this->receiveAccount, \PDO::PARAM_STR);
         $documentNumber = SqlHandler::setBindParameter(':DOCUMENT_NUMBER', $this->documentNumber, \PDO::PARAM_STR);
-        $documentDate = SqlHandler::setBindParameter(':DOCUMENT_DATE', $this->documentDate, \PDO::PARAM_STR);
-        $incomeAccount = SqlHandler::setBindParameter(':INCOME_ACCOUNT', $this->incomeCurrency, \PDO::PARAM_STR);
-        $outcomeAccount = SqlHandler::setBindParameter(':OUTCOME_ACCOUNT', $this->outcomeCurrency, \PDO::PARAM_STR);
+        $documentDate = SqlHandler::setBindParameter(':DOCUMENT_DATE', $documentDateString, \PDO::PARAM_STR);
+        $incomeCurrency = SqlHandler::setBindParameter(':INCOME_CURRENCY_ID', $this->incomeCurrency, \PDO::PARAM_INT);
+        $outcomeCurrency = SqlHandler::setBindParameter(':OUTCOME_CURRENCY_ID', $this->outcomeCurrency, \PDO::PARAM_INT);
         $status = SqlHandler::setBindParameter(':STATUS_ID', $this->transferStatus, \PDO::PARAM_INT);
         $statusComment = SqlHandler::setBindParameter(':STATUS_COMMENT', $this->statusComment, \PDO::PARAM_STR);
-        $statusTime = SqlHandler::setBindParameter(':STATUS_TIME', $this->statusTime, \PDO::PARAM_STR);
+        $statusTime = SqlHandler::setBindParameter(':STATUS_TIME', $statusTimeString, \PDO::PARAM_STR);
         $awaitName = SqlHandler::setBindParameter(':AWAIT_NAME', $this->awaitName, \PDO::PARAM_STR);
         $awaitAccount = SqlHandler::setBindParameter(':AWAIT_ACCOUNT', $this->awaitAccount, \PDO::PARAM_STR);
-        $fee = SqlHandler::setBindParameter(':FEE', $this->fee, \PDO::PARAM_STR);
+        $fee = SqlHandler::setBindParameter(':FEE', $feeString, \PDO::PARAM_STR);
         $proceedAccount = SqlHandler::setBindParameter(':PROCEED_ACCOUNT', $this->proceedAccount, \PDO::PARAM_STR);
         $proceedName = SqlHandler::setBindParameter(':PROCEED_NAME', $this->proceedName, \PDO::PARAM_STR);
-        $body = SqlHandler::setBindParameter(':BODY', $this->body, \PDO::PARAM_STR);
+        $body = SqlHandler::setBindParameter(':BODY', $bodyString, \PDO::PARAM_STR);
+        $placementDate = SqlHandler::setBindParameter(':PLACEMENT_DATE', $placementDateString, \PDO::PARAM_STR);
+        $cost = SqlHandler::setBindParameter(':COST', $costString, \PDO::PARAM_STR);
 
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $incomeAmount;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $outcomeAmount;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $reportEmail;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $transferName;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $transferAccount;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $receiveName;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $receiveAccount;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $documentNumber;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $documentDate;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $incomeCurrency;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $outcomeCurrency;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $status;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $statusComment;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $statusTime;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $isHidden;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $id;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $awaitName;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $awaitAccount;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $fee;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $proceedAccount;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $proceedName;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $body;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $placementDate;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $cost;
 
-        $isHiddenFilterValue = intval(self::DEFINE_AS_NOT_HIDDEN);
+        $isHiddenFilterValue = $input->toInteger(self::DEFINE_AS_NOT_HIDDEN);
+        $isHiddenFilter = SqlHandler::setBindParameter(':HIDDEN_FILTER', $isHiddenFilterValue, \PDO::PARAM_INT);
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $isHiddenFilter;
+
+        $output = new OutputFormatter(IDbFormatter::POSTGRES);
 
         $arguments[ISqlHandler::QUERY_TEXT] =
             ' UPDATE '
             . $this->tablename
             . ' SET '
-            . self::INCOME_AMOUNT . ' = ' . $incomeAmount[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::OUTCOME_AMOUNT . ' = ' . $outcomeAmount[ISqlHandler::PLACEHOLDER]
+            . self::INCOME_AMOUNT . ' = ' . $input->castFloat($incomeAmount[ISqlHandler::PLACEHOLDER])
+            . ' , ' . self::OUTCOME_AMOUNT . ' = ' . $input->castFloat($outcomeAmount[ISqlHandler::PLACEHOLDER])
             . ' , ' . self::REPORT_EMAIL . ' = ' . $reportEmail[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::TRANSFER_NAME . ' = ' . $transferName[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::TRANSFER_ACCOUNT . ' = ' . $transferAccount[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::RECEIVE_NAME . ' = ' . $receiveName[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::RECEIVE_ACCOUNT . ' = ' . $receiveAccount[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::DOCUMENT_NUMBER . ' = ' . $documentNumber[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::DOCUMENT_DATE . ' = ' . $documentDate[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::INCOME_CURRENCY . ' = ' . $incomeAccount[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::OUTCOME_CURRENCY . ' = ' . $outcomeAccount[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::TRANSFER_STATUS . ' = ' . $status[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::DOCUMENT_DATE . ' = ' . $input->castTimestamp($documentDate[ISqlHandler::PLACEHOLDER])
+            . ' , ' . self::INCOME_CURRENCY_ID . ' = ' . $incomeCurrency[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::OUTCOME_CURRENCY_ID . ' = ' . $outcomeCurrency[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::TRANSFER_STATUS_ID . ' = ' . $status[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::STATUS_COMMENT . ' = ' . $statusComment[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::STATUS_TIME . ' = ' . $statusTime[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::STATUS_TIME . ' = ' . $input->castTimestamp($statusTime[ISqlHandler::PLACEHOLDER])
             . ' , ' . self::AWAIT_NAME . ' = ' . $awaitName[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::AWAIT_ACCOUNT . ' = ' . $awaitAccount[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::FEE . ' = CAST(' . $fee[ISqlHandler::PLACEHOLDER] . ' AS DOUBLE PRECISION)'
+            . ' , ' . self::FEE . ' = ' . $input->castFloat($fee[ISqlHandler::PLACEHOLDER])
             . ' , ' . self::PROCEED_ACCOUNT . ' = ' . $proceedAccount[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::PROCEED_NAME . ' = ' . $proceedName[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::BODY . ' = CAST(' . $body[ISqlHandler::PLACEHOLDER] . ' AS DOUBLE PRECISION)'
+            . ' , ' . self::BODY . ' = ' . $input->castFloat($body[ISqlHandler::PLACEHOLDER])
+            . ' , ' . self::PLACEMENT_DATE . ' = ' . $input->castTimestamp($placementDate[ISqlHandler::PLACEHOLDER])
+            . ' , ' . self::COST . ' = ' . $input->castFloat($cost[ISqlHandler::PLACEHOLDER])
 
             . ' WHERE '
-            . self::IS_HIDDEN . ' = ' . $isHiddenFilterValue
+            . self::IS_HIDDEN . ' = ' . $isHiddenFilter[ISqlHandler::PLACEHOLDER]
             . ' AND ' . self::DOCUMENT_NUMBER . ' = ' . $documentNumber[ISqlHandler::PLACEHOLDER]
-            . ' AND ' . self::DOCUMENT_DATE . ' = ' . $documentDate[ISqlHandler::PLACEHOLDER]
+            . ' AND ' . self::DOCUMENT_DATE . ' = ' . $input->castTimestamp($documentDate[ISqlHandler::PLACEHOLDER])
             . ' RETURNING '
             . self::ID
             . ' , ' . self::IS_HIDDEN
@@ -173,40 +248,21 @@ class TransferRecord extends Entity
             . ' , ' . self::RECEIVE_NAME
             . ' , ' . self::RECEIVE_ACCOUNT
             . ' , ' . self::DOCUMENT_NUMBER
-            . ' , ' . self::DOCUMENT_DATE
-            . ' , ' . self::INCOME_CURRENCY
-            . ' , ' . self::OUTCOME_CURRENCY
-            . ' , ' . self::TRANSFER_STATUS
+            . ' , ' . $output->castTimestampToString(self::DOCUMENT_DATE) . ' AS ' . self::DOCUMENT_DATE
+            . ' , ' . self::INCOME_CURRENCY_ID
+            . ' , ' . self::OUTCOME_CURRENCY_ID
+            . ' , ' . self::TRANSFER_STATUS_ID
             . ' , ' . self::STATUS_COMMENT
-            . ' , ' . self::STATUS_TIME
+            . ' , ' . $output->castTimestampToString(self::STATUS_TIME) . ' AS ' . self::STATUS_TIME
             . ' , ' . self::AWAIT_NAME
             . ' , ' . self::AWAIT_ACCOUNT
             . ' , ' . self::FEE
             . ' , ' . self::PROCEED_ACCOUNT
             . ' , ' . self::PROCEED_NAME
             . ' , ' . self::BODY
+            . ' , ' . $output->castTimestampToString(self::PLACEMENT_DATE) . ' AS ' . self::PLACEMENT_DATE
+            . ' , ' . self::COST
             . ';';
-
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $incomeAmount;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $outcomeAmount;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $reportEmail;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $transferName;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $transferAccount;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $receiveName;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $receiveAccount;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $documentNumber;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $documentDate;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $incomeAccount;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $outcomeAccount;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $status;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $statusComment;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $statusTime;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $awaitName;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $awaitAccount;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $fee;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $proceedAccount;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $proceedName;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $body;
 
         $record = SqlHandler::writeOneRecord($arguments);
 
@@ -219,6 +275,7 @@ class TransferRecord extends Entity
 
     }
 
+
     /** Прочитать запись из БД
      * @param string $id идентификатор записи
      * @return bool успех выполнения
@@ -227,9 +284,12 @@ class TransferRecord extends Entity
     {
         $oneParameter = SqlHandler::setBindParameter(':ID', $id, \PDO::PARAM_INT);
 
+        $output = new OutputFormatter(IDbFormatter::POSTGRES);
+
         $arguments[ISqlHandler::QUERY_TEXT] =
             'SELECT '
             . self::ID
+            . ' , ' . self::IS_HIDDEN
             . ' , ' . self::INCOME_AMOUNT
             . ' , ' . self::OUTCOME_AMOUNT
             . ' , ' . self::REPORT_EMAIL
@@ -238,18 +298,20 @@ class TransferRecord extends Entity
             . ' , ' . self::RECEIVE_NAME
             . ' , ' . self::RECEIVE_ACCOUNT
             . ' , ' . self::DOCUMENT_NUMBER
-            . ' , ' . self::DOCUMENT_DATE
-            . ' , ' . self::INCOME_CURRENCY
-            . ' , ' . self::OUTCOME_CURRENCY
-            . ' , ' . self::TRANSFER_STATUS
+            . ' , ' . $output->castTimestampToString(self::DOCUMENT_DATE) . ' AS ' . self::DOCUMENT_DATE
+            . ' , ' . self::INCOME_CURRENCY_ID
+            . ' , ' . self::OUTCOME_CURRENCY_ID
+            . ' , ' . self::TRANSFER_STATUS_ID
             . ' , ' . self::STATUS_COMMENT
-            . ' , ' . self::STATUS_TIME
+            . ' , ' . $output->castTimestampToString(self::STATUS_TIME) . ' AS ' . self::STATUS_TIME
             . ' , ' . self::AWAIT_NAME
             . ' , ' . self::AWAIT_ACCOUNT
             . ' , ' . self::FEE
             . ' , ' . self::PROCEED_ACCOUNT
             . ' , ' . self::PROCEED_NAME
             . ' , ' . self::BODY
+            . ' , ' . $output->castTimestampToString(self::PLACEMENT_DATE) . ' AS ' . self::PLACEMENT_DATE
+            . ' , ' . self::COST
             . ' FROM '
             . $this->tablename
             . ' WHERE '
@@ -269,34 +331,43 @@ class TransferRecord extends Entity
     }
 
     /** Установить свойства экземпляра в соответствии со значениями
-     * @param array $namedValue массив значений
+     * @param array $namedValues массив значений
      * @return bool успех выполнения
      */
-    public function setByNamedValue(array $namedValue): bool
+    public function setByNamedValue(array $namedValues): bool
     {
 
-        $result = parent::setByNamedValue($namedValue);
+        $result = parent::setByNamedValue($namedValues);
 
-        $this->incomeAmount = SqlHandler::setIfExists(self::INCOME_AMOUNT, $namedValue);
-        $this->outcomeAmount = SqlHandler::setIfExists(self::OUTCOME_AMOUNT, $namedValue);
-        $this->reportEmail = SqlHandler::setIfExists(self::REPORT_EMAIL, $namedValue);
-        $this->transferName = SqlHandler::setIfExists(self::TRANSFER_NAME, $namedValue);
-        $this->transferAccount = SqlHandler::setIfExists(self::TRANSFER_ACCOUNT, $namedValue);
-        $this->receiveName = SqlHandler::setIfExists(self::RECEIVE_NAME, $namedValue);
-        $this->receiveAccount = SqlHandler::setIfExists(self::RECEIVE_ACCOUNT, $namedValue);
-        $this->documentNumber = SqlHandler::setIfExists(self::DOCUMENT_NUMBER, $namedValue);
-        $this->documentDate = SqlHandler::setIfExists(self::DOCUMENT_DATE, $namedValue);
-        $this->incomeCurrency = SqlHandler::setIfExists(self::INCOME_CURRENCY, $namedValue);
-        $this->outcomeCurrency = SqlHandler::setIfExists(self::OUTCOME_CURRENCY, $namedValue);
-        $this->transferStatus = intval(SqlHandler::setIfExists(self::TRANSFER_STATUS, $namedValue));
-        $this->statusComment = SqlHandler::setIfExists(self::STATUS_COMMENT, $namedValue);
-        $this->statusTime = SqlHandler::setIfExists(self::STATUS_TIME, $namedValue);
-        $this->awaitName = SqlHandler::setIfExists(self::AWAIT_NAME, $namedValue);
-        $this->awaitAccount = SqlHandler::setIfExists(self::AWAIT_ACCOUNT, $namedValue);
-        $this->fee = floatval(SqlHandler::setIfExists(self::FEE, $namedValue));
-        $this->proceedAccount = SqlHandler::setIfExists(self::PROCEED_ACCOUNT, $namedValue);
-        $this->proceedName = SqlHandler::setIfExists(self::PROCEED_NAME, $namedValue);
-        $this->body = floatval(SqlHandler::setIfExists(self::BODY, $namedValue));
+        $this->incomeAmount = SqlHandler::getDoublePrecisionValue(self::INCOME_AMOUNT, $namedValues);
+        $this->outcomeAmount = SqlHandler::getDoublePrecisionValue(self::OUTCOME_AMOUNT, $namedValues);
+        $this->reportEmail = SqlHandler::getTextValue(self::REPORT_EMAIL, $namedValues);
+        $this->transferName = SqlHandler::getTextValue(self::TRANSFER_NAME, $namedValues);
+        $this->transferAccount = SqlHandler::getTextValue(self::TRANSFER_ACCOUNT, $namedValues);
+        $this->receiveName = SqlHandler::getTextValue(self::RECEIVE_NAME, $namedValues);
+        $this->receiveAccount = SqlHandler::getTextValue(self::RECEIVE_ACCOUNT, $namedValues);
+        $this->documentNumber = SqlHandler::getTextValue(self::DOCUMENT_NUMBER, $namedValues);
+
+        $this->documentDate = SqlHandler::getTimestampValue(self::DOCUMENT_DATE, $namedValues);
+
+        $this->incomeCurrency = SqlHandler::getIntegerKey(self::INCOME_CURRENCY_ID, $namedValues);
+        $this->outcomeCurrency = SqlHandler::getIntegerKey(self::OUTCOME_CURRENCY_ID, $namedValues);
+        $this->transferStatus = SqlHandler::getIntegerKey(self::TRANSFER_STATUS_ID, $namedValues);
+
+        $this->statusComment = SqlHandler::getTextValue(self::STATUS_COMMENT, $namedValues);
+
+        $this->statusTime = SqlHandler::getTimestampValue(self::STATUS_TIME, $namedValues);
+
+        $this->awaitName = SqlHandler::getTextValue(self::AWAIT_NAME, $namedValues);
+        $this->awaitAccount = SqlHandler::getTextValue(self::AWAIT_ACCOUNT, $namedValues);
+        $this->fee = SqlHandler::getDoublePrecisionValue(self::FEE, $namedValues);
+        $this->proceedAccount = SqlHandler::getTextValue(self::PROCEED_ACCOUNT, $namedValues);
+        $this->proceedName = SqlHandler::getTextValue(self::PROCEED_NAME, $namedValues);
+        $this->body = SqlHandler::getDoublePrecisionValue(self::BODY, $namedValues);
+
+        $this->placementDate = SqlHandler::getTimestampValue(self::PLACEMENT_DATE, $namedValues);
+
+        $this->cost = SqlHandler::getDoublePrecisionValue(self::COST, $namedValues);
 
 
         return $result;
@@ -307,56 +378,120 @@ class TransferRecord extends Entity
      */
     protected function updateEntity(): bool
     {
+        $formatter = new InputFormatter(InputFormatter::POSTGRES);
+
+        $incomeAmountString = is_null($this->incomeAmount)
+            ? null
+            : $formatter->toDoublePrecision(floatval($this->incomeAmount));
+
+        $outcomeAmountString = is_null($this->outcomeAmount)
+            ? null
+            : $formatter->toDoublePrecision(floatval($this->outcomeAmount));
+
+        $feeString = is_null($this->fee)
+            ? null
+            : $formatter->toDoublePrecision(floatval($this->fee));
+
+        $bodyString = is_null($this->body)
+            ? null
+            : $formatter->toDoublePrecision(floatval($this->body));
+
+        $costString = is_null($this->cost)
+            ? null
+            : $formatter->toDoublePrecision(floatval($this->cost));
+
+        $documentDateString = is_null($this->documentDate)
+            ? null
+            : $formatter->toTimestampWithTimeZone($this->documentDate);
+
+        $statusTimeString = is_null($this->statusTime)
+            ? null
+            : $formatter->toTimestampWithTimeZone($this->statusTime);
+
+        $placementDateString = is_null($this->placementDate)
+            ? null
+            : $formatter->toTimestampWithTimeZone($this->placementDate);
+
         $id = SqlHandler::setBindParameter(':ID', $this->id, \PDO::PARAM_STR);
         $isHidden = SqlHandler::setBindParameter(':IS_HIDDEN', $this->isHidden, \PDO::PARAM_INT);
 
-        $incomeAmount = SqlHandler::setBindParameter(':INCOME_AMOUNT', $this->incomeAmount, \PDO::PARAM_STR);
-        $outcomeAmount = SqlHandler::setBindParameter(':OUTCOME_AMOUNT', $this->outcomeAmount, \PDO::PARAM_STR);
+        $incomeAmount = SqlHandler::setBindParameter(':INCOME_AMOUNT', $incomeAmountString, \PDO::PARAM_STR);
+        $outcomeAmount = SqlHandler::setBindParameter(':OUTCOME_AMOUNT', $outcomeAmountString, \PDO::PARAM_STR);
         $reportEmail = SqlHandler::setBindParameter(':REPORT_EMAIL', $this->reportEmail, \PDO::PARAM_STR);
         $transferName = SqlHandler::setBindParameter(':TRANSFER_NAME', $this->transferName, \PDO::PARAM_STR);
         $transferAccount = SqlHandler::setBindParameter(':TRANSFER_ACCOUNT', $this->transferAccount, \PDO::PARAM_STR);
         $receiveName = SqlHandler::setBindParameter(':RECEIVE_NAME', $this->receiveName, \PDO::PARAM_STR);
         $receiveAccount = SqlHandler::setBindParameter(':RECEIVE_ACCOUNT', $this->receiveAccount, \PDO::PARAM_STR);
         $documentNumber = SqlHandler::setBindParameter(':DOCUMENT_NUMBER', $this->documentNumber, \PDO::PARAM_STR);
-        $documentDate = SqlHandler::setBindParameter(':DOCUMENT_DATE', $this->documentDate, \PDO::PARAM_STR);
-        $incomeAccount = SqlHandler::setBindParameter(':INCOME_ACCOUNT', $this->incomeCurrency, \PDO::PARAM_STR);
-        $outcomeAccount = SqlHandler::setBindParameter(':OUTCOME_ACCOUNT', $this->outcomeCurrency, \PDO::PARAM_STR);
+        $documentDate = SqlHandler::setBindParameter(':DOCUMENT_DATE', $documentDateString, \PDO::PARAM_STR);
+        $incomeCurrency = SqlHandler::setBindParameter(':INCOME_CURRENCY_ID', $this->incomeCurrency, \PDO::PARAM_INT);
+        $outcomeCurrency = SqlHandler::setBindParameter(':OUTCOME_CURRENCY_ID', $this->outcomeCurrency, \PDO::PARAM_INT);
         $status = SqlHandler::setBindParameter(':STATUS_ID', $this->transferStatus, \PDO::PARAM_INT);
         $statusComment = SqlHandler::setBindParameter(':STATUS_COMMENT', $this->statusComment, \PDO::PARAM_STR);
-        $statusTime = SqlHandler::setBindParameter(':STATUS_TIME', $this->statusTime, \PDO::PARAM_STR);
+        $statusTime = SqlHandler::setBindParameter(':STATUS_TIME', $statusTimeString, \PDO::PARAM_STR);
         $awaitName = SqlHandler::setBindParameter(':AWAIT_NAME', $this->awaitName, \PDO::PARAM_STR);
         $awaitAccount = SqlHandler::setBindParameter(':AWAIT_ACCOUNT', $this->awaitAccount, \PDO::PARAM_STR);
-        $fee = SqlHandler::setBindParameter(':FEE', $this->fee, \PDO::PARAM_STR);
-        $proceed_account = SqlHandler::setBindParameter(':PROCEED_ACCOUNT', $this->proceedAccount, \PDO::PARAM_STR);
-        $proceed_name = SqlHandler::setBindParameter(':PROCEED_NAME', $this->proceedName, \PDO::PARAM_STR);
-        $body = SqlHandler::setBindParameter(':BODY', $this->body, \PDO::PARAM_STR);
+        $fee = SqlHandler::setBindParameter(':FEE', $feeString, \PDO::PARAM_STR);
+        $proceedAccount = SqlHandler::setBindParameter(':PROCEED_ACCOUNT', $this->proceedAccount, \PDO::PARAM_STR);
+        $proceedName = SqlHandler::setBindParameter(':PROCEED_NAME', $this->proceedName, \PDO::PARAM_STR);
+        $body = SqlHandler::setBindParameter(':BODY', $bodyString, \PDO::PARAM_STR);
+        $placementDate = SqlHandler::setBindParameter(':PLACEMENT_DATE', $placementDateString, \PDO::PARAM_STR);
+        $cost = SqlHandler::setBindParameter(':COST', $costString, \PDO::PARAM_STR);
 
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $incomeAmount;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $outcomeAmount;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $reportEmail;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $transferName;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $transferAccount;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $receiveName;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $receiveAccount;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $documentNumber;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $documentDate;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $incomeCurrency;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $outcomeCurrency;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $status;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $statusComment;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $statusTime;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $isHidden;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $id;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $awaitName;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $awaitAccount;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $fee;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $proceedAccount;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $proceedName;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $body;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $placementDate;
+        $arguments[ISqlHandler::QUERY_PARAMETER][] = $cost;
+
+        $output = new OutputFormatter(IDbFormatter::POSTGRES);
 
         $arguments[ISqlHandler::QUERY_TEXT] =
             ' UPDATE '
             . $this->tablename
             . ' SET '
-            . self::INCOME_AMOUNT . ' = ' . $incomeAmount[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::OUTCOME_AMOUNT . ' = ' . $outcomeAmount[ISqlHandler::PLACEHOLDER]
+            . self::INCOME_AMOUNT . ' = ' . $formatter->castFloat($incomeAmount[ISqlHandler::PLACEHOLDER])
+            . ' , ' . self::OUTCOME_AMOUNT . ' = ' . $formatter->castFloat($outcomeAmount[ISqlHandler::PLACEHOLDER])
             . ' , ' . self::REPORT_EMAIL . ' = ' . $reportEmail[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::TRANSFER_NAME . ' = ' . $transferName[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::TRANSFER_ACCOUNT . ' = ' . $transferAccount[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::RECEIVE_NAME . ' = ' . $receiveName[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::RECEIVE_ACCOUNT . ' = ' . $receiveAccount[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::DOCUMENT_NUMBER . ' = ' . $documentNumber[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::DOCUMENT_DATE . ' = ' . $documentDate[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::INCOME_CURRENCY . ' = ' . $incomeAccount[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::OUTCOME_CURRENCY . ' = ' . $outcomeAccount[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::TRANSFER_STATUS . ' = ' . $status[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::DOCUMENT_DATE . ' = ' . $formatter->castTimestamp($documentDate[ISqlHandler::PLACEHOLDER])
+            . ' , ' . self::INCOME_CURRENCY_ID . ' = ' . $incomeCurrency[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::OUTCOME_CURRENCY_ID . ' = ' . $outcomeCurrency[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::TRANSFER_STATUS_ID . ' = ' . $status[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::STATUS_COMMENT . ' = ' . $statusComment[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::STATUS_TIME . ' = ' . $statusTime[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::STATUS_TIME . ' = ' . $formatter->castTimestamp($statusTime[ISqlHandler::PLACEHOLDER])
             . ' , ' . self::IS_HIDDEN . ' = ' . $isHidden[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::AWAIT_NAME . ' = ' . $awaitName[ISqlHandler::PLACEHOLDER]
             . ' , ' . self::AWAIT_ACCOUNT . ' = ' . $awaitAccount[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::FEE . ' = CAST(' . $fee[ISqlHandler::PLACEHOLDER] . ' AS DOUBLE PRECISION)'
-            . ' , ' . self::PROCEED_ACCOUNT . ' = ' . $proceed_account[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::PROCEED_NAME . ' = ' . $proceed_name[ISqlHandler::PLACEHOLDER]
-            . ' , ' . self::BODY . ' = CAST(' . $body[ISqlHandler::PLACEHOLDER] . ' AS DOUBLE PRECISION)'
+            . ' , ' . self::FEE . ' = ' . $formatter->castFloat($fee[ISqlHandler::PLACEHOLDER])
+            . ' , ' . self::PROCEED_ACCOUNT . ' = ' . $proceedAccount[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::PROCEED_NAME . ' = ' . $proceedName[ISqlHandler::PLACEHOLDER]
+            . ' , ' . self::BODY . ' = ' . $formatter->castFloat($body[ISqlHandler::PLACEHOLDER])
+            . ' , ' . self::PLACEMENT_DATE . ' = ' . $formatter->castTimestamp($placementDate[ISqlHandler::PLACEHOLDER])
+            . ' , ' . self::COST . ' = ' . $formatter->castFloat($cost[ISqlHandler::PLACEHOLDER])
             . ' WHERE '
             . self::ID . ' = ' . $id[ISqlHandler::PLACEHOLDER]
             . ' RETURNING '
@@ -370,42 +505,21 @@ class TransferRecord extends Entity
             . ' , ' . self::RECEIVE_NAME
             . ' , ' . self::RECEIVE_ACCOUNT
             . ' , ' . self::DOCUMENT_NUMBER
-            . ' , ' . self::DOCUMENT_DATE
-            . ' , ' . self::INCOME_CURRENCY
-            . ' , ' . self::OUTCOME_CURRENCY
-            . ' , ' . self::TRANSFER_STATUS
+            . ' , ' . $output->castTimestampToString(self::DOCUMENT_DATE) . ' AS ' . self::DOCUMENT_DATE
+            . ' , ' . self::INCOME_CURRENCY_ID
+            . ' , ' . self::OUTCOME_CURRENCY_ID
+            . ' , ' . self::TRANSFER_STATUS_ID
             . ' , ' . self::STATUS_COMMENT
-            . ' , ' . self::STATUS_TIME
+            . ' , ' . $output->castTimestampToString(self::STATUS_TIME) . ' AS ' . self::STATUS_TIME
             . ' , ' . self::AWAIT_NAME
             . ' , ' . self::AWAIT_ACCOUNT
             . ' , ' . self::FEE
             . ' , ' . self::PROCEED_ACCOUNT
             . ' , ' . self::PROCEED_NAME
             . ' , ' . self::BODY
+            . ' , ' . $output->castTimestampToString(self::PLACEMENT_DATE) . ' AS ' . self::PLACEMENT_DATE
+            . ' , ' . self::COST
             . ';';
-
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $incomeAmount;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $outcomeAmount;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $reportEmail;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $transferName;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $transferAccount;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $receiveName;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $receiveAccount;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $documentNumber;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $documentDate;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $incomeAccount;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $outcomeAccount;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $status;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $statusComment;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $statusTime;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $isHidden;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $id;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $awaitName;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $awaitAccount;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $fee;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $proceed_account;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $proceed_name;
-        $arguments[ISqlHandler::QUERY_PARAMETER][] = $body;
 
         $record = SqlHandler::writeOneRecord($arguments);
 

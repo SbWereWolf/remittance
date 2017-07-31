@@ -12,9 +12,9 @@ namespace Remittance\DataAccess\Column;
 interface IHidden
 {
     /** @var string значение для поднятого флага "является скрытым" */
-    const DEFINE_AS_HIDDEN = true;
+    const DEFINE_AS_HIDDEN = 1;
     /** @var string значение для поднятого флага "является скрытым" */
-    const DEFINE_AS_NOT_HIDDEN = false;
+    const DEFINE_AS_NOT_HIDDEN = 0;
     /** @var string значение по умолчанию для флага "является скрытым" */
     const DEFAULT_IS_HIDDEN = self::DEFINE_AS_NOT_HIDDEN;
 

@@ -204,20 +204,20 @@ class RateRecord extends Entity implements IDefault
     }
 
     /** Установить свойства экземпляра в соответствии со значениями
-     * @param array $namedValue массив значений
+     * @param array $namedValues массив значений
      * @return bool успех выполнения
      */
-    public function setByNamedValue(array $namedValue): bool
+    public function setByNamedValue(array $namedValues): bool
     {
 
-        $result = parent::setByNamedValue($namedValue);
+        $result = parent::setByNamedValue($namedValues);
 
-        $this->sourceCurrencyId = intval(SqlHandler::setIfExists(self::SOURCE_CURRENCY, $namedValue));
-        $this->targetCurrencyId = intval(SqlHandler::setIfExists(self::TARGET_CURRENCY, $namedValue));
-        $this->ratio = floatval(SqlHandler::setIfExists(self::RATIO, $namedValue));
-        $this->fee = floatval(SqlHandler::setIfExists(self::FEE, $namedValue));
-        $this->isDefault = boolval(SqlHandler::setIfExists(self::IS_DEFAULT, $namedValue));
-        $this->description = strval(SqlHandler::setIfExists(self::DESCRIPTION, $namedValue));
+        $this->sourceCurrencyId = intval(SqlHandler::setIfExists(self::SOURCE_CURRENCY, $namedValues));
+        $this->targetCurrencyId = intval(SqlHandler::setIfExists(self::TARGET_CURRENCY, $namedValues));
+        $this->ratio = floatval(SqlHandler::setIfExists(self::RATIO, $namedValues));
+        $this->fee = floatval(SqlHandler::setIfExists(self::FEE, $namedValues));
+        $this->isDefault = boolval(SqlHandler::setIfExists(self::IS_DEFAULT, $namedValues));
+        $this->description = strval(SqlHandler::setIfExists(self::DESCRIPTION, $namedValues));
 
         return $result;
     }

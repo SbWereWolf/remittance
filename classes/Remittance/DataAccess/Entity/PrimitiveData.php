@@ -115,16 +115,13 @@ class PrimitiveData extends Record implements IPrimitiveData
     }
 
     /** Установить свойства экземпляра в соответствии со значениями
-     * @param array $namedValue массив значений
+     * @param array $namedValues массив значений
      * @return bool успех выполнения
      */
-    public function setByNamedValue(array $namedValue):bool
+    public function setByNamedValue(array $namedValues): bool
     {
 
-        $id = SqlHandler::setIfExists(self::ID, $namedValue);
-        if ($id !== SqlHandler::EMPTY_VALUE) {
-            $this->id = $id;
-        }
+        $this->id = SqlHandler::getIntegerKey(self::ID, $namedValues);
 
         return true;
     }

@@ -96,8 +96,43 @@ interface ISqlHandler
 
     /**
      * @param $key
-     * @param $namedValue
+     * @param $namedValues
      * @return mixed|string
      */
-    public static function setIfExists($key, &$namedValue);
+    public static function setIfExists($key, array &$namedValues);
+
+    /**
+     * @param string $arrayKey
+     * @param array $namedValues
+     * @return int|null
+     */
+    public static function getIntegerKey(string $arrayKey, array $namedValues):?int;
+
+    /**
+     * @param string $arrayKey
+     * @param array $namedValues
+     * @return int|null
+     */
+    public static function getIntegerValue(string $arrayKey, array $namedValues): int;
+
+    /**
+     * @param string $arrayKey
+     * @param array $namedValues
+     * @return null|string
+     */
+    public static function getTimestampValue(string $arrayKey, array $namedValues):?string;
+
+    /**
+     * @param string $arrayKey
+     * @param array $namedValues
+     * @return null|string
+     */
+    public static function getDoublePrecisionValue(string $arrayKey, array $namedValues):?string;
+
+    /**
+     * @param string $arrayKey
+     * @param array $namedValues
+     * @return null|string
+     */
+    public static function getTextValue(string $arrayKey, array $namedValues):?string;
 }

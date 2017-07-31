@@ -44,23 +44,22 @@ class SqlHandler implements ISqlHandler
             ISqlHandler::EMPTY_VALUE);
     }
 
-    /** Установить настройки параметра для запроса
-     * @param string $placeholder место заменитель
-     * @param string $value значение
-     * @param int $dataType тип данных для значения
-     * @return array настройки параметра для запроса
-     */
-    public static function setBindParameter(string $placeholder, string $value, int $dataType):array
+    public static function setBindParameter(?string $placeholder, ?string $value, ?int $dataType): array
     {
         $bindValue = $value;
-        switch ($dataType) {
-            case \PDO::PARAM_INT :
-                $bindValue = intval($value);
-                break;
-            case \PDO::PARAM_STR:
-                $bindValue = strval($value);
-                break;
+
+        $isNull = is_null($value);
+        if (!$isNull) {
+            switch ($dataType) {
+                case \PDO::PARAM_INT :
+                    $bindValue = intval($value);
+                    break;
+                case \PDO::PARAM_STR:
+                    $bindValue = strval($value);
+                    break;
+            }
         }
+
         $result = [
             ISqlHandler::PLACEHOLDER => $placeholder,
             ISqlHandler::VALUE => $bindValue,
@@ -70,10 +69,6 @@ class SqlHandler implements ISqlHandler
         return $result;
     }
 
-    /** Прочитать все результаты запроса данных
-     * @param $arguments array аргументы выборки данных
-     * @return array данные выборки
-     */
     public static function readAllRecords(array $arguments):array
     {
         $sqlReader = new self(self::DATA_READER);
@@ -143,10 +138,15 @@ class SqlHandler implements ISqlHandler
             foreach ($queryParameters as $queryParameter) {
 
                 $placeholder = Common::setIfExists(ISqlHandler::PLACEHOLDER, $queryParameter, $emptyValue);
-                $value = Common::setIfExists(ISqlHandler::VALUE, $queryParameter, $emptyValue);
+                $value = Common::setIfExists(ISqlHandler::VALUE, $queryParameter, ISqlHandler::EMPTY_OBJECT);
                 $dataType = Common::setIfExists(ISqlHandler::DATA_TYPE, $queryParameter, $emptyValue);
 
-                $isParametersEmpty = ($placeholder == $emptyValue) || ($dataType == $emptyValue);
+                $isValueEmpty = is_null($value);
+                if ($isValueEmpty) {
+                    $dataType = \PDO::PARAM_NULL;
+                }
+
+                $isParametersEmpty = ($placeholder === $emptyValue) || ($dataType === $emptyValue);
                 if (!$isParametersEmpty) {
                     $dbQuery->bindValue($placeholder, $value, $dataType);
                 }
@@ -303,36 +303,96 @@ class SqlHandler implements ISqlHandler
 
     /**
      * @param $key
-     * @param $namedValue
+     * @param $namedValues
      * @return mixed|string
      */
-    public static function setIfExists($key, &$namedValue)
+    public static function setIfExists($key, array &$namedValues)
     {
-        $some = ISqlHandler::EMPTY_VALUE;
-        $value = Common::setIfExists($key, $namedValue, ISqlHandler::EMPTY_VALUE);
-        $isNull = is_null($value);
-        if ($isNull) {
-            $value = ISqlHandler::EMPTY_VALUE;
-        }
-        $isEmpty = $value === ISqlHandler::EMPTY_VALUE;
+        $value = Common::setIfExists($key, $namedValues, ISqlHandler::EMPTY_OBJECT);
+
+        return $value;
+    }
+
+    /**
+     * @param string $arrayKey
+     * @param array $namedValues
+     * @return int|null
+     */
+    public static function getIntegerKey(string $arrayKey, array $namedValues):?int
+    {
+        $raw = SqlHandler::setIfExists($arrayKey, $namedValues);
+        $isEmpty = empty($raw);
+        $value = null;
         if (!$isEmpty) {
-            $some = $value;
+            $value = intval($raw);
+        }
+        return $value;
+    }
+
+    /**
+     * @param string $arrayKey
+     * @param array $namedValues
+     * @return int|null
+     */
+    public static function getIntegerValue(string $arrayKey, array $namedValues): int
+    {
+        $raw = SqlHandler::setIfExists($arrayKey, $namedValues);
+        $value = intval($raw);
+
+        return $value;
+    }
+
+    /**
+     * @param string $arrayKey
+     * @param array $namedValues
+     * @return null|string
+     */
+    public static function getTimestampValue(string $arrayKey, array $namedValues):?string
+    {
+        $raw = SqlHandler::setIfExists($arrayKey, $namedValues);
+        $isEmpty = empty($raw);
+        $value = null;
+        if (!$isEmpty) {
+            $value = strval($raw);
+        }
+        return $value;
+    }
+
+    /**
+     * @param string $arrayKey
+     * @param array $namedValues
+     * @return null|string
+     */
+    public static function getDoublePrecisionValue(string $arrayKey, array $namedValues):?string
+    {
+        $raw = SqlHandler::setIfExists($arrayKey, $namedValues);
+
+        $isEmpty = empty($raw);
+        $value = null;
+        if (!$isEmpty) {
+            $float = floatval($raw);
+
+            $formatter = new InputFormatter();
+            $value = $formatter->toDoublePrecision($float);
         }
 
-        return $some;
+        return $value;
     }
 
-    public function castFloat (string $placeholder):string{
-
-        $cast = 'CAST(' . $placeholder . ' AS DOUBLE PRECISION)';
-
-        return $cast;
+    /**
+     * @param string $arrayKey
+     * @param array $namedValues
+     * @return null|string
+     */
+    public static function getTextValue(string $arrayKey, array $namedValues):?string
+    {
+        $raw = SqlHandler::setIfExists($arrayKey, $namedValues);
+        $isEmpty = empty($raw);
+        $value = null;
+        if (!$isEmpty) {
+            $value = strval($raw);
+        }
+        return $value;
     }
 
-    public function castTimestamp (string $placeholder):string{
-
-        $cast = 'CAST(' . $placeholder . ' AS TIMESTAMP WITH TIME ZONE)';
-
-        return $cast;
-    }
 }
